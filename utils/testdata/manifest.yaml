@@ -1,0 +1,20 @@
+manifestVersion: v1
+
+stash:
+  project: admin
+  repo: tools
+  defaultBranch: master
+
+deployment:
+  method: ggn
+  serviceName: admin-tools
+  podName: pod-php-webapp-admin-tools
+
+  hooks:
+    slack:
+      channels:
+        - "#deployments"
+
+    newRelic:
+      apiKey: abc123
+      appName: admin-tools
