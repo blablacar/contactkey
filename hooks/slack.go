@@ -1,11 +1,10 @@
 package hooks
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
-
-	"github.com/labstack/gommon/log"
 )
 
 type Slack struct {
@@ -14,17 +13,17 @@ type Slack struct {
 	Channel string
 }
 
-func (s Slack) preDeployment() {
+func (s Slack) preDeployment() error {
 	// @todo Change the message
-	s.postMessage("Start update")
+	return s.postMessage("Start update")
 }
 
-func (s Slack) postDeployment() {
-	// @todo change the message
-	s.postMessage("End update")
+func (s Slack) postDeployment() error {
+	// @todo Change the message
+	return s.postMessage("End update")
 }
 
-func (s Slack) postMessage(message string) {
+func (s Slack) postMessage(message string) error {
 	client := &http.Client{}
 	url := fmt.Sprintf(
 		"%s/services/hooks/slackbot?token=%s&channel=%s",
@@ -36,10 +35,12 @@ func (s Slack) postMessage(message string) {
 	request, err := http.NewRequest("POST", url, strings.NewReader(message))
 	response, err := client.Do(request)
 	if err != nil {
-		log.Fatal(err.Error())
+		return err
 	}
 
 	if response.StatusCode != http.StatusOK {
-		log.Fatalf("Slack status code: %s", http.StatusOK)
+		return errors.New(fmt.Sprintf("Slack status code: %d", response.StatusCode))
 	}
+
+	return nil
 }
