@@ -8,4 +8,4 @@ install:
   - dep ensure
 
 script:
-  - go test --cover (go list ./... | grep -v /vendor/)
+  - go test --cover $(go list ./... | grep -v /vendor/)
