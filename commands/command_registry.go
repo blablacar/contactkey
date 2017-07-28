@@ -1,17 +1,19 @@
 package commands
 
 import (
-	"github.com/labstack/gommon/log"
+	"errors"
+	"fmt"
 )
 
 var typeRegistry = make(map[string]CckCommand)
 
-func makeInstance(name string) CckCommand {
+func makeInstance(name string) (CckCommand, error) {
 	if _, ok := typeRegistry[name]; !ok {
-		log.Fatalf("Struct %s not found", name)
+		return nil, errors.New(fmt.Sprintf("Struct not found %s", name))
+
 	}
 
-	return typeRegistry[name]
+	return typeRegistry[name], nil
 }
 
 func init() {

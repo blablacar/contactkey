@@ -21,7 +21,7 @@ func addEnvironmentToCommand(cmd *cobra.Command) map[int]*cobra.Command {
 	return envCommands
 }
 
-func addServiceNameToCommand(cmd *cobra.Command, commandName string, env string) map[int]*cobra.Command {
+func addServiceNameToCommand(cmd *cobra.Command, commandName string, env string) (map[int]*cobra.Command, error) {
 	serviceNameCommands := make(map[int]*cobra.Command)
 	// @todo Change this into something dynamic
 	services := []string{"airflow"}
@@ -30,15 +30,22 @@ func addServiceNameToCommand(cmd *cobra.Command, commandName string, env string)
 		serviceCmd := &cobra.Command{
 			Use:   service,
 			Short: "Run command for " + service,
-			Run: func(cmd *cobra.Command, args []string) {
-				cckCommand := makeInstance(commandName)
+			RunE: func(cmd *cobra.Command, args []string) error {
+				cckCommand, err := makeInstance(commandName)
+				if err != nil {
+					// @todo catch this error
+					return err
+				}
+
 				fill(cckCommand, cmd.Name(), env)
 				execute(cckCommand)
+
+				return nil
 			},
 		}
 		cmd.AddCommand(serviceCmd)
 		serviceNameCommands[index] = serviceCmd
 	}
 
-	return serviceNameCommands
+	return serviceNameCommands, nil
 }
