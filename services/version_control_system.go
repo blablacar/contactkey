@@ -109,6 +109,10 @@ func (s Stash) getStashResponse(params url.Values) (*StashResponse, error) {
 	)
 
 	request, err := http.NewRequest("GET", baseUrl+params.Encode(), nil)
+	if err != nil {
+		return nil, err
+	}
+
 	request.SetBasicAuth(s.User, s.Password)
 
 	response, err := client.Do(request)
