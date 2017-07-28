@@ -1,8 +1,9 @@
 package commands
 
 import (
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/spf13/cobra"
 )
 
 func Execute() {
@@ -16,23 +17,23 @@ func Execute() {
 	rootCmd.AddCommand(rollbackCmd)
 
 	deployEnvsCmd := addEnvironmentToCommand(deployCmd)
-    for _, deployEnvCmd := range deployEnvsCmd {
-		addServiceNameToCommand(deployEnvCmd, deployCmd.Name())
+	for _, deployEnvCmd := range deployEnvsCmd {
+		addServiceNameToCommand(deployEnvCmd, deployCmd.Name(), deployEnvCmd.Name())
 	}
 
 	diffEnvsCmd := addEnvironmentToCommand(diffCmd)
-	for _, diffEnvCmd := range diffEnvsCmd  {
-		addServiceNameToCommand(diffEnvCmd, diffCmd.Name())
+	for _, diffEnvCmd := range diffEnvsCmd {
+		addServiceNameToCommand(diffEnvCmd, diffCmd.Name(), diffEnvCmd.Name())
 	}
 
 	listEnvsCmd := addEnvironmentToCommand(listCmd)
 	for _, listEnvCmd := range listEnvsCmd {
-		addServiceNameToCommand(listEnvCmd, listCmd.Name())
+		addServiceNameToCommand(listEnvCmd, listCmd.Name(), listEnvCmd.Name())
 	}
 
 	rollbackEnvsCmd := addEnvironmentToCommand(rollbackCmd)
 	for _, rollbackEnvCmd := range rollbackEnvsCmd {
-		addServiceNameToCommand(rollbackEnvCmd, rollbackCmd.Name())
+		addServiceNameToCommand(rollbackEnvCmd, rollbackCmd.Name(), rollbackEnvCmd.Name())
 	}
 
 	err := rootCmd.Execute()
