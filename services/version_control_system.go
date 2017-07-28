@@ -2,26 +2,24 @@ package services
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strings"
-
 	"net/url"
-
-	"github.com/labstack/gommon/log"
+	"strings"
 )
 
 type versionControlSystem interface {
-	retrieveSha1ForProject(branch string) string
-	diff(deployedSha1 string, sha1ToDeploy string) Changes
+	retrieveSha1ForProject(branch string) (string, error)
+	diff(deployedSha1 string, sha1ToDeploy string) (*Changes, error)
 }
 
-func RetrieveSha1ForProject(vcs versionControlSystem, branch string) string {
+func RetrieveSha1ForProject(vcs versionControlSystem, branch string) (string, error) {
 	return vcs.retrieveSha1ForProject(branch)
 }
 
-func Diff(vcs versionControlSystem, deployedSha1 string, sha1ToDeploy string) Changes {
+func Diff(vcs versionControlSystem, deployedSha1 string, sha1ToDeploy string) (*Changes, error) {
 	return vcs.diff(deployedSha1, sha1ToDeploy)
 }
 
@@ -59,27 +57,32 @@ type StashResponse struct {
 	} `json:"values"`
 }
 
-func (s Stash) retrieveSha1ForProject(branch string) string {
-
+func (s Stash) retrieveSha1ForProject(branch string) (string, error) {
 	params := url.Values{}
 	params.Add("until", branch)
 	params.Add("limit", "1")
-	stashResponse := s.getStashResponse(params)
-
-	if len(stashResponse.Values) == 0 || stashResponse.Values[0].Id == "" {
-		log.Fatal("Stash: Sha1 not found in the response")
+	stashResponse, err := s.getStashResponse(params)
+	if err != nil {
+		return "", err
 	}
 
-	return stashResponse.Values[0].Id
+	if len(stashResponse.Values) == 0 || stashResponse.Values[0].Id == "" {
+		return "", errors.New("Stash: Sha1 not found in the response")
+	}
+
+	return stashResponse.Values[0].Id, nil
 }
 
-func (s Stash) diff(deployedSha1 string, sha1ToDeploy string) Changes {
+func (s Stash) diff(deployedSha1 string, sha1ToDeploy string) (*Changes, error) {
 	params := url.Values{}
 	params.Add("since", deployedSha1)
 	params.Add("until", sha1ToDeploy)
-	stashResponse := s.getStashResponse(params)
+	stashResponse, err := s.getStashResponse(params)
+	if err != nil {
+		return nil, err
+	}
 
-	changes := Changes{}
+	changes := new(Changes)
 	for cnt := 0; cnt < len(stashResponse.Values); cnt++ {
 		// We are sanitizing Stash
 		if !strings.HasPrefix(stashResponse.Values[cnt].Message, "Merge") {
@@ -91,13 +94,12 @@ func (s Stash) diff(deployedSha1 string, sha1ToDeploy string) Changes {
 		commits.AuthorFullName = stashResponse.Values[cnt].Author.DisplayName
 		commits.AuthorSlug = stashResponse.Values[cnt].Author.Slug
 		changes.Commits = append(changes.Commits, commits)
-
 	}
 
-	return changes
+	return changes, nil
 }
 
-func (s Stash) getStashResponse(params url.Values) StashResponse {
+func (s Stash) getStashResponse(params url.Values) (*StashResponse, error) {
 	client := &http.Client{}
 	baseUrl := fmt.Sprintf(
 		"%s/rest/api/latest/projects/%s/repos/%s/commits?",
@@ -111,19 +113,19 @@ func (s Stash) getStashResponse(params url.Values) StashResponse {
 
 	response, err := client.Do(request)
 	if err != nil {
-		log.Fatal(err.Error())
+		return nil, err
 	}
 
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal(err.Error())
+		return nil, err
 	}
 
-	var stashResponse StashResponse
+	stashResponse := new(StashResponse)
 	err = json.Unmarshal(body, &stashResponse)
 	if err != nil {
-		log.Fatal(err.Error())
+		return nil, err
 	}
 
-	return stashResponse
+	return stashResponse, nil
 }
