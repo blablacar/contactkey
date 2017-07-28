@@ -33,6 +33,10 @@ func (s Slack) postMessage(message string) error {
 	)
 
 	request, err := http.NewRequest("POST", url, strings.NewReader(message))
+	if err != nil {
+		return err
+	}
+
 	response, err := client.Do(request)
 	if err != nil {
 		return err
