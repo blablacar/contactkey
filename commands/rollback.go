@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"github.com/remyLemeunier/contactkey/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -17,7 +18,7 @@ type Rollback struct {
 func (r Rollback) execute() {
 }
 
-func (r Rollback) fill(service string, env string) {
+func (r Rollback) fill(config *utils.Config, service string, env string) {
 	r.Env = env
 	r.Service = service
 }
