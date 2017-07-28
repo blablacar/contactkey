@@ -38,6 +38,10 @@ func (n Nexus) retrievePodVersion() (string, error) {
 	)
 
 	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return "", err
+	}
+
 	request.Header.Set("accept", "application/json")
 	response, err := client.Do(request)
 	if err != nil {
