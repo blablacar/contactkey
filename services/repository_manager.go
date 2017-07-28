@@ -2,18 +2,17 @@ package services
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-
-	"github.com/labstack/gommon/log"
 )
 
 type repositoryManager interface {
-	retrievePodVersion() string
+	retrievePodVersion() (string, error)
 }
 
-func RetrievePodVersion(rm repositoryManager) string {
+func RetrievePodVersion(rm repositoryManager) (string, error) {
 	return rm.retrievePodVersion()
 }
 
@@ -28,7 +27,7 @@ type NexusResponse struct {
 	Version string `json:"version"`
 }
 
-func (n Nexus) retrievePodVersion() string {
+func (n Nexus) retrievePodVersion() (string, error) {
 	client := &http.Client{}
 	url := fmt.Sprintf(
 		"%s/nexus/service/local/artifact/maven?r=%s&a=%s&g=%s&v=LATEST",
@@ -42,23 +41,27 @@ func (n Nexus) retrievePodVersion() string {
 	request.Header.Set("accept", "application/json")
 	response, err := client.Do(request)
 	if err != nil {
-		log.Fatal(err.Error())
+		return "", err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		return "", errors.New(fmt.Sprintf("Nexus status code: %d", response.StatusCode))
 	}
 
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal(err.Error())
+		return "", err
 	}
 
 	var nexusResponse NexusResponse
 	err = json.Unmarshal(body, &nexusResponse)
 	if err != nil {
-		log.Fatal(err.Error())
+		return "", err
 	}
 
 	if nexusResponse.Version == "" {
-		log.Fatal("Nexus: Version not found in the response")
+		return "", errors.New("Nexus: Version not found in the response")
 	}
 
-	return nexusResponse.Version
+	return nexusResponse.Version, nil
 }
