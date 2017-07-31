@@ -15,6 +15,10 @@ func TestLoadConfig(t *testing.T) {
 		t.Fatal("cfg is nil")
 	}
 
+	if cfg.WorkPath != "/tmp" {
+		t.Errorf("Unexpected WorkPath %q", cfg.WorkPath)
+	}
+
 	if cfg.DeployDefaults.Deploy.PodName != "pod-php-webapp-admin-tools" {
 		t.Errorf("Unexpected DeployDefaults.Deployment.PodName %q", cfg.DeployDefaults.Deploy.PodName)
 	}

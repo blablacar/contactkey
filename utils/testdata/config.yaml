@@ -1,3 +1,5 @@
+workPath: /tmp
+
 deployers:
   ggn:
     gitBuildtoolsUrl: http://example.local
