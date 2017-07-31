@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"github.com/remyLemeunier/contactkey/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -18,7 +19,7 @@ func (d Diff) execute() {
 
 }
 
-func (d Diff) fill(service string, env string) {
+func (d Diff) fill(config *utils.Config, service string, env string) {
 	d.Env = env
 	d.Service = service
 }

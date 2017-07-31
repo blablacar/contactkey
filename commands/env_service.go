@@ -31,13 +31,11 @@ func addServiceNameToCommand(cmd *cobra.Command, commandName string, env string)
 			Use:   service,
 			Short: "Run command for " + service,
 			RunE: func(cmd *cobra.Command, args []string) error {
-				cckCommand, err := makeInstance(commandName)
+				cckCommand, err := makeInstance(commandName, cmd.Name(), env)
 				if err != nil {
 					// @todo catch this error
 					return err
 				}
-
-				fill(cckCommand, cmd.Name(), env)
 				execute(cckCommand)
 
 				return nil

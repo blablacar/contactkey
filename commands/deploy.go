@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"github.com/remyLemeunier/contactkey/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -17,7 +18,7 @@ type Deploy struct {
 func (d Deploy) execute() {
 }
 
-func (d Deploy) fill(service string, env string) {
+func (d Deploy) fill(config *utils.Config, service string, env string) {
 	d.Env = env
 	d.Service = service
 }
