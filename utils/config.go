@@ -1,12 +1,14 @@
 package utils
 
 import (
-	"github.com/spf13/viper"
 	"os"
 	"path/filepath"
+
+	"github.com/spf13/viper"
 )
 
 type Config struct {
+	WorkPath       string
 	Deployers      ConfigDeployers `mapstructure:"deployers"`
 	Environment    interface{}     `mapstructure:"environments"`
 	DeployDefaults DeployManifest  `yaml:"deployDefaults"`
