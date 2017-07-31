@@ -38,5 +38,4 @@ func TestNexus(t *testing.T) {
 		t.Errorf("podVersion is different from expected podVersion: %s", podVersion)
 	}
 
-
 }
