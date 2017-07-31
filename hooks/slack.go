@@ -3,6 +3,7 @@ package hooks
 import (
 	"errors"
 	"fmt"
+	"github.com/golang/glog"
 	"net/http"
 	"strings"
 )
@@ -37,12 +38,15 @@ func (s Slack) postMessage(message string) error {
 		return err
 	}
 
+	glog.V(4).Infof("sending %q to %s", message, url)
 	response, err := client.Do(request)
 	if err != nil {
+		glog.Errorf("fail to send %q to %s: %q", message, url, err)
 		return err
 	}
 
 	if response.StatusCode != http.StatusOK {
+		glog.Errorf("fail to send %q to %s StatusCode: %d", message, url, response.StatusCode)
 		return errors.New(fmt.Sprintf("Slack status code: %d", response.StatusCode))
 	}
 
