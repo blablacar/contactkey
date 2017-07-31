@@ -1,1 +1,1 @@
-# contactkey
+# contactkey [![Build Status](https://travis-ci.org/remyLemeunier/contactkey.svg?branch=master)](https://travis-ci.org/remyLemeunier/contactkey)

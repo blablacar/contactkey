@@ -8,4 +8,7 @@ install:
   - dep ensure
 
 script:
+  - ./hack/verify-gofmt.sh
   - go test --cover $(go list ./... | grep -v /vendor/)
+  - go build -o contactkey
+  - ./contactkey -h
