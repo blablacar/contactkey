@@ -5,5 +5,4 @@ import (
 )
 
 func TestDeployerRegistry(t *testing.T) {
-	//spew.Dump(registry)
 }

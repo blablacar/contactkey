@@ -16,12 +16,12 @@ func ggn(args ...string) *exec.Cmd {
 }
 
 type DeployerGgn struct {
-	name     string
+	Name     string
 	Manifest utils.DeployManifest
 }
 
 func init() {
-	register((*DeployerGgn)(nil))
+	Registry["ggn"] = &DeployerGgn{}
 }
 
 func (d *DeployerGgn) listUnits(env string) ([]string, error) {
@@ -54,7 +54,7 @@ func (d *DeployerGgn) catUnit(env string, unit string) (string, error) {
 }
 
 func (d *DeployerGgn) ListVersions(env string) (map[string]string, error) {
-	unitRegexp := regexp.MustCompile(fmt.Sprintf("%s", d.name))
+	unitRegexp := regexp.MustCompile(fmt.Sprintf("%s", d.Name))
 	versionRegexp := regexp.MustCompile("pod-airflow_aci-airflow:(\\S+)")
 	versions := make(map[string]string)
 

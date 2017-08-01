@@ -1,0 +1,5 @@
+---
+manifestVersion: v1
+stash: ~
+deployment:
+  method: mockggn
