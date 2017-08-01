@@ -14,6 +14,12 @@
   revision = "392dba7d905ed5d04a5794ba89f558b27e2ba1ca"
 
 [[projects]]
+  name = "github.com/imdario/mergo"
+  packages = ["."]
+  revision = "3e95a51e0639b4cf372f2ccf74c86749d747fbdc"
+  version = "0.2.2"
+
+[[projects]]
   branch = "master"
   name = "github.com/inconshreveable/mousetrap"
   packages = ["."]
