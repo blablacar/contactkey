@@ -1,14 +1,16 @@
 workPath: /tmp
 
+globalEnvironments:
+  - preprod
+  - prod
+
 deployers:
   ggn:
     gitBuildtoolsUrl: http://example.local
     workPath: /tmp
-
-environments:
-  prod-pa3:
-    ggn:
-      environment: prod-pa3
+    supportedEnvironment:
+      prod: prod-pa3
+      preprod: preprod
 
 deployDefaults: 
   manifestVersion: v1

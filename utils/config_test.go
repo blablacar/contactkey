@@ -19,6 +19,14 @@ func TestLoadConfig(t *testing.T) {
 		t.Errorf("Unexpected WorkPath %q", cfg.WorkPath)
 	}
 
+	if cfg.GlobalEnvironments[0] != "preprod" || cfg.GlobalEnvironments[1] != "prod" {
+		t.Error("Issue with global envs.")
+	}
+
+	if cfg.Deployers.DeployerGgn.SupportedEnvironment["prod"] != "prod-pa3" || cfg.Deployers.DeployerGgn.SupportedEnvironment["preprod"] != "preprod" {
+		t.Error("Issue with ggn supported env")
+	}
+
 	if cfg.DeployDefaults.Deploy.PodName != "pod-php-webapp-admin-tools" {
 		t.Errorf("Unexpected DeployDefaults.Deployment.PodName %q", cfg.DeployDefaults.Deploy.PodName)
 	}
