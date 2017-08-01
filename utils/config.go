@@ -8,10 +8,11 @@ import (
 )
 
 type Config struct {
-	WorkPath       string
-	Deployers      ConfigDeployers `mapstructure:"deployers"`
-	Environment    interface{}     `mapstructure:"environments"`
-	DeployDefaults DeployManifest  `yaml:"deployDefaults"`
+	WorkPath           string
+	GlobalEnvironments []string
+	Deployers          ConfigDeployers `mapstructure:"deployers"`
+	Environment        interface{}     `mapstructure:"environments"`
+	DeployDefaults     DeployManifest  `yaml:"deployDefaults"`
 }
 
 type ConfigDeployers struct {
@@ -19,17 +20,18 @@ type ConfigDeployers struct {
 }
 
 type ConfigDeployerGgn struct {
-	GitBuildtoolsUrl string `yaml:"gitBuildtoolsUrl"`
-	WorkPath         string `yaml:"workPath,omitempty"`
-	User             string `yaml:"user,omitempty"`
+	GitBuildtoolsUrl     string            `yaml:"gitBuildtoolsUrl"`
+	WorkPath             string            `yaml:"workPath,omitempty"`
+	User                 string            `yaml:"user,omitempty"`
+	SupportedEnvironment map[string]string `yaml:"supportedEnvironment"`
 }
 
 func LoadConfig(configPath string) (*Config, error) {
 	cfg := new(Config)
 
 	viper.SetConfigName("config")
-	viper.AddConfigPath(filepath.Join(os.Getenv("HOME"), ".contactkey"))
 	viper.AddConfigPath(configPath)
+	viper.AddConfigPath(filepath.Join(os.Getenv("HOME"), ".contactkey"))
 
 	err := viper.ReadInConfig()
 	if err != nil {
