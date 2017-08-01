@@ -18,8 +18,8 @@ func mockggn(command string, args ...string) *exec.Cmd {
 }
 
 func TestDeployerGgnRegistry(t *testing.T) {
-	if registry["github.com/remyLemeunier/contactkey/deployers.DeployerGgn"] == nil {
-		t.Error("deployers.DeployerGgn is not in the registry")
+	if Registry["ggn"] == nil {
+		t.Error("Deployer 'ggn' is not in the registry")
 	}
 }
 
@@ -51,7 +51,7 @@ func TestCatUnit(t *testing.T) {
 
 func TestListVersions(t *testing.T) {
 	execCommand = mockggn
-	d := DeployerGgn{name: "airflow-scheduler"}
+	d := DeployerGgn{Name: "airflow-scheduler"}
 	v, err := d.ListVersions("staging")
 	if err != nil {
 		t.Fatal("listUnits failed")

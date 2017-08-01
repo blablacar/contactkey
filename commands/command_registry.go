@@ -28,10 +28,10 @@ func makeInstance(name string, service string, env string) (CckCommand, error) {
 }
 
 func init() {
-	typeRegistry["deploy"] = Deploy{}
-	typeRegistry["diff"] = Diff{}
-	typeRegistry["list"] = List{}
-	typeRegistry["rollback"] = Rollback{}
+	typeRegistry["deploy"] = &Deploy{}
+	typeRegistry["diff"] = &Diff{}
+	typeRegistry["list"] = &List{}
+	typeRegistry["rollback"] = &Rollback{}
 }
 
 type CckCommand interface {

@@ -1,21 +1,22 @@
 package deployers
 
 import (
+	"errors"
 	"fmt"
-	"reflect"
 )
 
-var registry = make(map[string]reflect.Type)
+var Registry = make(map[string]Deployer)
 
 type Deployer interface {
-	listUnits(env string) ([]string, error)
+	ListVersions(env string) (map[string]string, error)
 }
 
-func register(deployer interface{}) {
-	t := reflect.TypeOf(deployer).Elem()
-	registry[fmt.Sprintf("%s.%s", t.PkgPath(), t.Name())] = t
-}
-
-func makeInstance(name string) interface{} {
-	return reflect.New(registry[name]).Elem().Interface()
+func MakeInstance(name string) (Deployer, error) {
+	_, ok := Registry[name]
+	if !ok {
+		return nil, errors.New(
+			fmt.Sprintf("Unexpected Deployer type %q", name),
+		)
+	}
+	return Registry[name], nil
 }
