@@ -1,8 +1,10 @@
 package utils
 
 import (
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
+
+	"github.com/imdario/mergo"
+	"gopkg.in/yaml.v2"
 )
 
 const ManifestVersion = "v1"
@@ -40,12 +42,22 @@ type DeployHookSlack struct {
 	Channels []string `yaml:"channels"`
 }
 
-func LoadDeployfile(filename string) (*DeployManifest, error) {
+func LoadDeployfile(defaults *DeployManifest, filename string) (*DeployManifest, error) {
 	b, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
-	return UnmarshalDeployfile(b)
+	manifest, err := UnmarshalDeployfile(b)
+	if err != nil {
+		return nil, err
+	}
+
+	err = mergo.MergeWithOverwrite(manifest, defaults)
+	if err != nil {
+		return nil, err
+	}
+
+	return manifest, nil
 }
 
 func UnmarshalDeployfile(data []byte) (*DeployManifest, error) {
