@@ -8,11 +8,33 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/remyLemeunier/contactkey/utils"
 )
+
+var registry = make(map[string]versionControlSystem)
+
+func init() {
+	registry["stash"] = &Stash{}
+}
+
+func MakeVcsInstance(vcsConfig *utils.VersionControlSystemConfig) (versionControlSystem, error) {
+	vcs, ok := registry[vcsConfig.Method]
+	if !ok {
+		return nil, errors.New(fmt.Sprintf("Unexpected Version control system type %q", vcsConfig.Method))
+	}
+	err := vcs.fill(vcsConfig.Data)
+	if err != nil {
+		return nil, err
+	}
+
+	return vcs, nil
+}
 
 type versionControlSystem interface {
 	retrieveSha1ForProject(branch string) (string, error)
 	diff(deployedSha1 string, sha1ToDeploy string) (*Changes, error)
+	fill(map[string]string) error
 }
 
 func RetrieveSha1ForProject(vcs versionControlSystem, branch string) (string, error) {
@@ -84,10 +106,6 @@ func (s Stash) diff(deployedSha1 string, sha1ToDeploy string) (*Changes, error) 
 
 	changes := new(Changes)
 	for cnt := 0; cnt < len(stashResponse.Values); cnt++ {
-		// We are sanitizing Stash
-		if !strings.HasPrefix(stashResponse.Values[cnt].Message, "Merge") {
-			continue
-		}
 		commits := Commits{}
 		commits.Title = stashResponse.Values[cnt].Message
 		commits.DisplayId = stashResponse.Values[cnt].DisplayId
@@ -104,8 +122,8 @@ func (s Stash) getStashResponse(params url.Values) (*StashResponse, error) {
 	baseUrl := fmt.Sprintf(
 		"%s/rest/api/latest/projects/%s/repos/%s/commits?",
 		s.Url,
-		s.Repository,
 		s.Project,
+		s.Repository,
 	)
 
 	request, err := http.NewRequest("GET", baseUrl+params.Encode(), nil)
@@ -132,4 +150,31 @@ func (s Stash) getStashResponse(params url.Values) (*StashResponse, error) {
 	}
 
 	return stashResponse, nil
+}
+
+func (s *Stash) fill(config map[string]string) error {
+	mandatoryIndexes := [5]string{"repository", "project", "user", "password", "url"}
+
+	indexesMissing := make([]string, 0)
+	for _, mandatoryIndex := range mandatoryIndexes {
+		if config[mandatoryIndex] == "" {
+			indexesMissing = append(indexesMissing, mandatoryIndex)
+		}
+	}
+
+	if len(indexesMissing) > 0 {
+		return errors.New(
+			fmt.Sprintf(
+				"Configuration '%s' for stash must be defined",
+				strings.Join(indexesMissing[:], ","),
+			))
+	}
+
+	s.Repository = config["repository"]
+	s.Project = config["project"]
+	s.User = config["user"]
+	s.Password = config["password"]
+	s.Url = config["url"]
+
+	return nil
 }
