@@ -11,15 +11,15 @@ import (
 const ManifestVersion = "v1"
 
 type DeployManifest struct {
-	ManifestVersion string      `yaml:"manifestVersion"`
-	Stash           interface{} `yaml:"stash"`
-	Deploy          Deploy      `yaml:"deployment" mapstructure:"deployment"`
+	ManifestVersion      string                      `yaml:"manifestVersion"`
+	VersionControlSystem *VersionControlSystemConfig `yaml:"versionControlSystem"`
+	Deploy               Deploy                      `yaml:"deployment" mapstructure:"deployment"`
 }
 
-type Stash struct {
-	Project       string `yaml:"project"`
-	Repo          string `yaml:"repo"`
-	DefaultBranch string `yaml:"defaultBranch"`
+type VersionControlSystemConfig struct {
+	Method        string            `yaml:"method"`
+	DefaultBranch string            `yaml:"defaultBranch"`
+	Data          map[string]string `yaml:"data"`
 }
 
 type Deploy struct {

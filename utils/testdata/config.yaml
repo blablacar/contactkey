@@ -14,10 +14,15 @@ deployers:
 
 deployDefaults: 
   manifestVersion: v1
-  stash:
-    project: admin
-    repo: tools
-    defaultBranch: master
+  versionControlSystem:
+    method: stash
+    data:
+      repository: repo
+      project:    project
+      user:       user
+      password:   password
+      url:        url
+
   deployment:
     method: ggn
     serviceName: admin-tools

@@ -1,9 +1,14 @@
 manifestVersion: v1
 
-stash:
-  project: admin
-  repo: tools
+versionControlSystem:
   defaultBranch: master
+  method: stash
+  data:
+    repository: repo
+    project:    project
+    user:       user
+    password:   password
+    url:        url
 
 deployment:
   method: ggn
