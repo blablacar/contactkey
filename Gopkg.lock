@@ -62,6 +62,12 @@
   version = "v1.0.0"
 
 [[projects]]
+  name = "github.com/sirupsen/logrus"
+  packages = ["."]
+  revision = "a3f95b5c423586578a4e099b11a46c2479628cac"
+  version = "1.0.2"
+
+[[projects]]
   branch = "master"
   name = "github.com/spf13/afero"
   packages = [".","mem"]
@@ -118,6 +124,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4ab3145b647d6e754069897da8e647d64834f5da9ef7d67bdcefcf778b9020ab"
+  inputs-digest = "b4476ac24f7c045f92a6a52102aaa8ed014af83b3fd435449d6f19eedb211ee1"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -7,7 +7,7 @@ import (
 func addEnvironmentToCommand(cmd *cobra.Command) map[int]*cobra.Command {
 	envCommands := make(map[int]*cobra.Command)
 	// @todo Change this into something dynamic
-	envs := []string{"preprod"}
+	envs := []string{"preprod", "pp-dc3"}
 
 	for index, env := range envs {
 		envCmd := &cobra.Command{
@@ -24,7 +24,7 @@ func addEnvironmentToCommand(cmd *cobra.Command) map[int]*cobra.Command {
 func addServiceNameToCommand(cmd *cobra.Command, commandName string, env string) (map[int]*cobra.Command, error) {
 	serviceNameCommands := make(map[int]*cobra.Command)
 	// @todo Change this into something dynamic
-	services := []string{"airflow"}
+	services := []string{"airflow", "webhooks"}
 
 	for index, service := range services {
 		serviceCmd := &cobra.Command{
