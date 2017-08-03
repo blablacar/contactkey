@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/remyLemeunier/contactkey/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 var execCommand = exec.Command
@@ -18,16 +19,27 @@ func ggn(args ...string) *exec.Cmd {
 type DeployerGgn struct {
 	Name     string
 	Manifest utils.DeployManifest
+	Log      *log.Logger
 }
 
 func init() {
-	Registry["ggn"] = &DeployerGgn{}
+	Registry["ggn"] = &DeployerGgn{Log: log.New()}
+}
+
+func (d *DeployerGgn) SetLogLevel(level log.Level) {
+	d.Log.SetLevel(level)
 }
 
 func (d *DeployerGgn) listUnits(env string) ([]string, error) {
 	units := []string{}
 	ggnCmd := ggn(env, "list-units")
+
 	stdOut, err := ggnCmd.CombinedOutput()
+	d.Log.WithFields(log.Fields{
+		"cmd":    ggnCmd.Path,
+		"args":   strings.Join(ggnCmd.Args, " "),
+		"stdout": ggnCmd.Stdout,
+	}).Debug("Executing external command")
 	if err != nil {
 		return nil, err
 	}
@@ -47,6 +59,11 @@ func (d *DeployerGgn) listUnits(env string) ([]string, error) {
 func (d *DeployerGgn) catUnit(env string, unit string) (string, error) {
 	ggnCmd := ggn(env, "fleetctl", "cat", unit)
 	stdOut, err := ggnCmd.CombinedOutput()
+	d.Log.WithFields(log.Fields{
+		"cmd":    ggnCmd.Path,
+		"args":   strings.Join(ggnCmd.Args, " "),
+		"stdout": ggnCmd.Stdout,
+	}).Debug("Executing external command")
 	if err != nil {
 		return "", err
 	}
@@ -54,8 +71,8 @@ func (d *DeployerGgn) catUnit(env string, unit string) (string, error) {
 }
 
 func (d *DeployerGgn) ListVersions(env string) (map[string]string, error) {
-	unitRegexp := regexp.MustCompile(fmt.Sprintf("%s", d.Name))
-	versionRegexp := regexp.MustCompile("pod-airflow_aci-airflow:(\\S+)")
+	unitRegexp := regexp.MustCompile(fmt.Sprintf("_%s_", "webhooks"))
+	versionRegexp := regexp.MustCompile("pod-webhooks_aci-\\S+:(\\S+)")
 	versions := make(map[string]string)
 
 	units, err := d.listUnits(env)
@@ -63,6 +80,7 @@ func (d *DeployerGgn) ListVersions(env string) (map[string]string, error) {
 		return nil, err
 	}
 	for _, unit := range units {
+		d.Log.Debug(unit)
 		if !unitRegexp.MatchString(unit) {
 			continue
 		}
@@ -72,7 +90,9 @@ func (d *DeployerGgn) ListVersions(env string) (map[string]string, error) {
 			continue
 		}
 		version := versionRegexp.FindStringSubmatch(file)
-
+		if len(version) == 0 {
+			continue
+		}
 		if version[1] != "" {
 			versions[unit] = version[1]
 		}
