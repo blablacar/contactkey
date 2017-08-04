@@ -7,6 +7,16 @@ import (
 
 type Manifest struct {
 	DeployerManifest `mapstructure:"deployment"`
+	VcsManifest      `mapstructure:"versionControlSystem"`
+}
+
+type VcsManifest struct {
+	StashManifest `mapstructure:"stash"`
+}
+
+type StashManifest struct {
+	Repository string `mapstructure:"repository"`
+	Project    string `mapstructure:"project"`
 }
 
 type DeployerManifest struct {

@@ -10,3 +10,9 @@ deployers:
     environments:
       preprod: pp
       prod: da-prod
+
+versionControlSystem:
+  stash:
+    user:       user
+    password:   password
+    url:        url

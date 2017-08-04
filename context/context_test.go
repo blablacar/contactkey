@@ -36,4 +36,8 @@ func TestNewContext(t *testing.T) {
 	if reflect.TypeOf(ctxt.Deployer).String() != "*deployers.DeployerGgn" {
 		t.Errorf("Type should be *deployers.DeployerGgn instead got %q", reflect.TypeOf(ctxt.Deployer).String())
 	}
+
+	if reflect.TypeOf(ctxt.Vcs).String() != "*services.Stash" {
+		t.Errorf("Type should be *services.Stash instead got %q", reflect.TypeOf(ctxt.Deployer).String())
+	}
 }

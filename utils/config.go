@@ -16,6 +16,7 @@ type Config struct {
 	WorkPath           string `mapstructure:"workPath"`
 	GlobalEnvironments []string
 	DeployerConfig     `mapstructure:"deployers"`
+	VcsConfig          `mapstructure:"versionControlSystem"`
 }
 
 type DeployerConfig struct {
@@ -25,6 +26,16 @@ type DeployerConfig struct {
 type DeployerGgnConfig struct {
 	WorkPath     string            `mapstructure:"workPath"`
 	Environments map[string]string `mapstructure:"environments"`
+}
+
+type VcsConfig struct {
+	StashConfig `mapstructure:"stash"`
+}
+
+type StashConfig struct {
+	User     string `mapstructure:"user"`
+	Password string `mapstructure:"password"`
+	Url      string `mapstructure:"url"`
 }
 
 func LoadConfig(cfgReader []byte) (*Config, error) {

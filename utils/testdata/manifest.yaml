@@ -4,4 +4,8 @@ versionControlSystem: ~
 deployment:
   ggn:
     pod: pod-webhooks
+versionControlSystem:
+  stash:
+    repository: repository
+    project: project
 hooks: ~
