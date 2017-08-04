@@ -1,0 +1,16 @@
+workPath: /tmp/manifests
+
+globalEnvironments:
+  - preprod
+
+deployers:
+  ggn:
+    workPath: /tmp
+    environments:
+      preprod: pp
+
+versionControlSystem:
+  stash:
+    user:       user
+    password:   password
+    url:        url

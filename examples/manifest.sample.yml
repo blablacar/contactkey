@@ -1,0 +1,10 @@
+manifestVersion: v1
+
+deployment:
+  ggn:
+    pod: pod
+
+versionControlSystem:
+  stash:
+    repository: repository
+    project:    project
