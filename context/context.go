@@ -1,6 +1,7 @@
 package context
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/remyLemeunier/contactkey/deployers"
@@ -12,13 +13,18 @@ type Context struct {
 	Log      log.Logger
 }
 
-func NewContext(cfg *utils.Config, manifest *utils.Manifest) *Context {
+func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 	ctx := &Context{}
 	if manifest.DeployerManifest.DeployerGgnManifest != (utils.DeployerGgnManifest{}) {
 		ctx.Deployer = deployers.NewDeployerGgn(
 			cfg.DeployerConfig.DeployerGgnConfig,
 			manifest.DeployerManifest.DeployerGgnManifest)
+	} else {
+		return nil, fmt.Errorf(
+			"Deployer unknown : %q",
+			manifest.DeployerGgnManifest,
+		)
 	}
 
-	return ctx
+	return ctx, nil
 }

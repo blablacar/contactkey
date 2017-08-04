@@ -28,7 +28,11 @@ func TestNewContext(t *testing.T) {
 		t.Fatalf("LoadConfig failed with err %q", err)
 	}
 
-	ctxt := NewContext(cfg, manifest)
+	ctxt, err := NewContext(cfg, manifest)
+	if err != nil {
+		t.Fatalf("NewContext failed with err %q", err)
+	}
+
 	if reflect.TypeOf(ctxt.Deployer).String() != "*deployers.DeployerGgn" {
 		t.Errorf("Type should be *deployers.DeployerGgn instead got %q", reflect.TypeOf(ctxt.Deployer).String())
 	}
