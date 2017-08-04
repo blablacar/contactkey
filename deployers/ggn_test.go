@@ -46,8 +46,11 @@ func TestCatUnit(t *testing.T) {
 }
 
 func TestListVersions(t *testing.T) {
+	envs := make(map[string]string)
+	envs["staging"] = "staging"
+
 	execCommand = mockggn
-	d := DeployerGgn{PodName: "webhooks", Log: log.New()}
+	d := DeployerGgn{PodName: "webhooks", Log: log.New(), Environments: envs}
 	v, err := d.ListVersions("staging")
 	if err != nil {
 		t.Fatal("listUnits failed")
