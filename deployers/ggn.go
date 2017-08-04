@@ -6,6 +6,8 @@ import (
 	"regexp"
 	"strings"
 
+	"errors"
+
 	"github.com/remyLemeunier/contactkey/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -17,16 +19,18 @@ func ggn(args ...string) *exec.Cmd {
 }
 
 type DeployerGgn struct {
-	PodName  string
-	WorkPath string
-	Log      *log.Logger
+	PodName      string
+	WorkPath     string
+	Environments map[string]string
+	Log          *log.Logger
 }
 
 func NewDeployerGgn(cfg utils.DeployerGgnConfig, manifest utils.DeployerGgnManifest) *DeployerGgn {
 	return &DeployerGgn{
-		WorkPath: cfg.WorkPath,
-		PodName:  manifest.PodName,
-		Log:      log.New(),
+		WorkPath:     cfg.WorkPath,
+		PodName:      manifest.PodName,
+		Environments: cfg.Environments,
+		Log:          log.New(),
 	}
 }
 
@@ -75,11 +79,15 @@ func (d *DeployerGgn) catUnit(env string, unit string) (string, error) {
 }
 
 func (d *DeployerGgn) ListVersions(env string) (map[string]string, error) {
+	ggnEnv, err := d.getGgnEnv(env)
+	if err != nil {
+		return nil, err
+	}
 	unitRegexp := regexp.MustCompile(fmt.Sprintf("_%s_", "webhooks"))
 	versionRegexp := regexp.MustCompile("pod-webhooks_aci-\\S+:(\\S+)")
 	versions := make(map[string]string)
 
-	units, err := d.listUnits(env)
+	units, err := d.listUnits(ggnEnv)
 	if err != nil {
 		return nil, err
 	}
@@ -103,6 +111,15 @@ func (d *DeployerGgn) ListVersions(env string) (map[string]string, error) {
 	}
 
 	return versions, nil
+}
+
+func (d *DeployerGgn) getGgnEnv(env string) (string, error) {
+	val, ok := d.Environments[env]
+	if !ok {
+		return "", errors.New(fmt.Sprintf("CCK env('%q') not found in GGN", env))
+	}
+
+	return val, nil
 }
 
 func (d *DeployerGgn) Deploy(env string) error {
