@@ -1,71 +1,46 @@
 package utils
 
 import (
-	"io/ioutil"
-
-	"github.com/imdario/mergo"
-
-	"gopkg.in/yaml.v2"
+	"github.com/mitchellh/mapstructure"
+	yaml "gopkg.in/yaml.v2"
 )
 
-const ManifestVersion = "v1"
-
-type DeployManifest struct {
-	ManifestVersion      string                      `yaml:"manifestVersion"`
-	VersionControlSystem *VersionControlSystemConfig `yaml:"versionControlSystem"`
-	Deploy               Deploy                      `yaml:"deployment" mapstructure:"deployment"`
+type Manifest struct {
+	DeployerManifest `mapstructure:"deployment"`
+	VcsManifest      `mapstructure:"versionControlSystem"`
 }
 
-type VersionControlSystemConfig struct {
-	Method        string            `yaml:"method"`
-	DefaultBranch string            `yaml:"defaultBranch"`
-	Data          map[string]string `yaml:"data"`
+type VcsManifest struct {
+	StashManifest `mapstructure:"stash"`
 }
 
-type Deploy struct {
-	Method      string      `yaml:"method"`
-	ServiceName string      `yaml:"serviceName"`
-	PodName     string      `yaml:"podName"`
-	Hooks       DeployHooks `yaml:"hooks"`
+type StashManifest struct {
+	Repository string `mapstructure:"repository"`
+	Project    string `mapstructure:"project"`
 }
 
-type DeployHooks struct {
-	DeployHookSlack    `yaml:"slack,omitempty" mapstructure:"slack"`
-	DeployHookNewRelic `yaml:"newRelic,omitempty" mapstructure:"newRelic"`
+type DeployerManifest struct {
+	DeployerGgnManifest  `mapstructure:"ggn"`
+	DeployerHelmManifest `mapstructure:"helm"`
 }
 
-type DeployHookNewRelic struct {
-	ApiKey  string `yaml:"apiKey"`
-	AppName string `yaml:"admin-tools"`
+type DeployerGgnManifest struct {
+	PodName string `mapstructure:"pod"`
 }
 
-type DeployHookSlack struct {
-	Channels []string `yaml:"channels"`
+type DeployerHelmManifest struct {
+	ReleaseName string `mapstructure:"release"`
 }
 
-func LoadDeployfile(defaults *DeployManifest, filename string) (*DeployManifest, error) {
-	b, err := ioutil.ReadFile(filename)
+func LoadManifest(manifestReader []byte) (*Manifest, error) {
+	manifest := &Manifest{}
+	manifestAux := make(map[string]interface{})
+	err := yaml.Unmarshal(manifestReader, &manifestAux)
 	if err != nil {
 		return nil, err
 	}
-	manifest, err := UnmarshalDeployfile(b)
-	if err != nil {
+	if err := mapstructure.Decode(manifestAux, manifest); err != nil {
 		return nil, err
 	}
-
-	err = mergo.MergeWithOverwrite(manifest, defaults)
-	if err != nil {
-		return nil, err
-	}
-
 	return manifest, nil
-}
-
-func UnmarshalDeployfile(data []byte) (*DeployManifest, error) {
-	y := &DeployManifest{}
-	err := yaml.Unmarshal(data, y)
-	if err != nil {
-		return nil, err
-	}
-	return y, nil
 }

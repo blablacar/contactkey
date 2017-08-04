@@ -6,47 +6,48 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/spf13/viper"
+	"github.com/mitchellh/mapstructure"
+	yaml "gopkg.in/yaml.v2"
 )
 
-var DefaultHome = filepath.Join(os.Getenv("HOME"), ".contactkey")
+var DefaultHome = filepath.Join(os.Getenv("HOME"), ".contactkey", "config.yml")
 
 type Config struct {
-	WorkPath           string
+	WorkPath           string `mapstructure:"workPath"`
 	GlobalEnvironments []string
-	Deployers          ConfigDeployers `mapstructure:"deployers"`
-	Environment        interface{}     `mapstructure:"environments"`
-	DeployDefaults     DeployManifest  `yaml:"deployDefaults"`
+	DeployerConfig     `mapstructure:"deployers"`
+	VcsConfig          `mapstructure:"versionControlSystem"`
 }
 
-type ConfigDeployers struct {
-	DeployerGgn ConfigDeployerGgn `mapstructure:"ggn"`
+type DeployerConfig struct {
+	DeployerGgnConfig `mapstructure:"ggn"`
 }
 
-type ConfigDeployerGgn struct {
-	GitBuildtoolsUrl     string            `yaml:"gitBuildtoolsUrl"`
-	WorkPath             string            `yaml:"workPath,omitempty"`
-	User                 string            `yaml:"user,omitempty"`
-	SupportedEnvironment map[string]string `yaml:"supportedEnvironment"`
+type DeployerGgnConfig struct {
+	WorkPath     string            `mapstructure:"workPath"`
+	Environments map[string]string `mapstructure:"environments"`
 }
 
-func LoadConfig(configPath string) (*Config, error) {
-	cfg := new(Config)
+type VcsConfig struct {
+	StashConfig `mapstructure:"stash"`
+}
 
-	viper.SetConfigName("config")
-	viper.AddConfigPath(configPath)
-	viper.AddConfigPath(filepath.Join(os.Getenv("HOME"), ".contactkey"))
+type StashConfig struct {
+	User     string `mapstructure:"user"`
+	Password string `mapstructure:"password"`
+	Url      string `mapstructure:"url"`
+}
 
-	err := viper.ReadInConfig()
+func LoadConfig(cfgReader []byte) (*Config, error) {
+	cfg := &Config{}
+	cfgAux := make(map[string]interface{})
+	err := yaml.Unmarshal(cfgReader, &cfgAux)
 	if err != nil {
 		return nil, err
 	}
-
-	err = viper.Unmarshal(&cfg)
-	if err != nil {
+	if err := mapstructure.Decode(cfgAux, cfg); err != nil {
 		return nil, err
 	}
-
 	return cfg, nil
 }
 

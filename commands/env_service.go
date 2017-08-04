@@ -1,14 +1,12 @@
 package commands
 
 import (
+	"github.com/remyLemeunier/contactkey/utils"
 	"github.com/spf13/cobra"
 )
 
-func addEnvironmentToCommand(cmd *cobra.Command) map[int]*cobra.Command {
+func addEnvironmentToCommand(cmd *cobra.Command, envs []string) map[int]*cobra.Command {
 	envCommands := make(map[int]*cobra.Command)
-	// @todo Change this into something dynamic
-	envs := []string{"preprod", "pp-dc3"}
-
 	for index, env := range envs {
 		envCmd := &cobra.Command{
 			Use:   env,
@@ -21,19 +19,15 @@ func addEnvironmentToCommand(cmd *cobra.Command) map[int]*cobra.Command {
 	return envCommands
 }
 
-func addServiceNameToCommand(cmd *cobra.Command, commandName string, env string) (map[int]*cobra.Command, error) {
+func addServiceNameToCommand(cmd *cobra.Command, cfg *utils.Config, services []string, commandName string, env string) map[int]*cobra.Command {
 	serviceNameCommands := make(map[int]*cobra.Command)
-	// @todo Change this into something dynamic
-	services := []string{"airflow", "webhooks"}
-
 	for index, service := range services {
 		serviceCmd := &cobra.Command{
 			Use:   service,
 			Short: "Run command for " + service,
 			RunE: func(cmd *cobra.Command, args []string) error {
-				cckCommand, err := makeInstance(commandName, cmd.Name(), env)
+				cckCommand, err := makeInstance(cfg, commandName, cmd.Name(), env)
 				if err != nil {
-					// @todo catch this error
 					return err
 				}
 				execute(cckCommand)
@@ -45,5 +39,5 @@ func addServiceNameToCommand(cmd *cobra.Command, commandName string, env string)
 		serviceNameCommands[index] = serviceCmd
 	}
 
-	return serviceNameCommands, nil
+	return serviceNameCommands
 }

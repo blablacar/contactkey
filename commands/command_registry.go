@@ -9,20 +9,14 @@ import (
 
 var typeRegistry = make(map[string]CckCommand)
 
-func makeInstance(name string, service string, env string) (CckCommand, error) {
+func makeInstance(cfg *utils.Config, name string, service string, env string) (CckCommand, error) {
 	if _, ok := typeRegistry[name]; !ok {
 		return nil, errors.New(fmt.Sprintf("Struct not found %s", name))
 
 	}
 
-	// load conifg
-	config, err := utils.LoadConfig("")
-	if err != nil {
-		return nil, err
-	}
-
 	cckCommand := typeRegistry[name]
-	fill(cckCommand, config, service, env)
+	fill(cckCommand, cfg, service, env)
 
 	return cckCommand, nil
 }

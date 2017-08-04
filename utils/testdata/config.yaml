@@ -6,32 +6,13 @@ globalEnvironments:
 
 deployers:
   ggn:
-    gitBuildtoolsUrl: http://example.local
     workPath: /tmp
-    supportedEnvironment:
-      prod: prod-pa3
-      preprod: preprod
+    environments:
+      preprod: pp
+      prod: da-prod
 
-deployDefaults: 
-  manifestVersion: v1
-  versionControlSystem:
-    method: stash
-    data:
-      repository: repo
-      project:    project
-      user:       user
-      password:   password
-      url:        url
-
-  deployment:
-    method: ggn
-    serviceName: admin-tools
-    podName: pod-php-webapp-admin-tools
-
-    hooks:
-      slack:
-        channels:
-          - "#deployments"
-      newRelic:
-        apiKey: abc123
-        appName: admin-tools
+versionControlSystem:
+  stash:
+    user:       user
+    password:   password
+    url:        url

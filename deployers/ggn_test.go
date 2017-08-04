@@ -19,12 +19,6 @@ func mockggn(command string, args ...string) *exec.Cmd {
 	return cmd
 }
 
-func TestDeployerGgnRegistry(t *testing.T) {
-	if Registry["ggn"] == nil {
-		t.Error("Deployer 'ggn' is not in the registry")
-	}
-}
-
 func TestListUnits(t *testing.T) {
 	execCommand = mockggn
 	d := DeployerGgn{Log: log.New()}
@@ -53,7 +47,7 @@ func TestCatUnit(t *testing.T) {
 
 func TestListVersions(t *testing.T) {
 	execCommand = mockggn
-	d := DeployerGgn{Name: "webhooks", Log: log.New()}
+	d := DeployerGgn{PodName: "webhooks", Log: log.New()}
 	v, err := d.ListVersions("staging")
 	if err != nil {
 		t.Fatal("listUnits failed")
@@ -85,4 +79,7 @@ staging_webhooks_webhooks.service					b102fa1e59ae42e28936dd676829236d/10.13.33.
 ExecStart=/opt/bin/rkt      --insecure-options=all run      --set-env=TEMPLATER_OVERRIDE='${ATTR_0}'      --set-env=TEMPLATER_OVERRIDE_BASE64='${ATTR_BASE64_0}${ATTR_BASE64_1}'      --set-env=HOSTNAME='webhooks'      --set-env=HOST="%H"      --hostname=webhooks      --dns=10.254.0.3 --dns=10.254.0.4       --dns-search=pp-bourse.par-1.h.blbl.cr       --uuid-file-save=/mnt/sda9/rkt-uuid/pp-bourse/webhooks      --set-env=DOMAINNAME='pp.par-1.h.blbl.cr'      --net='bond0'      --set-env=AIRFLOW_HOME='/opt/webhooks'      aci.blbl.cr/pod-webhooks_aci-go-synapse:1.8.1-1    aci.blbl.cr/pod-webhooks_aci-go-nerve:1.8.1-1    aci.blbl.cr/pod-webhooks_aci-confd:1.8.1-1    aci.blbl.cr/pod-webhooks_aci-embulk:1.8.1-1    aci.blbl.cr/pod-webhooks_aci-zabbix-agent:1.8.1-1    aci.blbl.cr/pod-webhooks_aci-webhooks:1.8.1-1 --exec /usr/local/bin/webhooks -- scheduler ---
 	`)
 	}
+}
+
+func TestNewDeployerGGN(t *testing.T) {
 }

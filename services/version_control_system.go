@@ -12,36 +12,17 @@ import (
 	"github.com/remyLemeunier/contactkey/utils"
 )
 
-var registry = make(map[string]versionControlSystem)
-
-func init() {
-	registry["stash"] = &Stash{}
-}
-
-func MakeVcsInstance(vcsConfig *utils.VersionControlSystemConfig) (versionControlSystem, error) {
-	vcs, ok := registry[vcsConfig.Method]
-	if !ok {
-		return nil, errors.New(fmt.Sprintf("Unexpected Version control system type %q", vcsConfig.Method))
-	}
-	err := vcs.fill(vcsConfig.Data)
-	if err != nil {
-		return nil, err
-	}
-
-	return vcs, nil
-}
-
-type versionControlSystem interface {
+type VersionControlSystem interface {
 	retrieveSha1ForProject(branch string) (string, error)
 	diff(deployedSha1 string, sha1ToDeploy string) (*Changes, error)
 	fill(map[string]string) error
 }
 
-func RetrieveSha1ForProject(vcs versionControlSystem, branch string) (string, error) {
+func RetrieveSha1ForProject(vcs VersionControlSystem, branch string) (string, error) {
 	return vcs.retrieveSha1ForProject(branch)
 }
 
-func Diff(vcs versionControlSystem, deployedSha1 string, sha1ToDeploy string) (*Changes, error) {
+func Diff(vcs VersionControlSystem, deployedSha1 string, sha1ToDeploy string) (*Changes, error) {
 	return vcs.diff(deployedSha1, sha1ToDeploy)
 }
 
@@ -77,6 +58,16 @@ type StashResponse struct {
 			Id string `json:"id"`
 		} `json:"parents"`
 	} `json:"values"`
+}
+
+func NewStash(cfg utils.StashConfig, manifest utils.StashManifest) *Stash {
+	return &Stash{
+		Repository: manifest.Repository,
+		Project:    manifest.Project,
+		User:       cfg.User,
+		Password:   cfg.Password,
+		Url:        cfg.Url,
+	}
 }
 
 func (s Stash) retrieveSha1ForProject(branch string) (string, error) {

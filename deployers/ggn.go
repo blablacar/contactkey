@@ -17,13 +17,17 @@ func ggn(args ...string) *exec.Cmd {
 }
 
 type DeployerGgn struct {
-	Name     string
-	Manifest utils.DeployManifest
+	PodName  string
+	WorkPath string
 	Log      *log.Logger
 }
 
-func init() {
-	Registry["ggn"] = &DeployerGgn{Log: log.New()}
+func NewDeployerGgn(cfg utils.DeployerGgnConfig, manifest utils.DeployerGgnManifest) *DeployerGgn {
+	return &DeployerGgn{
+		WorkPath: cfg.WorkPath,
+		PodName:  manifest.PodName,
+		Log:      log.New(),
+	}
 }
 
 func (d *DeployerGgn) SetLogLevel(level log.Level) {
