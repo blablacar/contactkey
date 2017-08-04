@@ -86,3 +86,6 @@ ExecStart=/opt/bin/rkt      --insecure-options=all run      --set-env=TEMPLATER_
 	`)
 	}
 }
+
+func TestNewDeployerGGN(t *testing.T) {
+}

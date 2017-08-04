@@ -4,39 +4,21 @@ import (
 	"testing"
 )
 
-const testfile = "testdata/manifest.yaml"
-
-func TestLoadDeployfile(t *testing.T) {
-	defaults := &DeployManifest{
-		Deploy: Deploy{
-			Hooks: DeployHooks{
-				DeployHookNewRelic: DeployHookNewRelic{
-					ApiKey: "abc123_from_config",
-				},
-			},
-		},
+func TestLoadManifest(t *testing.T) {
+	configFile, err := ReadFile("./testdata/manifest.yaml")
+	if err != nil {
+		t.Fatalf("ReadFile failed with err %q", err)
 	}
-	f, err := LoadDeployfile(defaults, testfile)
+	manifest, err := LoadManifest(configFile)
 	if err != nil {
 		t.Fatalf("LoadDeployfile failed with err %q", err)
 	}
 
-	if f == nil {
-		t.Fatal("f is nil")
+	if manifest == (&Manifest{}) {
+		t.Errorf("Unexpected manifest %q", manifest)
 	}
 
-	if f.ManifestVersion != ManifestVersion {
-		t.Errorf("Expected nanifestVersion %q, got %q", ManifestVersion, f.ManifestVersion)
-	}
-
-	if f.Deploy.Hooks.DeployHookNewRelic.ApiKey != "abc123_from_config" {
-		t.Errorf(
-			"Unexpected NewRelic.ApiKey: %q",
-			f.Deploy.Hooks.DeployHookNewRelic.ApiKey,
-		)
-	}
-
-	if f.Deploy.Method != "ggn" {
-		t.Errorf("Unexpected deployment.method %q", f.Deploy.Method)
+	if manifest.PodName != "pod-webhooks" {
+		t.Errorf("Podname should be 'pod-webhooks' instead got  %q", manifest.PodName)
 	}
 }

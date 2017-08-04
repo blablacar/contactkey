@@ -1,25 +1,7 @@
 manifestVersion: v1
 
-versionControlSystem:
-  defaultBranch: master
-  method: stash
-  data:
-    repository: repo
-    project:    project
-    user:       user
-    password:   password
-    url:        url
-
+versionControlSystem: ~
 deployment:
-  method: ggn
-  serviceName: admin-tools
-  podName: pod-php-webapp-admin-tools
-
-  hooks:
-    slack:
-      channels:
-        - "#deployments"
-
-    newRelic:
-      apiKey: abc123
-      appName: admin-tools
+  ggn:
+    pod: pod-webhooks
+hooks: ~
