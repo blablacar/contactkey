@@ -8,6 +8,10 @@ install:
   - dep ensure
 
 script:
+  - mkdir /home/travis/.contactkey
+  - mv examples/config.sample.yml  /home/travis/.contactkey/config.yml
+  - mkdir /tmp/manifests
+  - mv examples/manifest.sample.yml /tmp/manifests/manifest.yml
   - ./hack/verify-gofmt.sh
   - go test --cover $(go list ./... | grep -v /vendor/)
   - go build -o contactkey
