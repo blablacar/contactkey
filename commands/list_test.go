@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/olekukonko/tablewriter"
-	"github.com/remyLemeunier/contactkey/deployers"
 	"github.com/remyLemeunier/contactkey/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -24,10 +23,6 @@ func (d *DeployerMockGgn) ListVersions(env string) (map[string]string, error) {
 
 func (d *DeployerMockGgn) SetLogLevel(level log.Level) {
 	d.Log.SetLevel(level)
-}
-
-func init() {
-	deployers.Registry["mockggn"] = &DeployerMockGgn{Log: log.New()}
 }
 
 func TestListExecute(t *testing.T) {

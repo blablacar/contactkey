@@ -19,12 +19,6 @@ func mockggn(command string, args ...string) *exec.Cmd {
 	return cmd
 }
 
-func TestDeployerGgnRegistry(t *testing.T) {
-	if Registry["ggn"] == nil {
-		t.Error("Deployer 'ggn' is not in the registry")
-	}
-}
-
 func TestListUnits(t *testing.T) {
 	execCommand = mockggn
 	d := DeployerGgn{Log: log.New()}
@@ -53,7 +47,7 @@ func TestCatUnit(t *testing.T) {
 
 func TestListVersions(t *testing.T) {
 	execCommand = mockggn
-	d := DeployerGgn{Name: "webhooks", Log: log.New()}
+	d := DeployerGgn{PodName: "webhooks", Log: log.New()}
 	v, err := d.ListVersions("staging")
 	if err != nil {
 		t.Fatal("listUnits failed")

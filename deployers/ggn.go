@@ -30,10 +30,6 @@ func NewDeployerGgn(cfg utils.DeployerGgnConfig, manifest utils.DeployerGgnManif
 	}
 }
 
-func init() {
-	Registry["ggn"] = &DeployerGgn{Log: log.New()}
-}
-
 func (d *DeployerGgn) SetLogLevel(level log.Level) {
 	d.Log.SetLevel(level)
 }

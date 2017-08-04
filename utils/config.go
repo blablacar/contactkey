@@ -2,12 +2,15 @@ package utils
 
 import (
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/mitchellh/mapstructure"
 	yaml "gopkg.in/yaml.v2"
 )
+
+var DefaultHome = filepath.Join(os.Getenv("HOME"), ".contactkey", "config.yml")
 
 type Config struct {
 	WorkPath           string `mapstructure:"workPath"`

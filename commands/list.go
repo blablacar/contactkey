@@ -3,10 +3,11 @@ package commands
 import (
 	"fmt"
 	"os"
+
 	"path"
 
 	"github.com/olekukonko/tablewriter"
-	"github.com/remyLemeunier/contactkey/deployers"
+	"github.com/remyLemeunier/contactkey/context"
 	"github.com/remyLemeunier/contactkey/utils"
 	"github.com/spf13/cobra"
 )
@@ -24,21 +25,20 @@ type List struct {
 }
 
 func (l List) execute() {
-	deployFile := path.Join(l.Config.WorkPath, fmt.Sprintf("%s.yml", l.Service))
-
-	manifest, err := utils.LoadDeployfile(&l.Config.DeployDefaults, deployFile)
+	filePath := path.Join(l.Config.WorkPath, fmt.Sprintf("%s.yml", l.Service))
+	manifestFile, err := utils.ReadFile(filePath)
 	if err != nil {
-		fmt.Printf("Unexpected error : %q", err)
+		fmt.Printf("Unable to read file: %q with err: %q", filePath, err)
+		os.Exit(1)
+	}
+	manifest, err := utils.LoadManifest(manifestFile)
+	if err != nil {
+		fmt.Printf("LoadConfig failed with err %q", err)
 		os.Exit(1)
 	}
 
-	deployer, err := deployers.MakeInstance(manifest.Deploy.Method)
-	if err != nil {
-		fmt.Printf("Unexpected deployment method : %q", err)
-		os.Exit(1)
-	}
-
-	versions, err := deployer.ListVersions(l.Env)
+	ctxt := context.NewContext(l.Config, manifest)
+	versions, err := ctxt.Deployer.ListVersions(l.Env)
 	if err != nil {
 		fmt.Printf("Failed to list versions with error %q", err)
 		os.Exit(1)
