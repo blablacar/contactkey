@@ -18,7 +18,7 @@ func TestLoadManifest(t *testing.T) {
 		t.Errorf("Unexpected manifest %q", manifest)
 	}
 
-	if manifest.PodName != "pod-webhooks" {
-		t.Errorf("Podname should be 'pod-webhooks' instead got  %q", manifest.PodName)
+	if manifest.Pod != "pod-webhooks" {
+		t.Errorf("Pod should be 'pod-webhooks' instead got  %q", manifest.Pod)
 	}
 }

@@ -2,6 +2,7 @@ manifestVersion: v1
 
 deployment:
   ggn:
+    service: webhooks
     pod: pod
 
 versionControlSystem:

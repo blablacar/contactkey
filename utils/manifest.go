@@ -25,7 +25,8 @@ type DeployerManifest struct {
 }
 
 type DeployerGgnManifest struct {
-	PodName string `mapstructure:"pod"`
+	Service string `mapstructure:"service"`
+	Pod     string `mapstructure:"pod"`
 }
 
 type DeployerHelmManifest struct {

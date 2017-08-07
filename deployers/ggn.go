@@ -17,7 +17,8 @@ func ggn(args ...string) *exec.Cmd {
 }
 
 type DeployerGgn struct {
-	PodName      string
+	Service      string
+	Pod          string
 	WorkPath     string
 	Environments map[string]string
 	Log          *log.Logger
@@ -28,7 +29,8 @@ func NewDeployerGgn(cfg utils.DeployerGgnConfig,
 	logger *log.Logger) *DeployerGgn {
 	return &DeployerGgn{
 		WorkPath:     cfg.WorkPath,
-		PodName:      manifest.PodName,
+		Service:      manifest.Service,
+		Pod:          manifest.Pod,
 		Environments: cfg.Environments,
 		Log:          logger,
 	}
@@ -78,13 +80,21 @@ func (d *DeployerGgn) catUnit(env string, unit string) (string, error) {
 	return string(stdOut), nil
 }
 
+func (d *DeployerGgn) buildUnitRegexp(env string) *regexp.Regexp {
+	return regexp.MustCompile(fmt.Sprintf("^%s_%s_", env, d.Service))
+}
+
+func (d *DeployerGgn) buildVersionRegexp() *regexp.Regexp {
+	return regexp.MustCompile(fmt.Sprintf(`%s_aci-\S+:(\S+)`, d.Pod))
+}
+
 func (d *DeployerGgn) ListVersions(env string) (map[string]string, error) {
 	ggnEnv, err := d.getGgnEnv(env)
 	if err != nil {
 		return nil, err
 	}
-	unitRegexp := regexp.MustCompile(fmt.Sprintf("_%s_", "webhooks"))
-	versionRegexp := regexp.MustCompile("pod-webhooks_aci-\\S+:(\\S+)")
+	unitRegexp := d.buildUnitRegexp(env)
+	versionRegexp := d.buildVersionRegexp()
 	versions := make(map[string]string)
 
 	units, err := d.listUnits(ggnEnv)
