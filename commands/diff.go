@@ -14,6 +14,12 @@ var diffCmd = &cobra.Command{
 	Short: "Diff between what's currently deployed and what's going to be deployed",
 }
 
+var branch = ""
+
+func init() {
+	diffCmd.PersistentFlags().StringVar(&branch, "branch", "", "Change the branch from the default one.")
+}
+
 type Diff struct {
 	Env     string
 	Service string
@@ -21,7 +27,7 @@ type Diff struct {
 }
 
 func (d Diff) execute() {
-	branch := "PS-518-add-subscription-notification-router-paypal-notif"
+	// If the branch is null it will use the default one.
 	sha1, err := d.Context.Vcs.RetrieveSha1ForProject(branch)
 	if err != nil {
 		fmt.Printf("Failed to retrieve sha1: %q", err)
@@ -56,7 +62,7 @@ func (d Diff) execute() {
 			os.Exit(1)
 		}
 
-		fmt.Printf("between %q(deployed) and %q(branch) \n", uniqueVersion, sha1)
+		fmt.Printf("Diff between %q(deployed) and %q(branch) \n", uniqueVersion, sha1)
 		table := tablewriter.NewWriter(os.Stdout)
 		table.SetHeader([]string{"Author", "sha1", "description"})
 		for _, change := range changes.Commits {
