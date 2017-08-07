@@ -47,9 +47,10 @@ func TestStashRetrieveSha1ForProject(t *testing.T) {
 		"user",
 		"password",
 		apiStub.URL,
+		"defaultBranch",
 	}
 
-	sha1, err := stash.retrieveSha1ForProject("branch")
+	sha1, err := stash.RetrieveSha1ForProject("branch")
 	if err != nil {
 		t.Errorf("Error shouldn't have been raised instead got %s", err.Error())
 	}
@@ -69,9 +70,10 @@ func TestDiff(t *testing.T) {
 		"user",
 		"password",
 		apiStub.URL,
+		"defaultBranch",
 	}
 
-	changes, err := stash.diff("b04ad09883d1858081702b8e2d80eb348ead9849", "b0d5ca3e586d48cc6d3ad35f0e03dfc891e62752")
+	changes, err := stash.Diff("b04ad09883d1858081702b8e2d80eb348ead9849", "b0d5ca3e586d48cc6d3ad35f0e03dfc891e62752")
 	if err != nil {
 		t.Errorf("Error shouldn't have been raised instead got %s", err.Error())
 	}
