@@ -96,7 +96,7 @@ func (d *DeployerGgn) ListVersions(env string) (map[string]string, error) {
 		if !unitRegexp.MatchString(unit) {
 			continue
 		}
-		file, err := d.catUnit(env, unit)
+		file, err := d.catUnit(ggnEnv, unit)
 		if err != nil {
 			// @TODO what should we do there ?
 			continue
