@@ -32,6 +32,8 @@ func Execute() {
 		Use: "cck",
 	}
 
+	rootCmd.PersistentFlags().StringVarP(&cfg.LogLevel, "loglevel", "L", "warn", "log level")
+
 	rootCmd.AddCommand(deployCmd)
 	rootCmd.AddCommand(diffCmd)
 	rootCmd.AddCommand(listCmd)

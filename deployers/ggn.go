@@ -6,8 +6,6 @@ import (
 	"regexp"
 	"strings"
 
-	"errors"
-
 	"github.com/remyLemeunier/contactkey/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -25,17 +23,15 @@ type DeployerGgn struct {
 	Log          *log.Logger
 }
 
-func NewDeployerGgn(cfg utils.DeployerGgnConfig, manifest utils.DeployerGgnManifest) *DeployerGgn {
+func NewDeployerGgn(cfg utils.DeployerGgnConfig,
+	manifest utils.DeployerGgnManifest,
+	logger *log.Logger) *DeployerGgn {
 	return &DeployerGgn{
 		WorkPath:     cfg.WorkPath,
 		PodName:      manifest.PodName,
 		Environments: cfg.Environments,
-		Log:          log.New(),
+		Log:          logger,
 	}
-}
-
-func (d *DeployerGgn) SetLogLevel(level log.Level) {
-	d.Log.SetLevel(level)
 }
 
 func (d *DeployerGgn) listUnits(env string) ([]string, error) {
@@ -44,12 +40,17 @@ func (d *DeployerGgn) listUnits(env string) ([]string, error) {
 
 	stdOut, err := ggnCmd.CombinedOutput()
 	d.Log.WithFields(log.Fields{
-		"cmd":    ggnCmd.Path,
-		"args":   strings.Join(ggnCmd.Args, " "),
-		"stdout": ggnCmd.Stdout,
+		"cmd":  ggnCmd.Path,
+		"args": strings.Join(ggnCmd.Args, " "),
 	}).Debug("Executing external command")
+
 	if err != nil {
-		return nil, err
+		d.Log.WithFields(log.Fields{
+			"args": strings.Join(ggnCmd.Args, " "),
+		}).Error("Failed to run external command")
+		return nil, fmt.Errorf("Command `%s` failed with %q",
+			strings.Join(ggnCmd.Args, " "),
+			err)
 	}
 
 	r := regexp.MustCompile(".*.service")
@@ -68,9 +69,8 @@ func (d *DeployerGgn) catUnit(env string, unit string) (string, error) {
 	ggnCmd := ggn(env, "fleetctl", "cat", unit)
 	stdOut, err := ggnCmd.CombinedOutput()
 	d.Log.WithFields(log.Fields{
-		"cmd":    ggnCmd.Path,
-		"args":   strings.Join(ggnCmd.Args, " "),
-		"stdout": ggnCmd.Stdout,
+		"cmd":  ggnCmd.Path,
+		"args": strings.Join(ggnCmd.Args, " "),
 	}).Debug("Executing external command")
 	if err != nil {
 		return "", err
@@ -92,7 +92,6 @@ func (d *DeployerGgn) ListVersions(env string) (map[string]string, error) {
 		return nil, err
 	}
 	for _, unit := range units {
-		d.Log.Debug(unit)
 		if !unitRegexp.MatchString(unit) {
 			continue
 		}
@@ -116,7 +115,7 @@ func (d *DeployerGgn) ListVersions(env string) (map[string]string, error) {
 func (d *DeployerGgn) getGgnEnv(env string) (string, error) {
 	val, ok := d.Environments[env]
 	if !ok {
-		return "", errors.New(fmt.Sprintf("CCK env('%q') not found in GGN", env))
+		return "", fmt.Errorf("CCK env('%q') not found in GGN", env)
 	}
 
 	return val, nil

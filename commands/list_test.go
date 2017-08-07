@@ -21,10 +21,6 @@ func (d *DeployerMockGgn) ListVersions(env string) (map[string]string, error) {
 	return versions, nil
 }
 
-func (d *DeployerMockGgn) SetLogLevel(level log.Level) {
-	d.Log.SetLevel(level)
-}
-
 func TestListExecute(t *testing.T) {
 	cmd := &List{
 		Env:     "staging",

@@ -2,7 +2,8 @@ package context
 
 import (
 	"fmt"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/remyLemeunier/contactkey/deployers"
 	"github.com/remyLemeunier/contactkey/services"
@@ -12,15 +13,24 @@ import (
 type Context struct {
 	Deployer deployers.Deployer
 	Vcs      services.VersionControlSystem
-	Log      log.Logger
+	Log      *log.Logger
 }
 
 func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
-	ctx := &Context{}
+	ctx := &Context{
+		Log: log.New(),
+	}
+	loglevel, err := log.ParseLevel(cfg.LogLevel)
+	if err != nil {
+		loglevel = log.WarnLevel
+	}
+	ctx.Log.SetLevel(loglevel)
+
 	if manifest.DeployerManifest.DeployerGgnManifest != (utils.DeployerGgnManifest{}) {
 		ctx.Deployer = deployers.NewDeployerGgn(
 			cfg.DeployerConfig.DeployerGgnConfig,
-			manifest.DeployerManifest.DeployerGgnManifest)
+			manifest.DeployerManifest.DeployerGgnManifest,
+			ctx.Log)
 	} else {
 		return nil, fmt.Errorf(
 			"Deployer unknown : %q",

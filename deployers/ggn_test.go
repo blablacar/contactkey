@@ -27,7 +27,7 @@ func TestListUnits(t *testing.T) {
 		t.Fatal("listUnits failed")
 	}
 	if units[0] != "staging_webhooks_webhooks.service" {
-		t.Error("Unexpected units[0] : %q", units[0])
+		t.Errorf("Unexpected units[0] : %q", units[0])
 	}
 }
 
@@ -36,7 +36,7 @@ func TestCatUnit(t *testing.T) {
 	d := DeployerGgn{Log: log.New()}
 	unit, err := d.catUnit("staging", "staging_webhooks_webhooks.service")
 	if err != nil {
-		t.Fatal("CatUnits() failed : %q", err)
+		t.Fatalf("CatUnits() failed : %q", err)
 	}
 	m, _ := regexp.MatchString("aci.blbl.cr/pod-webhooks_aci-webhooks:1.8.1-1", unit)
 	if !m {

@@ -14,6 +14,7 @@ var DefaultHome = filepath.Join(os.Getenv("HOME"), ".contactkey", "config.yml")
 
 type Config struct {
 	WorkPath           string `mapstructure:"workPath"`
+	LogLevel           string
 	GlobalEnvironments []string
 	DeployerConfig     `mapstructure:"deployers"`
 	VcsConfig          `mapstructure:"versionControlSystem"`

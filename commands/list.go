@@ -28,7 +28,7 @@ type List struct {
 func (l List) execute() {
 	versions, err := l.Context.Deployer.ListVersions(l.Env)
 	if err != nil {
-		fmt.Printf("Failed to list versions with error %q", err)
+		fmt.Printf("Failed to list versions : %s", err)
 		os.Exit(1)
 	}
 
