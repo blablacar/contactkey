@@ -13,17 +13,9 @@ import (
 )
 
 type VersionControlSystem interface {
-	retrieveSha1ForProject(branch string) (string, error)
-	diff(deployedSha1 string, sha1ToDeploy string) (*Changes, error)
+	RetrieveSha1ForProject(branch string) (string, error)
+	Diff(deployedSha1 string, sha1ToDeploy string) (*Changes, error)
 	fill(map[string]string) error
-}
-
-func RetrieveSha1ForProject(vcs VersionControlSystem, branch string) (string, error) {
-	return vcs.retrieveSha1ForProject(branch)
-}
-
-func Diff(vcs VersionControlSystem, deployedSha1 string, sha1ToDeploy string) (*Changes, error) {
-	return vcs.diff(deployedSha1, sha1ToDeploy)
 }
 
 type Stash struct {
@@ -32,6 +24,7 @@ type Stash struct {
 	User       string
 	Password   string
 	Url        string
+	Branch     string
 }
 
 type Changes struct {
@@ -67,10 +60,14 @@ func NewStash(cfg utils.StashConfig, manifest utils.StashManifest) *Stash {
 		User:       cfg.User,
 		Password:   cfg.Password,
 		Url:        cfg.Url,
+		Branch:     manifest.Branch,
 	}
 }
 
-func (s Stash) retrieveSha1ForProject(branch string) (string, error) {
+func (s Stash) RetrieveSha1ForProject(branch string) (string, error) {
+	if branch == "" {
+		branch = s.Branch
+	}
 	params := url.Values{}
 	params.Add("until", branch)
 	params.Add("limit", "1")
@@ -86,7 +83,7 @@ func (s Stash) retrieveSha1ForProject(branch string) (string, error) {
 	return stashResponse.Values[0].Id, nil
 }
 
-func (s Stash) diff(deployedSha1 string, sha1ToDeploy string) (*Changes, error) {
+func (s Stash) Diff(deployedSha1 string, sha1ToDeploy string) (*Changes, error) {
 	params := url.Values{}
 	params.Add("since", deployedSha1)
 	params.Add("until", sha1ToDeploy)

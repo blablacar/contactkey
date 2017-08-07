@@ -17,6 +17,7 @@ func ggn(args ...string) *exec.Cmd {
 }
 
 type DeployerGgn struct {
+	VcsRegexp    string
 	PodName      string
 	WorkPath     string
 	Environments map[string]string
@@ -31,6 +32,7 @@ func NewDeployerGgn(cfg utils.DeployerGgnConfig,
 		PodName:      manifest.PodName,
 		Environments: cfg.Environments,
 		Log:          logger,
+		VcsRegexp:    cfg.VcsRegexp,
 	}
 }
 
@@ -110,6 +112,23 @@ func (d *DeployerGgn) ListVersions(env string) (map[string]string, error) {
 	}
 
 	return versions, nil
+}
+
+func (d *DeployerGgn) ListVcsVersions(env string) ([]string, error) {
+	versions, err := d.ListVersions(env)
+	if err != nil {
+		return nil, err
+	}
+	regexp := regexp.MustCompile(d.VcsRegexp)
+	vcsVersions := make([]string, 0)
+	for _, version := range versions {
+		vcsVersion := regexp.FindStringSubmatch(version)
+		if len(vcsVersion) == 2 {
+			vcsVersions = append(vcsVersions, vcsVersion[1])
+		}
+	}
+
+	return vcsVersions, nil
 }
 
 func (d *DeployerGgn) getGgnEnv(env string) (string, error) {

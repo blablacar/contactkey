@@ -5,6 +5,7 @@ deployment:
   ggn:
     pod: pod-webhooks
 versionControlSystem:
+  branch: master
   stash:
     repository: repository
     project: project
