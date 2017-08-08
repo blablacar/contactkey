@@ -6,14 +6,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/remyLemeunier/contactkey/utils"
 )
 
-type repositoryManager interface {
-	retrievePodVersion() (string, error)
-}
-
-func RetrievePodVersion(rm repositoryManager) (string, error) {
-	return rm.retrievePodVersion()
+type RepositoryManager interface {
+	RetrievePodVersion() (string, error)
 }
 
 type Nexus struct {
@@ -27,7 +25,16 @@ type NexusResponse struct {
 	Version string `json:"version"`
 }
 
-func (n Nexus) retrievePodVersion() (string, error) {
+func NewNexus(cfg utils.NexusConfig, manifest utils.NexusManifest) *Nexus {
+	return &Nexus{
+		Url:        cfg.Url,
+		Repository: cfg.Repository,
+		Group:      cfg.Group,
+		Artifact:   manifest.Artifact,
+	}
+}
+
+func (n Nexus) RetrievePodVersion() (string, error) {
 	client := &http.Client{}
 	url := fmt.Sprintf(
 		"%s/nexus/service/local/artifact/maven?r=%s&a=%s&g=%s&v=LATEST",

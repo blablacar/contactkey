@@ -9,4 +9,7 @@ versionControlSystem:
   stash:
     repository: repository
     project: project
+repositoryManager:
+  nexus:
+    artifact: pod-webhooks
 hooks: ~

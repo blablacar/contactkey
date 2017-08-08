@@ -16,3 +16,9 @@ versionControlSystem:
     user:       user
     password:   password
     url:        url
+
+repositoryManager:
+  nexus:
+    url:        127.0.0.1
+    repository: repository
+    group:      group

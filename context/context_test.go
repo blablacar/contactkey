@@ -38,6 +38,10 @@ func TestNewContext(t *testing.T) {
 	}
 
 	if reflect.TypeOf(ctxt.Vcs).String() != "*services.Stash" {
-		t.Errorf("Type should be *services.Stash instead got %q", reflect.TypeOf(ctxt.Deployer).String())
+		t.Errorf("Type should be *services.Stash instead got %q", reflect.TypeOf(ctxt.Vcs).String())
+	}
+
+	if reflect.TypeOf(ctxt.RepositoryManager).String() != "*services.Nexus" {
+		t.Errorf("Type should be *services.Nexus instead got %q", reflect.TypeOf(ctxt.RepositoryManager).String())
 	}
 }

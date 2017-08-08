@@ -6,8 +6,9 @@ import (
 )
 
 type Manifest struct {
-	DeployerManifest `mapstructure:"deployment"`
-	VcsManifest      `mapstructure:"versionControlSystem"`
+	DeployerManifest          `mapstructure:"deployment"`
+	VcsManifest               `mapstructure:"versionControlSystem"`
+	RepositoryManagerManifest `mapstructure:"repositoryManager"`
 }
 
 type VcsManifest struct {
@@ -33,6 +34,14 @@ type DeployerHelmManifest struct {
 	ReleaseName string `mapstructure:"release"`
 }
 
+type RepositoryManagerManifest struct {
+	NexusManifest `mapstructure:"nexus"`
+}
+
+type NexusManifest struct {
+	Artifact string `mapstructure:"artifact"`
+}
+
 func LoadManifest(manifestReader []byte) (*Manifest, error) {
 	manifest := &Manifest{}
 	manifestAux := make(map[string]interface{})
@@ -40,8 +49,10 @@ func LoadManifest(manifestReader []byte) (*Manifest, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	if err := mapstructure.Decode(manifestAux, manifest); err != nil {
 		return nil, err
 	}
+
 	return manifest, nil
 }

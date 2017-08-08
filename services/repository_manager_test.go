@@ -29,7 +29,7 @@ func TestNexus(t *testing.T) {
 		"group",
 	}
 
-	podVersion, err := nexus.retrievePodVersion()
+	podVersion, err := nexus.RetrievePodVersion()
 	if err != nil {
 		t.Errorf("Error triggered %s", err.Error())
 	}

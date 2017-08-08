@@ -11,9 +11,10 @@ import (
 )
 
 type Context struct {
-	Deployer deployers.Deployer
-	Vcs      services.VersionControlSystem
-	Log      *log.Logger
+	Deployer          deployers.Deployer
+	Vcs               services.VersionControlSystem
+	RepositoryManager services.RepositoryManager
+	Log               *log.Logger
 }
 
 func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
@@ -47,6 +48,17 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 		return nil, fmt.Errorf(
 			"Vcs unknown : %q",
 			manifest.VcsManifest,
+		)
+	}
+
+	if manifest.RepositoryManagerManifest.NexusManifest != (utils.NexusManifest{}) {
+		ctx.RepositoryManager = services.NewNexus(
+			cfg.RepositoryManager.NexusConfig,
+			manifest.RepositoryManagerManifest.NexusManifest)
+	} else {
+		return nil, fmt.Errorf(
+			"Repository manager unknown : %q",
+			manifest.RepositoryManagerManifest,
 		)
 	}
 

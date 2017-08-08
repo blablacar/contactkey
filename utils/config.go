@@ -18,6 +18,7 @@ type Config struct {
 	GlobalEnvironments []string
 	DeployerConfig     `mapstructure:"deployers"`
 	VcsConfig          `mapstructure:"versionControlSystem"`
+	RepositoryManager  `mapstructure:"repositoryManager"`
 }
 
 type DeployerConfig struct {
@@ -38,6 +39,16 @@ type StashConfig struct {
 	User     string `mapstructure:"user"`
 	Password string `mapstructure:"password"`
 	Url      string `mapstructure:"url"`
+}
+
+type RepositoryManager struct {
+	NexusConfig `mapstructure:"nexus"`
+}
+
+type NexusConfig struct {
+	Url        string `mapstructure:"url"`
+	Repository string `mapstructure:"repository"`
+	Group      string `mapstructure:"group"`
 }
 
 func LoadConfig(cfgReader []byte) (*Config, error) {
