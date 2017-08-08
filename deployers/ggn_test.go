@@ -94,7 +94,7 @@ func TestListVcsVersions(t *testing.T) {
 	}
 
 	if len(result) != 1 {
-		t.Error("We should have found only 1 version")
+		t.Fatal("We should have found only 1 version")
 	}
 
 	// We are receiving "1.8.1-1" when parsed with the regexp above it should "1" (string)

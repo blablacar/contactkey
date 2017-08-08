@@ -22,9 +22,7 @@ func (d *DeployerMockGgn) ListVersions(env string) (map[string]string, error) {
 }
 
 func (d *DeployerMockGgn) ListVcsVersions(env string) ([]string, error) {
-	var vcsVersions []string
-	vcsVersions[0] = "b0f586a"
-	vcsVersions[1] = "b0f586a"
+	vcsVersions := []string{"b0f586a", "b0f586a"}
 
 	return vcsVersions, nil
 }

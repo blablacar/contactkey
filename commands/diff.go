@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/olekukonko/tablewriter"
@@ -21,27 +22,33 @@ func init() {
 }
 
 type Diff struct {
-	Env     string
-	Service string
-	Context *context.Context
+	Env         string
+	Service     string
+	Context     *context.Context
+	TableWriter *tablewriter.Table
+	Writer      io.Writer
 }
 
 func (d Diff) execute() {
 	// If the branch is null it will use the default one.
 	sha1, err := d.Context.Vcs.RetrieveSha1ForProject(branch)
 	if err != nil {
-		fmt.Printf("Failed to retrieve sha1: %q", err)
+		fmt.Fprintf(d.Writer, "Failed to retrieve sha1: %q", err)
+		os.Exit(1)
+	}
+	if sha1 == "" {
+		fmt.Fprintf(d.Writer, "No sha1 found for service %q \n", d.Service)
 		os.Exit(1)
 	}
 
 	versions, err := d.Context.Deployer.ListVcsVersions(d.Env)
 	if err != nil {
-		fmt.Printf("Failed to list versions with error %q", err)
+		fmt.Fprintf(d.Writer, "Failed to list versions with error %q", err)
 		os.Exit(1)
 	}
 
 	if len(versions) == 0 {
-		fmt.Printf("No service (%q) versions found for the Env: %q", d.Service, d.Env)
+		fmt.Fprintf(d.Writer, "No service (%q) versions found for the Env: %q", d.Service, d.Env)
 		os.Exit(1)
 	}
 
@@ -58,17 +65,16 @@ func (d Diff) execute() {
 	for _, uniqueVersion := range uniqueVersions {
 		changes, err := d.Context.Vcs.Diff(uniqueVersion, sha1)
 		if err != nil {
-			fmt.Printf("Failed to retrieve sha1: %q", err)
+			fmt.Fprintf(d.Writer, "Failed to retrieve sha1: %q", err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("Diff between %q(deployed) and %q(branch) \n", uniqueVersion, sha1)
-		table := tablewriter.NewWriter(os.Stdout)
-		table.SetHeader([]string{"Author", "sha1", "description"})
+		fmt.Fprintf(d.Writer, "Diff between %q(deployed) and %q(branch) \n", uniqueVersion, sha1)
+		d.TableWriter.SetHeader([]string{"Author", "sha1", "description"})
 		for _, change := range changes.Commits {
-			table.Append([]string{change.AuthorFullName, change.DisplayId, change.Title})
+			d.TableWriter.Append([]string{change.AuthorFullName, change.DisplayId, change.Title})
 		}
-		table.Render()
+		d.TableWriter.Render()
 	}
 }
 
@@ -76,5 +82,6 @@ func (d *Diff) fill(context *context.Context, service string, env string) {
 	d.Env = env
 	d.Service = service
 	d.Context = context
-
+	d.TableWriter = tablewriter.NewWriter(os.Stdout)
+	d.Writer = os.Stdout
 }

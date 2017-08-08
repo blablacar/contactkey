@@ -15,7 +15,6 @@ import (
 type VersionControlSystem interface {
 	RetrieveSha1ForProject(branch string) (string, error)
 	Diff(deployedSha1 string, sha1ToDeploy string) (*Changes, error)
-	fill(map[string]string) error
 }
 
 type Stash struct {
