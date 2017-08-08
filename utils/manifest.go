@@ -17,6 +17,7 @@ type VcsManifest struct {
 type StashManifest struct {
 	Repository string `mapstructure:"repository"`
 	Project    string `mapstructure:"project"`
+	Branch     string `mapstructure:"branch"`
 }
 
 type DeployerManifest struct {

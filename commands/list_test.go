@@ -21,6 +21,12 @@ func (d *DeployerMockGgn) ListVersions(env string) (map[string]string, error) {
 	return versions, nil
 }
 
+func (d *DeployerMockGgn) ListVcsVersions(env string) ([]string, error) {
+	vcsVersions := []string{"b0f586a", "b0f586a"}
+
+	return vcsVersions, nil
+}
+
 func TestListExecute(t *testing.T) {
 	cmd := &List{
 		Env:     "staging",

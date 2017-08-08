@@ -27,6 +27,7 @@ type DeployerConfig struct {
 type DeployerGgnConfig struct {
 	WorkPath     string            `mapstructure:"workPath"`
 	Environments map[string]string `mapstructure:"environments"`
+	VcsRegexp    string            `mapstructure:"vcsRegexp"`
 }
 
 type VcsConfig struct {
