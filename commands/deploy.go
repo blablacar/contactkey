@@ -31,6 +31,12 @@ func (d *Deploy) execute() {
 		os.Exit(1)
 	}
 
+	podVersion, err := d.Context.RepositoryManager.RetrievePodVersion()
+	if err != nil {
+		fmt.Fprintf(d.Writer, "Failted to retrieve pod version: %q", err)
+		os.Exit(1)
+	}
+
 	sha1ToDeploy, err := d.Context.Vcs.RetrieveSha1ForProject("")
 	if err != nil {
 		fmt.Fprintf(d.Writer, "Failed to retrieve version from service(%q): %q", d.Service, err)
@@ -63,7 +69,16 @@ func (d *Deploy) execute() {
 		os.Exit(1)
 	}
 
-	fmt.Fprintf(d.Writer, "Going to deploy version %q", sha1ToDeploy)
+	fmt.Fprintf(d.Writer, "Going to deploy pod version %q", podVersion)
+	for _, hook := range d.Context.Hooks {
+		//@TODO Add a logger and log error comming from hooks
+		hook.PreDeployment(d.Env, d.Service, podVersion)
+	}
+
+	for _, hook := range d.Context.Hooks {
+		//@TODO Add a logger and log error comming from hooks
+		hook.PostDeployment(d.Env, d.Service, podVersion)
+	}
 }
 
 func (d *Deploy) fill(context *context.Context, service string, env string) {
