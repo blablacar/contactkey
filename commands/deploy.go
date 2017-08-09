@@ -71,12 +71,12 @@ func (d *Deploy) execute() {
 
 	fmt.Fprintf(d.Writer, "Going to deploy pod version %q", podVersion)
 	for _, hook := range d.Context.Hooks {
-		//@TODO Add a logger and log error comming from hooks
+		//@TODO Add a logger and log error coming from hooks
 		hook.PreDeployment(d.Env, d.Service, podVersion)
 	}
 
 	for _, hook := range d.Context.Hooks {
-		//@TODO Add a logger and log error comming from hooks
+		//@TODO Add a logger and log error coming from hooks
 		hook.PostDeployment(d.Env, d.Service, podVersion)
 	}
 }
