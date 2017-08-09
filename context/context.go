@@ -56,10 +56,7 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 			cfg.RepositoryManager.NexusConfig,
 			manifest.RepositoryManagerManifest.NexusManifest)
 	} else {
-		return nil, fmt.Errorf(
-			"Repository manager unknown : %q",
-			manifest.RepositoryManagerManifest,
-		)
+		return nil, fmt.Errorf("Repository manager not found, You should check in your manifest if it's well formated.")
 	}
 
 	return ctx, nil

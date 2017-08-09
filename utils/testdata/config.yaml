@@ -6,6 +6,7 @@ globalEnvironments:
 
 deployers:
   ggn:
+    vcsRegexp: -v(.+)
     workPath: /tmp
     environments:
       preprod: pp
@@ -13,12 +14,13 @@ deployers:
 
 versionControlSystem:
   stash:
-    user:       user
-    password:   password
-    url:        url
+    user:     user
+    password: password
+    url:      url
 
 repositoryManager:
   nexus:
+    serviceRegexp: -v(.+)
     url:        127.0.0.1
     repository: repository
     group:      group

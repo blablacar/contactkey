@@ -46,9 +46,10 @@ type RepositoryManager struct {
 }
 
 type NexusConfig struct {
-	Url        string `mapstructure:"url"`
-	Repository string `mapstructure:"repository"`
-	Group      string `mapstructure:"group"`
+	Url           string `mapstructure:"url"`
+	Repository    string `mapstructure:"repository"`
+	Group         string `mapstructure:"group"`
+	ServiceRegexp string `mapstructure:"serviceRegexp"`
 }
 
 func LoadConfig(cfgReader []byte) (*Config, error) {

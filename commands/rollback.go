@@ -16,10 +16,10 @@ type Rollback struct {
 	Context *context.Context
 }
 
-func (r Rollback) execute() {
+func (r *Rollback) execute() {
 }
 
-func (r Rollback) fill(context *context.Context, service string, env string) {
+func (r *Rollback) fill(context *context.Context, service string, env string) {
 	r.Env = env
 	r.Service = service
 	r.Context = context

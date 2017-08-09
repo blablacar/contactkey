@@ -37,6 +37,10 @@ func TestLoadConfig(t *testing.T) {
 	if cfg.NexusConfig.Group != "group" {
 		t.Errorf("group exptected got %q", cfg.NexusConfig.Group)
 	}
+
+	if cfg.NexusConfig.ServiceRegexp != "-v(.+)" {
+		t.Errorf("-v(.+) exptected got %q", cfg.NexusConfig.ServiceRegexp)
+	}
 }
 
 func TestDiscoverServices(t *testing.T) {
