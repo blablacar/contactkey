@@ -58,8 +58,8 @@ func (d *Deploy) execute() {
 	}
 
 	if needToDeploy == false {
-		fmt.Fprintf(d.Writer, "The version to deploy(%q) differs from the pod version (%q). \n"+
-			"The pod has not been created.", sha1ToDeploy, serviceVersionFromPod)
+		fmt.Fprintf(d.Writer, "I can't deploy(sorry) as the version you want to deploy \n"+
+			"is the same as the version deployed (%q)", sha1ToDeploy)
 		os.Exit(1)
 	}
 
