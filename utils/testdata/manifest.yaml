@@ -12,4 +12,6 @@ versionControlSystem:
 repositoryManager:
   nexus:
     artifact: pod-webhooks
-hooks: ~
+hooks:
+  slack:
+    channel:   channel

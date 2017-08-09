@@ -41,6 +41,14 @@ func TestLoadConfig(t *testing.T) {
 	if cfg.NexusConfig.ServiceRegexp != "-v(.+)" {
 		t.Errorf("-v(.+) exptected got %q", cfg.NexusConfig.ServiceRegexp)
 	}
+
+	if cfg.SlackConfig.Url != "127.0.0.1" {
+		t.Errorf("127.0.0.1 exptected got %q", cfg.SlackConfig.Url)
+	}
+
+	if cfg.SlackConfig.Token != "token" {
+		t.Errorf("token exptected got %q", cfg.SlackConfig.Token)
+	}
 }
 
 func TestDiscoverServices(t *testing.T) {

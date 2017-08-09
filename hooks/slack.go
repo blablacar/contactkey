@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+
+	"github.com/remyLemeunier/contactkey/utils"
 )
 
 type Slack struct {
@@ -13,12 +15,20 @@ type Slack struct {
 	Channel string
 }
 
-func (s Slack) preDeployment() error {
+func NewSlack(cfg utils.SlackConfig, manifest utils.SlackManifest) *Slack {
+	return &Slack{
+		Url:     cfg.Url,
+		Token:   cfg.Token,
+		Channel: manifest.Channel,
+	}
+}
+
+func (s Slack) PreDeployment() error {
 	// @todo Change the message
 	return s.postMessage("Start update")
 }
 
-func (s Slack) postDeployment() error {
+func (s Slack) PostDeployment() error {
 	// @todo Change the message
 	return s.postMessage("End update")
 }

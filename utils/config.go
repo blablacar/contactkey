@@ -19,6 +19,7 @@ type Config struct {
 	DeployerConfig     `mapstructure:"deployers"`
 	VcsConfig          `mapstructure:"versionControlSystem"`
 	RepositoryManager  `mapstructure:"repositoryManager"`
+	HookConfig         `mapstructure:"hooks"`
 }
 
 type DeployerConfig struct {
@@ -50,6 +51,15 @@ type NexusConfig struct {
 	Repository    string `mapstructure:"repository"`
 	Group         string `mapstructure:"group"`
 	ServiceRegexp string `mapstructure:"serviceRegexp"`
+}
+
+type HookConfig struct {
+	SlackConfig `mapstructure:"slack"`
+}
+
+type SlackConfig struct {
+	Url   string `mapstructure:"url"`
+	Token string `mapstructure:"token"`
 }
 
 func LoadConfig(cfgReader []byte) (*Config, error) {
