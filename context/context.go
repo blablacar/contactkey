@@ -6,6 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/remyLemeunier/contactkey/deployers"
+	"github.com/remyLemeunier/contactkey/hooks"
 	"github.com/remyLemeunier/contactkey/services"
 	"github.com/remyLemeunier/contactkey/utils"
 )
@@ -14,6 +15,7 @@ type Context struct {
 	Deployer          deployers.Deployer
 	Vcs               services.VersionControlSystem
 	RepositoryManager services.RepositoryManager
+	Hooks             []hooks.Hooks
 	Log               *log.Logger
 }
 
@@ -57,6 +59,12 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 			manifest.RepositoryManagerManifest.NexusManifest)
 	} else {
 		return nil, fmt.Errorf("Repository manager not found, You should check in your manifest if it's well formated.")
+	}
+
+	if manifest.HookManifest.SlackManifest != (utils.SlackManifest{}) {
+		ctx.Hooks = append(ctx.Hooks, hooks.NewSlack(
+			cfg.HookConfig.SlackConfig,
+			manifest.HookManifest.SlackManifest))
 	}
 
 	return ctx, nil

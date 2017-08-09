@@ -9,6 +9,7 @@ type Manifest struct {
 	DeployerManifest          `mapstructure:"deployment"`
 	VcsManifest               `mapstructure:"versionControlSystem"`
 	RepositoryManagerManifest `mapstructure:"repositoryManager"`
+	HookManifest              `mapstructure:"hooks"`
 }
 
 type VcsManifest struct {
@@ -40,6 +41,14 @@ type RepositoryManagerManifest struct {
 
 type NexusManifest struct {
 	Artifact string `mapstructure:"artifact"`
+}
+
+type HookManifest struct {
+	SlackManifest `mapstructure:"slack"`
+}
+
+type SlackManifest struct {
+	Channel string `mapstructure:"channel"`
 }
 
 func LoadManifest(manifestReader []byte) (*Manifest, error) {

@@ -25,4 +25,8 @@ func TestLoadManifest(t *testing.T) {
 	if manifest.NexusManifest.Artifact != "pod-webhooks" {
 		t.Errorf("artifact in the NexusManifest not found got %q", manifest.NexusManifest.Artifact)
 	}
+
+	if manifest.SlackManifest.Channel != "channel" {
+		t.Errorf("channel in the SlackManifest not found got %q", manifest.SlackManifest.Channel)
+	}
 }

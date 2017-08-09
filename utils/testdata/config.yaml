@@ -24,3 +24,7 @@ repositoryManager:
     url:        127.0.0.1
     repository: repository
     group:      group
+hooks:
+  slack:
+    url:   127.0.0.1
+    token: token
