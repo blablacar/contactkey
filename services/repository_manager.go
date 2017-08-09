@@ -6,28 +6,39 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
+
+	"github.com/remyLemeunier/contactkey/utils"
 )
 
-type repositoryManager interface {
-	retrievePodVersion() (string, error)
-}
-
-func RetrievePodVersion(rm repositoryManager) (string, error) {
-	return rm.retrievePodVersion()
+type RepositoryManager interface {
+	RetrievePodVersion() (string, error)
+	RetrieveServiceVersionFromPod() (string, error)
 }
 
 type Nexus struct {
-	Url        string
-	Repository string
-	Artifact   string
-	Group      string
+	Url           string
+	Repository    string
+	Artifact      string
+	Group         string
+	ServiceRegexp string
 }
 
 type NexusResponse struct {
 	Version string `json:"version"`
 }
 
-func (n Nexus) retrievePodVersion() (string, error) {
+func NewNexus(cfg utils.NexusConfig, manifest utils.NexusManifest) *Nexus {
+	return &Nexus{
+		Url:           cfg.Url,
+		Repository:    cfg.Repository,
+		Group:         cfg.Group,
+		Artifact:      manifest.Artifact,
+		ServiceRegexp: cfg.ServiceRegexp,
+	}
+}
+
+func (n Nexus) RetrievePodVersion() (string, error) {
 	client := &http.Client{}
 	url := fmt.Sprintf(
 		"%s/nexus/service/local/artifact/maven?r=%s&a=%s&g=%s&v=LATEST",
@@ -68,4 +79,19 @@ func (n Nexus) retrievePodVersion() (string, error) {
 	}
 
 	return nexusResponse.Version, nil
+}
+
+func (n Nexus) RetrieveServiceVersionFromPod() (string, error) {
+	podVersion, err := n.RetrievePodVersion()
+	if err != nil {
+		return "", err
+	}
+
+	regexp := regexp.MustCompile(n.ServiceRegexp)
+	vcsVersion := regexp.FindStringSubmatch(podVersion)
+	if len(vcsVersion) == 2 {
+		return vcsVersion[1], nil
+	}
+
+	return "", err
 }

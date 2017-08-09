@@ -27,9 +27,10 @@ func TestNexus(t *testing.T) {
 		"repository",
 		"artifact",
 		"group",
+		"-v(.+)",
 	}
 
-	podVersion, err := nexus.retrievePodVersion()
+	podVersion, err := nexus.RetrievePodVersion()
 	if err != nil {
 		t.Errorf("Error triggered %s", err.Error())
 	}
@@ -38,4 +39,12 @@ func TestNexus(t *testing.T) {
 		t.Errorf("podVersion is different from expected podVersion: %s", podVersion)
 	}
 
+	serviceVersion, err := nexus.RetrieveServiceVersionFromPod()
+	if err != nil {
+		t.Errorf("Error triggered %s", err.Error())
+	}
+
+	if serviceVersion != "b0f586a" {
+		t.Errorf("serviceVersion is different from expected serviceVersion: %s", serviceVersion)
+	}
 }

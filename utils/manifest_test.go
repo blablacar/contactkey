@@ -21,4 +21,8 @@ func TestLoadManifest(t *testing.T) {
 	if manifest.PodName != "pod-webhooks" {
 		t.Errorf("Podname should be 'pod-webhooks' instead got  %q", manifest.PodName)
 	}
+
+	if manifest.NexusManifest.Artifact != "pod-webhooks" {
+		t.Errorf("artifact in the NexusManifest not found got %q", manifest.NexusManifest.Artifact)
+	}
 }

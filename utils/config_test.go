@@ -21,6 +21,26 @@ func TestLoadConfig(t *testing.T) {
 	if cfg.GlobalEnvironments[0] != "preprod" || cfg.GlobalEnvironments[1] != "prod" {
 		t.Error("Issue with global envs.")
 	}
+
+	if cfg.NexusConfig.Repository != "repository" {
+		t.Errorf("repository exptected got %q", cfg.NexusConfig.Repository)
+	}
+
+	if cfg.NexusConfig.Repository != "repository" {
+		t.Errorf("repository exptected got %q", cfg.NexusConfig.Repository)
+	}
+
+	if cfg.NexusConfig.Url != "127.0.0.1" {
+		t.Errorf("127.0.0.1 exptected got %q", cfg.NexusConfig.Url)
+	}
+
+	if cfg.NexusConfig.Group != "group" {
+		t.Errorf("group exptected got %q", cfg.NexusConfig.Group)
+	}
+
+	if cfg.NexusConfig.ServiceRegexp != "-v(.+)" {
+		t.Errorf("-v(.+) exptected got %q", cfg.NexusConfig.ServiceRegexp)
+	}
 }
 
 func TestDiscoverServices(t *testing.T) {
