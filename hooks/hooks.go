@@ -1,6 +1,6 @@
 package hooks
 
 type Hooks interface {
-	PreDeployment(env string, service string, podVersion string) error
-	PostDeployment(env string, service string, podVersion string) error
+	PreDeployment(userName string, env string, service string, podVersion string) error
+	PostDeployment(userName string, env string, service string, podVersion string) error
 }

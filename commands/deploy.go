@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/user"
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/remyLemeunier/contactkey/context"
 	"github.com/spf13/cobra"
 )
+
+var userName = "Mister Robot"
 
 func init() {
 	deployCmd.PersistentFlags().StringVar(&branch, "branch", "", "Change the branch from the default one.")
@@ -28,6 +31,11 @@ type Deploy struct {
 }
 
 func (d *Deploy) execute() {
+	currentUser, err := user.Current()
+	if err == nil {
+		userName = currentUser.Name
+	}
+
 	// The lock system is not mandatory
 	if d.Context.LockSystem != nil {
 		fmt.Fprintf(d.Writer, "Trying to lock the lock command for service %q and env %q \n", d.Service, d.Env)
@@ -90,12 +98,12 @@ func (d *Deploy) execute() {
 	fmt.Fprintf(d.Writer, "Going to deploy pod version %q", podVersion)
 	for _, hook := range d.Context.Hooks {
 		//@TODO Add a logger and log error coming from hooks
-		hook.PreDeployment(d.Env, d.Service, podVersion)
+		hook.PreDeployment(userName, d.Env, d.Service, podVersion)
 	}
 
 	for _, hook := range d.Context.Hooks {
 		//@TODO Add a logger and log error coming from hooks
-		hook.PostDeployment(d.Env, d.Service, podVersion)
+		hook.PostDeployment(userName, d.Env, d.Service, podVersion)
 	}
 }
 
