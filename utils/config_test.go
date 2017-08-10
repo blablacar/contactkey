@@ -61,6 +61,10 @@ func TestLoadConfig(t *testing.T) {
 	if cfg.SlackConfig.Token != "token" {
 		t.Errorf("token exptected got %q", cfg.SlackConfig.Token)
 	}
+
+	if cfg.FileLockConfig.FilePath != "/tmp" {
+		t.Errorf("/tmp exptected got %q", cfg.FileLockConfig.FilePath)
+	}
 }
 
 func TestDiscoverServices(t *testing.T) {

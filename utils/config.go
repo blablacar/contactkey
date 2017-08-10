@@ -20,6 +20,7 @@ type Config struct {
 	VcsConfig          `mapstructure:"versionControlSystem"`
 	RepositoryManager  `mapstructure:"repositoryManager"`
 	HookConfig         `mapstructure:"hooks"`
+	LockSystemConfig   `mapstructure:"lockSystem"`
 }
 
 type DeployerConfig struct {
@@ -60,6 +61,14 @@ type HookConfig struct {
 type SlackConfig struct {
 	Url   string `mapstructure:"url"`
 	Token string `mapstructure:"token"`
+}
+
+type LockSystemConfig struct {
+	FileLockConfig `mapstructure:"fileLock"`
+}
+
+type FileLockConfig struct {
+	FilePath string `mapstructure:"filePath"`
 }
 
 func LoadConfig(cfgReader []byte) (*Config, error) {
