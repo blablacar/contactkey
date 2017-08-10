@@ -15,8 +15,6 @@ var diffCmd = &cobra.Command{
 	Short: "Diff between what's currently deployed and what's going to be deployed",
 }
 
-var branch = ""
-
 func init() {
 	diffCmd.PersistentFlags().StringVar(&branch, "branch", "", "Change the branch from the default one.")
 }

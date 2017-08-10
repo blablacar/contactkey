@@ -14,13 +14,13 @@ deployers:
 
 versionControlSystem:
   stash:
-    user:     user
-    password: password
-    url:      url
+    user:        user
+    password:    password
+    url:         url
+    sha1MaxSize: 7
 
 repositoryManager:
   nexus:
-    serviceRegexp: -v(.+)
     url:        127.0.0.1
     repository: repository
     group:      group

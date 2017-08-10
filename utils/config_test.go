@@ -38,10 +38,6 @@ func TestLoadConfig(t *testing.T) {
 		t.Errorf("group exptected got %q", cfg.NexusConfig.Group)
 	}
 
-	if cfg.NexusConfig.ServiceRegexp != "-v(.+)" {
-		t.Errorf("-v(.+) exptected got %q", cfg.NexusConfig.ServiceRegexp)
-	}
-
 	if cfg.SlackConfig.Url != "127.0.0.1" {
 		t.Errorf("127.0.0.1 exptected got %q", cfg.SlackConfig.Url)
 	}
