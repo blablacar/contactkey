@@ -26,7 +26,6 @@ func TestNexus(t *testing.T) {
 		"repo",
 		"service-name",
 		"this.is.a.group",
-		"-v(.+)",
 	}
 
 	podVersion, err := nexus.RetrievePodVersion("")
