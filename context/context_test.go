@@ -52,4 +52,8 @@ func TestNewContext(t *testing.T) {
 	if reflect.TypeOf(ctxt.Hooks[0]).String() != "*hooks.Slack" {
 		t.Errorf("Type should be *hooks.Slack instead got %q", reflect.TypeOf(ctxt.Hooks[1]).String())
 	}
+
+	if reflect.TypeOf(ctxt.LockSystem).String() != "*utils.FileLock" {
+		t.Errorf("Type should be *utils.FileLock instead got %q", reflect.TypeOf(ctxt.LockSystem).String())
+	}
 }

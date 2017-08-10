@@ -13,6 +13,12 @@ type Lock interface {
 	Unlock(env string, service string) error
 }
 
+func NewFileLock(config FileLockConfig) *FileLock {
+	return &FileLock{
+		config.FilePath,
+	}
+}
+
 type FileLock struct {
 	FileDir string
 }
@@ -39,7 +45,7 @@ func (f FileLock) Lock(env string, service string) (bool, error) {
 // if necessary.
 func (f FileLock) Unlock(env string, service string) error {
 	filePath := fmt.Sprintf(filePathPattern, f.FileDir, env, service)
-	if _, err := os.Stat(filePath); !os.IsExist(err) {
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		return nil
 	}
 

@@ -16,6 +16,7 @@ type Context struct {
 	Vcs               services.VersionControlSystem
 	RepositoryManager services.RepositoryManager
 	Hooks             []hooks.Hooks
+	LockSystem        utils.Lock
 	Log               *log.Logger
 }
 
@@ -65,6 +66,10 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 		ctx.Hooks = append(ctx.Hooks, hooks.NewSlack(
 			cfg.HookConfig.SlackConfig,
 			manifest.HookManifest.SlackManifest))
+	}
+
+	if cfg.LockSystemConfig.FileLockConfig != (utils.FileLockConfig{}) {
+		ctx.LockSystem = utils.NewFileLock(cfg.LockSystemConfig.FileLockConfig)
 	}
 
 	return ctx, nil
