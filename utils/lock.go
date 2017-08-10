@@ -1,29 +1,33 @@
 package utils
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 )
 
+var filePathPattern = "%s/contactkey_%s_%s.lock"
+
 type Lock interface {
-	Lock() (bool, error)
-	Unlock() error
+	Lock(env string, service string) (bool, error)
+	Unlock(env string, service string) error
 }
 
 type FileLock struct {
-	FilePath string
+	FileDir string
 }
 
 // The lock function will also verify if
 // it's already locked or not.
 // Return false if it can't lock true otherwise
-func (f FileLock) Lock() (bool, error) {
+func (f FileLock) Lock(env string, service string) (bool, error) {
 	// Check if the file exists
-	if _, err := os.Stat(f.FilePath); !os.IsNotExist(err) {
+	filePath := fmt.Sprintf(filePathPattern, f.FileDir, env, service)
+	if _, err := os.Stat(filePath); !os.IsNotExist(err) {
 		return false, err
 	}
-	// 0222 = --w--w--w-
-	err := ioutil.WriteFile(f.FilePath, []byte("locked by contactKey"), 0222)
+	// 0222 = --w--w----
+	err := ioutil.WriteFile(filePath, []byte("locked by contactKey"), 0222)
 	if err != nil {
 		return false, err
 	}
@@ -33,12 +37,13 @@ func (f FileLock) Lock() (bool, error) {
 
 // Check if the file exists and remove it
 // if necessary.
-func (f FileLock) Unlock() error {
-	if _, err := os.Stat(f.FilePath); !os.IsExist(err) {
+func (f FileLock) Unlock(env string, service string) error {
+	filePath := fmt.Sprintf(filePathPattern, f.FileDir, env, service)
+	if _, err := os.Stat(filePath); !os.IsExist(err) {
 		return nil
 	}
 
-	if err := os.Remove(f.FilePath); err != nil {
+	if err := os.Remove(filePath); err != nil {
 		return err
 	}
 
