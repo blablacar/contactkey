@@ -37,9 +37,10 @@ type VcsConfig struct {
 }
 
 type StashConfig struct {
-	User     string `mapstructure:"user"`
-	Password string `mapstructure:"password"`
-	Url      string `mapstructure:"url"`
+	User        string `mapstructure:"user"`
+	Password    string `mapstructure:"password"`
+	Url         string `mapstructure:"url"`
+	Sha1MaxSize int    `mapstructure:"sha1MaxSize"`
 }
 
 type RepositoryManager struct {
@@ -47,10 +48,9 @@ type RepositoryManager struct {
 }
 
 type NexusConfig struct {
-	Url           string `mapstructure:"url"`
-	Repository    string `mapstructure:"repository"`
-	Group         string `mapstructure:"group"`
-	ServiceRegexp string `mapstructure:"serviceRegexp"`
+	Url        string `mapstructure:"url"`
+	Repository string `mapstructure:"repository"`
+	Group      string `mapstructure:"group"`
 }
 
 type HookConfig struct {

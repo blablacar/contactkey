@@ -1,51 +1,56 @@
 package services
 
 import (
-	"encoding/json"
+	"encoding/xml"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"regexp"
+
+	"strings"
 
 	"github.com/remyLemeunier/contactkey/utils"
 )
 
 type RepositoryManager interface {
-	RetrievePodVersion() (string, error)
-	RetrieveServiceVersionFromPod() (string, error)
+	RetrievePodVersion(sha1 string) (string, error)
 }
 
 type Nexus struct {
-	Url           string
-	Repository    string
-	Artifact      string
-	Group         string
-	ServiceRegexp string
+	Url        string
+	Repository string
+	Artifact   string
+	Group      string
 }
 
 type NexusResponse struct {
-	Version string `json:"version"`
+	ArtifactId string `xml:"artifactId"`
+	GroupId    string `xml:"groupId"`
+	Versioning struct {
+		Latest   string   `xml:"latest"`
+		Release  string   `xml:"release"`
+		Versions []string `xml:"versions>version"`
+	} `xml:"versioning"`
 }
 
 func NewNexus(cfg utils.NexusConfig, manifest utils.NexusManifest) *Nexus {
 	return &Nexus{
-		Url:           cfg.Url,
-		Repository:    cfg.Repository,
-		Group:         cfg.Group,
-		Artifact:      manifest.Artifact,
-		ServiceRegexp: cfg.ServiceRegexp,
+		Url:        cfg.Url,
+		Repository: cfg.Repository,
+		Group:      cfg.Group,
+		Artifact:   manifest.Artifact,
 	}
 }
 
-func (n Nexus) RetrievePodVersion() (string, error) {
+func (n Nexus) RetrievePodVersion(sha1 string) (string, error) {
+	group := strings.Replace(n.Group, ".", "/", -1)
 	client := &http.Client{}
 	url := fmt.Sprintf(
-		"%s/nexus/service/local/artifact/maven?r=%s&a=%s&g=%s&v=LATEST",
+		"%s/nexus/service/local/repositories/%s/content/%s/%s/maven-metadata.xml",
 		n.Url,
 		n.Repository,
+		group,
 		n.Artifact,
-		n.Group,
 	)
 
 	request, err := http.NewRequest("GET", url, nil)
@@ -53,7 +58,6 @@ func (n Nexus) RetrievePodVersion() (string, error) {
 		return "", err
 	}
 
-	request.Header.Set("accept", "application/json")
 	response, err := client.Do(request)
 	if err != nil {
 		return "", err
@@ -69,29 +73,20 @@ func (n Nexus) RetrievePodVersion() (string, error) {
 	}
 
 	var nexusResponse NexusResponse
-	err = json.Unmarshal(body, &nexusResponse)
+	err = xml.Unmarshal(body, &nexusResponse)
 	if err != nil {
 		return "", err
 	}
 
-	if nexusResponse.Version == "" {
-		return "", errors.New("Nexus: Version not found in the response")
+	if sha1 != "" {
+		for _, version := range nexusResponse.Versioning.Versions {
+			if strings.Contains(version, sha1) {
+				return version, nil
+			}
+		}
+
+		return "", nil
 	}
 
-	return nexusResponse.Version, nil
-}
-
-func (n Nexus) RetrieveServiceVersionFromPod() (string, error) {
-	podVersion, err := n.RetrievePodVersion()
-	if err != nil {
-		return "", err
-	}
-
-	regexp := regexp.MustCompile(n.ServiceRegexp)
-	vcsVersion := regexp.FindStringSubmatch(podVersion)
-	if len(vcsVersion) == 2 {
-		return vcsVersion[1], nil
-	}
-
-	return "", err
+	return nexusResponse.Versioning.Latest, nil
 }

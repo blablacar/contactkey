@@ -18,12 +18,13 @@ type VersionControlSystem interface {
 }
 
 type Stash struct {
-	Repository string
-	Project    string
-	User       string
-	Password   string
-	Url        string
-	Branch     string
+	Repository  string
+	Project     string
+	User        string
+	Password    string
+	Url         string
+	Branch      string
+	sha1MaxSize int
 }
 
 type Changes struct {
@@ -54,12 +55,13 @@ type StashResponse struct {
 
 func NewStash(cfg utils.StashConfig, manifest utils.StashManifest) *Stash {
 	return &Stash{
-		Repository: manifest.Repository,
-		Project:    manifest.Project,
-		User:       cfg.User,
-		Password:   cfg.Password,
-		Url:        cfg.Url,
-		Branch:     manifest.Branch,
+		Repository:  manifest.Repository,
+		Project:     manifest.Project,
+		User:        cfg.User,
+		Password:    cfg.Password,
+		Url:         cfg.Url,
+		Branch:      manifest.Branch,
+		sha1MaxSize: cfg.Sha1MaxSize,
 	}
 }
 
@@ -77,6 +79,10 @@ func (s Stash) RetrieveSha1ForProject(branch string) (string, error) {
 
 	if len(stashResponse.Values) == 0 || stashResponse.Values[0].Id == "" {
 		return "", errors.New("Stash: Sha1 not found in the response")
+	}
+
+	if s.sha1MaxSize > 0 {
+		return stashResponse.Values[0].Id[0:s.sha1MaxSize], nil
 	}
 
 	return stashResponse.Values[0].Id, nil

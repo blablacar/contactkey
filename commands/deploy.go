@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/remyLemeunier/contactkey/context"
 	"github.com/spf13/cobra"
 )
+
+func init() {
+	deployCmd.PersistentFlags().StringVar(&branch, "branch", "", "Change the branch from the default one.")
+}
 
 var deployCmd = &cobra.Command{
 	Use:   "deploy",
@@ -25,21 +28,16 @@ type Deploy struct {
 }
 
 func (d *Deploy) execute() {
-	serviceVersionFromPod, err := d.Context.RepositoryManager.RetrieveServiceVersionFromPod()
-	if err != nil {
-		fmt.Fprintf(d.Writer, "Failed to retrieve service version from Pod: %q", err)
-		os.Exit(1)
-	}
-
-	podVersion, err := d.Context.RepositoryManager.RetrievePodVersion()
-	if err != nil {
-		fmt.Fprintf(d.Writer, "Failted to retrieve pod version: %q", err)
-		os.Exit(1)
-	}
-
-	sha1ToDeploy, err := d.Context.Vcs.RetrieveSha1ForProject("")
+	// If the branch is null it will use the default one.
+	sha1ToDeploy, err := d.Context.Vcs.RetrieveSha1ForProject(branch)
 	if err != nil {
 		fmt.Fprintf(d.Writer, "Failed to retrieve version from service(%q): %q", d.Service, err)
+		os.Exit(1)
+	}
+
+	podVersion, err := d.Context.RepositoryManager.RetrievePodVersion(sha1ToDeploy)
+	if err != nil {
+		fmt.Fprintf(d.Writer, "Failted to retrieve pod version: %q", err)
 		os.Exit(1)
 	}
 
@@ -49,10 +47,9 @@ func (d *Deploy) execute() {
 		os.Exit(1)
 	}
 
-	// It means that the pod has not been created
-	if !strings.Contains(sha1ToDeploy, serviceVersionFromPod) {
-		fmt.Fprintf(d.Writer, "The version to deploy(%q) differs from the pod version (%q). \n"+
-			"The pod has not been created.", sha1ToDeploy, serviceVersionFromPod)
+	if podVersion == "" {
+		fmt.Fprintf(d.Writer, "We have not found the pod version with the the sha1 %q \n"+
+			"The pod has not been created.", sha1ToDeploy)
 		os.Exit(1)
 	}
 
