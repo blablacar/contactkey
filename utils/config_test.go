@@ -22,6 +22,22 @@ func TestLoadConfig(t *testing.T) {
 		t.Error("Issue with global envs.")
 	}
 
+	if cfg.StashConfig.Url != "url" {
+		t.Errorf("Url exptected url got %q", cfg.StashConfig.Sha1MaxSize)
+	}
+
+	if cfg.StashConfig.Password != "password" {
+		t.Errorf("Password exptected password got %q", cfg.StashConfig.Sha1MaxSize)
+	}
+
+	if cfg.StashConfig.User != "user" {
+		t.Errorf("User exptected user got %q", cfg.StashConfig.Sha1MaxSize)
+	}
+
+	if cfg.StashConfig.Sha1MaxSize != 7 {
+		t.Errorf("Sha1MaxSize exptected 7 got %q", cfg.StashConfig.Sha1MaxSize)
+	}
+
 	if cfg.NexusConfig.Repository != "repository" {
 		t.Errorf("repository exptected got %q", cfg.NexusConfig.Repository)
 	}
