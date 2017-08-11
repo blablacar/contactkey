@@ -3,7 +3,7 @@
 Contactkey is a Go command and its aim is to deploy services on different environments.
 
 ## Deployment Flow
-![this](https://docs.google.com/drawings/d/1N7mgky_Dq3KWrT_gRxR4iwxGjCDY6rbgc455mJgEMtA/pub?w=792&amp;h=1540)
+![this](https://docs.google.com/drawings/d/1N7mgky_Dq3KWrT_gRxR4iwxGjCDY6rbgc455mJgEMtA/pub?w=594&h=1155)
 # Deployers, VCS, Repository Manager, Hooks, Lock System
 ### Deployers
  * GGN 
