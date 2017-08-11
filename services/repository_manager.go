@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-
 	"strings"
 
 	"github.com/remyLemeunier/contactkey/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 type RepositoryManager interface {
@@ -21,6 +21,7 @@ type Nexus struct {
 	Repository string
 	Artifact   string
 	Group      string
+	Log        *log.Logger
 }
 
 type NexusResponse struct {
@@ -33,15 +34,18 @@ type NexusResponse struct {
 	} `xml:"versioning"`
 }
 
-func NewNexus(cfg utils.NexusConfig, manifest utils.NexusManifest) *Nexus {
+func NewNexus(cfg utils.NexusConfig, manifest utils.NexusManifest, logger *log.Logger) *Nexus {
 	return &Nexus{
 		Url:        cfg.Url,
 		Repository: cfg.Repository,
 		Group:      cfg.Group,
 		Artifact:   manifest.Artifact,
+		Log:        logger,
 	}
 }
 
+// If no sha1 is given to this function
+// It will retrieve the LATEST version available.
 func (n Nexus) RetrievePodVersion(sha1 string) (string, error) {
 	group := strings.Replace(n.Group, ".", "/", -1)
 	client := &http.Client{}
@@ -53,6 +57,14 @@ func (n Nexus) RetrievePodVersion(sha1 string) (string, error) {
 		n.Artifact,
 	)
 
+	n.Log.WithFields(log.Fields{
+		"fullPath":   url,
+		"nexusUrl":   n.Url,
+		"repository": n.Repository,
+		"Group":      n.Group,
+		"Artifact":   n.Artifact,
+	}).Debug("Creating Nexus url")
+
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return "", err
@@ -63,6 +75,10 @@ func (n Nexus) RetrievePodVersion(sha1 string) (string, error) {
 		return "", err
 	}
 
+	n.Log.WithFields(log.Fields{
+		"statusCode": response.StatusCode,
+	}).Debug("Status code from Nexus")
+
 	if response.StatusCode != http.StatusOK {
 		return "", errors.New(fmt.Sprintf("Nexus status code: %d", response.StatusCode))
 	}
@@ -72,21 +88,31 @@ func (n Nexus) RetrievePodVersion(sha1 string) (string, error) {
 		return "", err
 	}
 
+	n.Log.WithFields(log.Fields{
+		"body": string(body),
+	}).Debug("Response body from Nexus")
+
 	var nexusResponse NexusResponse
 	err = xml.Unmarshal(body, &nexusResponse)
 	if err != nil {
 		return "", err
 	}
 
+	serviceVersion := ""
 	if sha1 != "" {
 		for _, version := range nexusResponse.Versioning.Versions {
 			if strings.Contains(version, sha1) {
-				return version, nil
+				serviceVersion = version
+				break
 			}
 		}
-
-		return "", nil
+	} else {
+		serviceVersion = nexusResponse.Versioning.Latest
 	}
 
-	return nexusResponse.Versioning.Latest, nil
+	n.Log.WithFields(log.Fields{
+		"serviceVersion": serviceVersion,
+	}).Debug("Version retrieved in Nexus")
+
+	return serviceVersion, nil
 }

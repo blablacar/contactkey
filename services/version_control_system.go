@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/remyLemeunier/contactkey/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 type VersionControlSystem interface {
@@ -25,6 +26,7 @@ type Stash struct {
 	Url         string
 	Branch      string
 	sha1MaxSize int
+	Log         *log.Logger
 }
 
 type Changes struct {
@@ -53,7 +55,7 @@ type StashResponse struct {
 	} `json:"values"`
 }
 
-func NewStash(cfg utils.StashConfig, manifest utils.StashManifest) *Stash {
+func NewStash(cfg utils.StashConfig, manifest utils.StashManifest, logger *log.Logger) *Stash {
 	return &Stash{
 		Repository:  manifest.Repository,
 		Project:     manifest.Project,
@@ -62,6 +64,7 @@ func NewStash(cfg utils.StashConfig, manifest utils.StashManifest) *Stash {
 		Url:         cfg.Url,
 		Branch:      manifest.Branch,
 		sha1MaxSize: cfg.Sha1MaxSize,
+		Log:         logger,
 	}
 }
 
@@ -107,6 +110,10 @@ func (s Stash) Diff(deployedSha1 string, sha1ToDeploy string) (*Changes, error) 
 		changes.Commits = append(changes.Commits, commits)
 	}
 
+	s.Log.WithFields(log.Fields{
+		"changes": changes,
+	}).Debug("Struct Changes")
+
 	return changes, nil
 }
 
@@ -119,16 +126,30 @@ func (s Stash) getStashResponse(params url.Values) (*StashResponse, error) {
 		s.Repository,
 	)
 
+	s.Log.WithFields(log.Fields{
+		"fullPath":   baseUrl,
+		"stashUrl":   s.Url,
+		"project":    s.Project,
+		"repository": s.Repository,
+	}).Debug("Creating stash url")
+
 	request, err := http.NewRequest("GET", baseUrl+params.Encode(), nil)
 	if err != nil {
 		return nil, err
 	}
 
 	request.SetBasicAuth(s.User, s.Password)
-
 	response, err := client.Do(request)
 	if err != nil {
 		return nil, err
+	}
+
+	s.Log.WithFields(log.Fields{
+		"statusCode": response.StatusCode,
+	}).Debug("Stash response status code")
+
+	if response.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Stash status code: %d", response.StatusCode))
 	}
 
 	body, err := ioutil.ReadAll(response.Body)
@@ -136,11 +157,19 @@ func (s Stash) getStashResponse(params url.Values) (*StashResponse, error) {
 		return nil, err
 	}
 
+	s.Log.WithFields(log.Fields{
+		"body": string(body),
+	}).Debug("Response body from Stash")
+
 	stashResponse := new(StashResponse)
 	err = json.Unmarshal(body, &stashResponse)
 	if err != nil {
 		return nil, err
 	}
+
+	s.Log.WithFields(log.Fields{
+		"stashResponse": stashResponse,
+	}).Debug("Struct StashResponse")
 
 	return stashResponse, nil
 }

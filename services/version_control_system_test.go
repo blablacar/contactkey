@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	log "github.com/sirupsen/logrus"
 )
 
 var apiStub *httptest.Server
@@ -49,6 +51,7 @@ func TestStashRetrieveSha1ForProject(t *testing.T) {
 		apiStub.URL,
 		"defaultBranch",
 		7,
+		log.New(),
 	}
 
 	sha1, err := stash.RetrieveSha1ForProject("branch")
@@ -73,6 +76,7 @@ func TestDiff(t *testing.T) {
 		apiStub.URL,
 		"defaultBranch",
 		7,
+		log.New(),
 	}
 
 	changes, err := stash.Diff("b04ad09883d1858081702b8e2d80eb348ead9849", "b0d5ca3e586d48cc6d3ad35f0e03dfc891e62752")

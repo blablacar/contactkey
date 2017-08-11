@@ -1,11 +1,12 @@
 package services
 
 import (
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"io/ioutil"
+	log "github.com/sirupsen/logrus"
 )
 
 func TestNexus(t *testing.T) {
@@ -26,6 +27,7 @@ func TestNexus(t *testing.T) {
 		"repo",
 		"service-name",
 		"this.is.a.group",
+		log.New(),
 	}
 
 	podVersion, err := nexus.RetrievePodVersion("")

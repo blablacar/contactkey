@@ -3,12 +3,11 @@ package context
 import (
 	"fmt"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/remyLemeunier/contactkey/deployers"
 	"github.com/remyLemeunier/contactkey/hooks"
 	"github.com/remyLemeunier/contactkey/services"
 	"github.com/remyLemeunier/contactkey/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 type Context struct {
@@ -45,7 +44,8 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 	if manifest.VcsManifest.StashManifest != (utils.StashManifest{}) {
 		ctx.Vcs = services.NewStash(
 			cfg.VcsConfig.StashConfig,
-			manifest.VcsManifest.StashManifest)
+			manifest.VcsManifest.StashManifest,
+			ctx.Log)
 
 	} else {
 		return nil, fmt.Errorf(
@@ -57,7 +57,8 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 	if manifest.RepositoryManagerManifest.NexusManifest != (utils.NexusManifest{}) {
 		ctx.RepositoryManager = services.NewNexus(
 			cfg.RepositoryManager.NexusConfig,
-			manifest.RepositoryManagerManifest.NexusManifest)
+			manifest.RepositoryManagerManifest.NexusManifest,
+			ctx.Log)
 	} else {
 		return nil, fmt.Errorf("Repository manager not found, You should check in your manifest if it's well formated.")
 	}
@@ -65,7 +66,8 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 	if manifest.HookManifest.SlackManifest != (utils.SlackManifest{}) {
 		ctx.Hooks = append(ctx.Hooks, hooks.NewSlack(
 			cfg.HookConfig.SlackConfig,
-			manifest.HookManifest.SlackManifest))
+			manifest.HookManifest.SlackManifest,
+			ctx.Log))
 	}
 
 	if cfg.LockSystemConfig.FileLockConfig != (utils.FileLockConfig{}) {
