@@ -4,7 +4,7 @@ Contactkey is a Go command and its aim is to deploy services on different enviro
 
 ## Deployment Flow
 ![this](https://docs.google.com/drawings/d/1N7mgky_Dq3KWrT_gRxR4iwxGjCDY6rbgc455mJgEMtA/pub?w=792&amp;h=1540)
-# Deployers, VCS, Repository Manager, Hooks
+# Deployers, VCS, Repository Manager, Hooks, Lock System
 ### Deployers
  * GGN 
  * kubernetes (to do) 
@@ -17,6 +17,11 @@ Contactkey is a Go command and its aim is to deploy services on different enviro
  * Slack
  * NewRelic (to do)
  * MailSender (to do)
+### Lock System 
+ * FileLock
+ * etcd (to do)
+ * Redis (to do)
+ 
 ## Commands
 ```bash
 cck deploy environment service    Deploy the service in an environment
