@@ -1,6 +1,5 @@
 manifestVersion: v1
 
-versionControlSystem: ~
 deployment:
   ggn:
     pod: pod-webhooks

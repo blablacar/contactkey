@@ -2,9 +2,15 @@ manifestVersion: v1
 
 deployment:
   ggn:
-    pod: pod
-
+    pod: pod-webhooks
 versionControlSystem:
+  branch: master
   stash:
     repository: repository
-    project:    project
+    project: project
+repositoryManager:
+  nexus:
+    artifact: pod-webhooks
+hooks:
+  slack:
+    channel:   channel
