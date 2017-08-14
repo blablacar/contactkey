@@ -111,7 +111,12 @@ func TestListVcsVersions(t *testing.T) {
 	envs := make(map[string]string)
 	envs["staging"] = "staging"
 	execCommand = mockggn
-	d := DeployerGgn{PodName: "webhooks", Log: log.New(), Environments: envs, VcsRegexp: "-(.+)"}
+	d := DeployerGgn{
+		Service:      "webhooks",
+		Pod:          "pod-webhooks",
+		Log:          log.New(),
+		Environments: envs,
+		VcsRegexp:    "-(.+)"}
 	result, err := d.ListVcsVersions("staging")
 	if err != nil {
 		t.Fatalf("ListVcsVersions() failed : %q", err)
