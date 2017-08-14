@@ -3,7 +3,7 @@ manifestVersion: v1
 deployment:
   ggn:
     service: webhooks
-    pod: pod-webhooks
+    pod: aci.blbl.cr/pod-webhooks
 
 versionControlSystem:
   branch: master

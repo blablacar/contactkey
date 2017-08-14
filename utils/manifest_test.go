@@ -30,3 +30,11 @@ func TestLoadManifest(t *testing.T) {
 		t.Errorf("channel in the SlackManifest not found got %q", manifest.SlackManifest.Channel)
 	}
 }
+
+func TestDeployerGGNManifest(t *testing.T) {
+	d := DeployerGgnManifest{}
+	err := d.validate()
+	if err == nil {
+		t.Error("Validate() on incomplete manifest did not return err")
+	}
+}

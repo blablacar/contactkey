@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"fmt"
+
 	"github.com/mitchellh/mapstructure"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -65,4 +67,11 @@ func LoadManifest(manifestReader []byte) (*Manifest, error) {
 	}
 
 	return manifest, nil
+}
+
+func (m *DeployerGgnManifest) validate() error {
+	if m.Service == "" {
+		return fmt.Errorf("Missing field Service")
+	}
+	return nil
 }
