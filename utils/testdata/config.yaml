@@ -6,6 +6,7 @@ globalEnvironments:
 
 deployers:
   ggn:
+    vcsRegexp: -v(.+)
     workPath: /tmp
     environments:
       preprod: pp
@@ -13,6 +14,20 @@ deployers:
 
 versionControlSystem:
   stash:
-    user:       user
-    password:   password
-    url:        url
+    user:        user
+    password:    password
+    url:         url
+    sha1MaxSize: 7
+
+repositoryManager:
+  nexus:
+    url:        127.0.0.1
+    repository: repository
+    group:      group
+hooks:
+  slack:
+    url:   127.0.0.1
+    token: token
+lockSystem:
+  fileLock:
+    filePath: /tmp

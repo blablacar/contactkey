@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	log "github.com/sirupsen/logrus"
 )
 
 var apiStub *httptest.Server
@@ -47,15 +49,18 @@ func TestStashRetrieveSha1ForProject(t *testing.T) {
 		"user",
 		"password",
 		apiStub.URL,
+		"defaultBranch",
+		7,
+		log.New(),
 	}
 
-	sha1, err := stash.retrieveSha1ForProject("branch")
+	sha1, err := stash.RetrieveSha1ForProject("branch")
 	if err != nil {
 		t.Errorf("Error shouldn't have been raised instead got %s", err.Error())
 	}
 
-	if sha1 != "dbddae98366efd1ef6e71fd6001e5954ff358788" {
-		t.Errorf("The sha1 defined in body is dbddae98366efd1ef6e71fd6001e5954ff358788 not sha1 %s", sha1)
+	if sha1 != "dbddae9" {
+		t.Errorf("The sha1 defined in body is dbddae9not sha1 %s", sha1)
 	}
 }
 
@@ -69,9 +74,12 @@ func TestDiff(t *testing.T) {
 		"user",
 		"password",
 		apiStub.URL,
+		"defaultBranch",
+		7,
+		log.New(),
 	}
 
-	changes, err := stash.diff("b04ad09883d1858081702b8e2d80eb348ead9849", "b0d5ca3e586d48cc6d3ad35f0e03dfc891e62752")
+	changes, err := stash.Diff("b04ad09883d1858081702b8e2d80eb348ead9849", "b0d5ca3e586d48cc6d3ad35f0e03dfc891e62752")
 	if err != nil {
 		t.Errorf("Error shouldn't have been raised instead got %s", err.Error())
 	}

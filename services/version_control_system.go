@@ -10,28 +10,23 @@ import (
 	"strings"
 
 	"github.com/remyLemeunier/contactkey/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 type VersionControlSystem interface {
-	retrieveSha1ForProject(branch string) (string, error)
-	diff(deployedSha1 string, sha1ToDeploy string) (*Changes, error)
-	fill(map[string]string) error
-}
-
-func RetrieveSha1ForProject(vcs VersionControlSystem, branch string) (string, error) {
-	return vcs.retrieveSha1ForProject(branch)
-}
-
-func Diff(vcs VersionControlSystem, deployedSha1 string, sha1ToDeploy string) (*Changes, error) {
-	return vcs.diff(deployedSha1, sha1ToDeploy)
+	RetrieveSha1ForProject(branch string) (string, error)
+	Diff(deployedSha1 string, sha1ToDeploy string) (*Changes, error)
 }
 
 type Stash struct {
-	Repository string
-	Project    string
-	User       string
-	Password   string
-	Url        string
+	Repository  string
+	Project     string
+	User        string
+	Password    string
+	Url         string
+	Branch      string
+	sha1MaxSize int
+	Log         *log.Logger
 }
 
 type Changes struct {
@@ -60,17 +55,23 @@ type StashResponse struct {
 	} `json:"values"`
 }
 
-func NewStash(cfg utils.StashConfig, manifest utils.StashManifest) *Stash {
+func NewStash(cfg utils.StashConfig, manifest utils.StashManifest, logger *log.Logger) *Stash {
 	return &Stash{
-		Repository: manifest.Repository,
-		Project:    manifest.Project,
-		User:       cfg.User,
-		Password:   cfg.Password,
-		Url:        cfg.Url,
+		Repository:  manifest.Repository,
+		Project:     manifest.Project,
+		User:        cfg.User,
+		Password:    cfg.Password,
+		Url:         cfg.Url,
+		Branch:      manifest.Branch,
+		sha1MaxSize: cfg.Sha1MaxSize,
+		Log:         logger,
 	}
 }
 
-func (s Stash) retrieveSha1ForProject(branch string) (string, error) {
+func (s Stash) RetrieveSha1ForProject(branch string) (string, error) {
+	if branch == "" {
+		branch = s.Branch
+	}
 	params := url.Values{}
 	params.Add("until", branch)
 	params.Add("limit", "1")
@@ -83,10 +84,14 @@ func (s Stash) retrieveSha1ForProject(branch string) (string, error) {
 		return "", errors.New("Stash: Sha1 not found in the response")
 	}
 
+	if s.sha1MaxSize > 0 {
+		return stashResponse.Values[0].Id[0:s.sha1MaxSize], nil
+	}
+
 	return stashResponse.Values[0].Id, nil
 }
 
-func (s Stash) diff(deployedSha1 string, sha1ToDeploy string) (*Changes, error) {
+func (s Stash) Diff(deployedSha1 string, sha1ToDeploy string) (*Changes, error) {
 	params := url.Values{}
 	params.Add("since", deployedSha1)
 	params.Add("until", sha1ToDeploy)
@@ -105,6 +110,10 @@ func (s Stash) diff(deployedSha1 string, sha1ToDeploy string) (*Changes, error) 
 		changes.Commits = append(changes.Commits, commits)
 	}
 
+	s.Log.WithFields(log.Fields{
+		"changes": changes,
+	}).Debug("Struct Changes")
+
 	return changes, nil
 }
 
@@ -117,16 +126,30 @@ func (s Stash) getStashResponse(params url.Values) (*StashResponse, error) {
 		s.Repository,
 	)
 
+	s.Log.WithFields(log.Fields{
+		"fullPath":   baseUrl,
+		"stashUrl":   s.Url,
+		"project":    s.Project,
+		"repository": s.Repository,
+	}).Debug("Creating stash url")
+
 	request, err := http.NewRequest("GET", baseUrl+params.Encode(), nil)
 	if err != nil {
 		return nil, err
 	}
 
 	request.SetBasicAuth(s.User, s.Password)
-
 	response, err := client.Do(request)
 	if err != nil {
 		return nil, err
+	}
+
+	s.Log.WithFields(log.Fields{
+		"statusCode": response.StatusCode,
+	}).Debug("Stash response status code")
+
+	if response.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Stash status code: %d", response.StatusCode))
 	}
 
 	body, err := ioutil.ReadAll(response.Body)
@@ -134,11 +157,19 @@ func (s Stash) getStashResponse(params url.Values) (*StashResponse, error) {
 		return nil, err
 	}
 
+	s.Log.WithFields(log.Fields{
+		"body": string(body),
+	}).Debug("Response body from Stash")
+
 	stashResponse := new(StashResponse)
 	err = json.Unmarshal(body, &stashResponse)
 	if err != nil {
 		return nil, err
 	}
+
+	s.Log.WithFields(log.Fields{
+		"stashResponse": stashResponse,
+	}).Debug("Struct StashResponse")
 
 	return stashResponse, nil
 }

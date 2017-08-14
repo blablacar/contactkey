@@ -9,6 +9,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var branch = ""
+
 func Execute() {
 	configFile, err := utils.ReadFile(utils.DefaultHome)
 	if err != nil {

@@ -21,6 +21,50 @@ func TestLoadConfig(t *testing.T) {
 	if cfg.GlobalEnvironments[0] != "preprod" || cfg.GlobalEnvironments[1] != "prod" {
 		t.Error("Issue with global envs.")
 	}
+
+	if cfg.StashConfig.Url != "url" {
+		t.Errorf("Url exptected url got %q", cfg.StashConfig.Sha1MaxSize)
+	}
+
+	if cfg.StashConfig.Password != "password" {
+		t.Errorf("Password exptected password got %q", cfg.StashConfig.Sha1MaxSize)
+	}
+
+	if cfg.StashConfig.User != "user" {
+		t.Errorf("User exptected user got %q", cfg.StashConfig.Sha1MaxSize)
+	}
+
+	if cfg.StashConfig.Sha1MaxSize != 7 {
+		t.Errorf("Sha1MaxSize exptected 7 got %q", cfg.StashConfig.Sha1MaxSize)
+	}
+
+	if cfg.NexusConfig.Repository != "repository" {
+		t.Errorf("repository exptected got %q", cfg.NexusConfig.Repository)
+	}
+
+	if cfg.NexusConfig.Repository != "repository" {
+		t.Errorf("repository exptected got %q", cfg.NexusConfig.Repository)
+	}
+
+	if cfg.NexusConfig.Url != "127.0.0.1" {
+		t.Errorf("127.0.0.1 exptected got %q", cfg.NexusConfig.Url)
+	}
+
+	if cfg.NexusConfig.Group != "group" {
+		t.Errorf("group exptected got %q", cfg.NexusConfig.Group)
+	}
+
+	if cfg.SlackConfig.Url != "127.0.0.1" {
+		t.Errorf("127.0.0.1 exptected got %q", cfg.SlackConfig.Url)
+	}
+
+	if cfg.SlackConfig.Token != "token" {
+		t.Errorf("token exptected got %q", cfg.SlackConfig.Token)
+	}
+
+	if cfg.FileLockConfig.FilePath != "/tmp" {
+		t.Errorf("/tmp exptected got %q", cfg.FileLockConfig.FilePath)
+	}
 }
 
 func TestDiscoverServices(t *testing.T) {

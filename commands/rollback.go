@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"github.com/remyLemeunier/contactkey/utils"
+	"github.com/remyLemeunier/contactkey/context"
 	"github.com/spf13/cobra"
 )
 
@@ -13,12 +13,14 @@ var rollbackCmd = &cobra.Command{
 type Rollback struct {
 	Env     string
 	Service string
+	Context *context.Context
 }
 
-func (r Rollback) execute() {
+func (r *Rollback) execute() {
 }
 
-func (r Rollback) fill(config *utils.Config, service string, env string) {
+func (r *Rollback) fill(context *context.Context, service string, env string) {
 	r.Env = env
 	r.Service = service
+	r.Context = context
 }

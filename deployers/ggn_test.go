@@ -92,7 +92,6 @@ func TestHelperProcess(t *testing.T) {
 	}
 	defer os.Exit(0)
 	args := strings.Join(os.Args, " ")
-
 	listUnits := regexp.MustCompile("-- ggn staging list-units$")
 	catUnit := regexp.MustCompile("-- ggn staging fleetctl cat staging_webhooks_webhooks.service")
 	switch {
@@ -105,6 +104,26 @@ staging_webhooks_webhooks.service					b102fa1e59ae42e28936dd676829236d/10.13.33.
 		fmt.Printf(
 			`ExecStart=/opt/bin/rkt      --insecure-options=all run      --set-env=TEMPLATER_OVERRIDE='${ATTR_0}'      --set-env=TEMPLATER_OVERRIDE_BASE64='${ATTR_BASE64_0}${ATTR_BASE64_1}'      --set-env=HOSTNAME='webhooks'      --set-env=HOST="%H"      --hostname=webhooks      --dns=10.254.0.3 --dns=10.254.0.4       --dns-search=pp-bourse.par-1.h.blbl.cr       --uuid-file-save=/mnt/sda9/rkt-uuid/pp-bourse/webhooks      --set-env=DOMAINNAME='pp.par-1.h.blbl.cr'      --net='bond0'      --set-env=AIRFLOW_HOME='/opt/webhooks'      aci.blbl.cr/pod-webhooks_aci-go-synapse:1.8.1-1    aci.blbl.cr/pod-webhooks_aci-go-nerve:1.8.1-1    aci.blbl.cr/pod-webhooks_aci-confd:1.8.1-1    aci.blbl.cr/pod-webhooks_aci-embulk:1.8.1-1    aci.blbl.cr/pod-webhooks_aci-zabbix-agent:1.8.1-1    aci.blbl.cr/pod-webhooks_aci-webhooks:1.8.1-1 --exec /usr/local/bin/webhooks -- scheduler ---
 	`)
+	}
+}
+
+func TestListVcsVersions(t *testing.T) {
+	envs := make(map[string]string)
+	envs["staging"] = "staging"
+	execCommand = mockggn
+	d := DeployerGgn{PodName: "webhooks", Log: log.New(), Environments: envs, VcsRegexp: "-(.+)"}
+	result, err := d.ListVcsVersions("staging")
+	if err != nil {
+		t.Fatalf("ListVcsVersions() failed : %q", err)
+	}
+
+	if len(result) != 1 {
+		t.Fatal("We should have found only 1 version")
+	}
+
+	// We are receiving "1.8.1-1" when parsed with the regexp above it should "1" (string)
+	if result[0] != "1" {
+		t.Errorf("Result should be '1' instead found %q", result[0])
 	}
 }
 

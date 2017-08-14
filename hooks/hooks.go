@@ -1,14 +1,6 @@
 package hooks
 
-type hooks interface {
-	preDeployment()
-	postDeployment()
-}
-
-func PreDeployment(h hooks) {
-	h.preDeployment()
-}
-
-func PostDeployment(h hooks) {
-	h.postDeployment()
+type Hooks interface {
+	PreDeployment(userName string, env string, service string, podVersion string) error
+	PostDeployment(userName string, env string, service string, podVersion string) error
 }

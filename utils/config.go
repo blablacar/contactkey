@@ -18,6 +18,9 @@ type Config struct {
 	GlobalEnvironments []string
 	DeployerConfig     `mapstructure:"deployers"`
 	VcsConfig          `mapstructure:"versionControlSystem"`
+	RepositoryManager  `mapstructure:"repositoryManager"`
+	HookConfig         `mapstructure:"hooks"`
+	LockSystemConfig   `mapstructure:"lockSystem"`
 }
 
 type DeployerConfig struct {
@@ -27,6 +30,7 @@ type DeployerConfig struct {
 type DeployerGgnConfig struct {
 	WorkPath     string            `mapstructure:"workPath"`
 	Environments map[string]string `mapstructure:"environments"`
+	VcsRegexp    string            `mapstructure:"vcsRegexp"`
 }
 
 type VcsConfig struct {
@@ -34,9 +38,37 @@ type VcsConfig struct {
 }
 
 type StashConfig struct {
-	User     string `mapstructure:"user"`
-	Password string `mapstructure:"password"`
-	Url      string `mapstructure:"url"`
+	User        string `mapstructure:"user"`
+	Password    string `mapstructure:"password"`
+	Url         string `mapstructure:"url"`
+	Sha1MaxSize int    `mapstructure:"sha1MaxSize"`
+}
+
+type RepositoryManager struct {
+	NexusConfig `mapstructure:"nexus"`
+}
+
+type NexusConfig struct {
+	Url        string `mapstructure:"url"`
+	Repository string `mapstructure:"repository"`
+	Group      string `mapstructure:"group"`
+}
+
+type HookConfig struct {
+	SlackConfig `mapstructure:"slack"`
+}
+
+type SlackConfig struct {
+	Url   string `mapstructure:"url"`
+	Token string `mapstructure:"token"`
+}
+
+type LockSystemConfig struct {
+	FileLockConfig `mapstructure:"fileLock"`
+}
+
+type FileLockConfig struct {
+	FilePath string `mapstructure:"filePath"`
 }
 
 func LoadConfig(cfgReader []byte) (*Config, error) {
