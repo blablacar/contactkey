@@ -14,8 +14,8 @@ script:
   - cp examples/manifest.sample.yml /tmp/manifests/manifest.yml
   - ./hack/verify-gofmt.sh
   - go test --cover $(go list ./... | grep -v /vendor/)
-  - go build -o cck
-  - ./cck -h
+  - go build -o /tmp/cck
+  - ./tmp/cck -h
 
 after_success:
   - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
