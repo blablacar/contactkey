@@ -15,7 +15,7 @@ script:
   - ./hack/verify-gofmt.sh
   - go test --cover $(go list ./... | grep -v /vendor/)
   - go build -o /tmp/cck
-  - ./tmp/cck -h
+  - /tmp/cck -h
 
 after_success:
   - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
