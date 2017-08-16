@@ -9,14 +9,13 @@ install:
 
 script:
   - mkdir /home/travis/.contactkey
-  - mv examples/config.sample.yml  /home/travis/.contactkey/config.yml
+  - cp examples/config.sample.yml  /home/travis/.contactkey/config.yml
   - mkdir /tmp/manifests
-  - mv examples/manifest.sample.yml /tmp/manifests/manifest.yml
+  - cp examples/manifest.sample.yml /tmp/manifests/manifest.yml
   - ./hack/verify-gofmt.sh
   - go test --cover $(go list ./... | grep -v /vendor/)
   - go build -o cck
   - ./cck -h
-  - echo $TRAVIS_TAG
 
 after_success:
   - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
