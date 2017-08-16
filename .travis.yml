@@ -18,4 +18,4 @@ script:
   - ./cck -h
 
 after_success:
-  test -n "$TRAVIS_TAG" && curl -s https://raw.githubusercontent.com/goreleaser/get/master/latest | bash
+  - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
