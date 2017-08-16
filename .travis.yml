@@ -16,6 +16,7 @@ script:
   - go test --cover $(go list ./... | grep -v /vendor/)
   - go build -o cck
   - ./cck -h
+  - echo $TRAVIS_TAG
 
 after_success:
   - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
