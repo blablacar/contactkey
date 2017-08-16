@@ -1,6 +1,7 @@
 package deployers
 
 import (
+	"encoding/json"
 	"fmt"
 	"os/exec"
 	"regexp"
@@ -95,7 +96,7 @@ func (d *DeployerGgn) ListVersions(env string) (map[string]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	unitRegexp := d.buildUnitRegexp(env)
+	unitRegexp := d.buildUnitRegexp(ggnEnv)
 	versionRegexp := d.buildVersionRegexp()
 	versions := make(map[string]string)
 
@@ -103,10 +104,13 @@ func (d *DeployerGgn) ListVersions(env string) (map[string]string, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	d.Log.Debugf("Matching for units with regex %q", unitRegexp)
 	for _, unit := range units {
 		if !unitRegexp.MatchString(unit) {
 			continue
 		}
+		d.Log.Debugf("Found unit %q", unit)
 		file, err := d.catUnit(ggnEnv, unit)
 		if err != nil {
 			// @TODO what should we do there ?
@@ -118,6 +122,7 @@ func (d *DeployerGgn) ListVersions(env string) (map[string]string, error) {
 		}
 		if version[1] != "" {
 			versions[unit] = version[1]
+			d.Log.Debugf("Found version %q for unit %q", versions[unit], unit)
 		}
 	}
 
@@ -150,8 +155,25 @@ func (d *DeployerGgn) getGgnEnv(env string) (string, error) {
 	return val, nil
 }
 
-func (d *DeployerGgn) Deploy(env string) error {
-	// @TODO
+func (d *DeployerGgn) Deploy(env string, podVersion string) error {
+	serviceAttrs := make(map[string]string)
+
+	ggnEnv, err := d.getGgnEnv(env)
+	if err != nil {
+		return err
+	}
+
+	serviceAttrs["version"] = podVersion
+	serviceAttrsJSON, err := json.Marshal(serviceAttrs)
+	if err != nil {
+		return err
+	}
+
+	ggnCmd := ggn(ggnEnv, d.Service, "update", "-A", string(serviceAttrsJSON))
+	d.Log.WithFields(log.Fields{
+		"cmd": strings.Join(ggnCmd.Args, " "),
+	}).Debug("Executing external command")
+	// stdOut, err := ggnCmd.CombinedOutput()
 
 	return nil
 }

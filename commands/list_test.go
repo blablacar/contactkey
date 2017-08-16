@@ -13,6 +13,10 @@ type DeployerMockGgn struct {
 	Log *log.Logger
 }
 
+func (d *DeployerMockGgn) Deploy(env string, podVersion string) error {
+	return nil
+}
+
 func (d *DeployerMockGgn) ListVersions(env string) (map[string]string, error) {
 	versions := map[string]string{
 		"staging_webhooks_webhooks1.service": "26.1501244191-vb0f586a",

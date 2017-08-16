@@ -66,7 +66,7 @@ func (d *Deploy) execute() {
 
 	podVersion, err := d.Context.RepositoryManager.RetrievePodVersion(sha1ToDeploy)
 	if err != nil {
-		fmt.Fprintf(d.Writer, "Failted to retrieve pod version: %q", err)
+		fmt.Fprintf(d.Writer, "Failed to retrieve pod version: %q", err)
 		return
 	}
 
@@ -99,6 +99,10 @@ func (d *Deploy) execute() {
 	for _, hook := range d.Context.Hooks {
 		//@TODO Add a logger and log error coming from hooks
 		hook.PreDeployment(userName, d.Env, d.Service, podVersion)
+	}
+
+	if err := d.Context.Deployer.Deploy(d.Env, podVersion); err != nil {
+		fmt.Fprintf(d.Writer, "Failed to deploy : %q", err)
 	}
 
 	for _, hook := range d.Context.Hooks {
