@@ -14,5 +14,14 @@ script:
   - mv examples/manifest.sample.yml /tmp/manifests/manifest.yml
   - ./hack/verify-gofmt.sh
   - go test --cover $(go list ./... | grep -v /vendor/)
-  - go build -o contactkey
-  - ./contactkey -h
+  - go build -o cck
+  - ./cck -h
+
+deploy:
+  provider: releases
+  api_key:
+    secure: $GITHUB_TOKEN
+  file: cck
+  skip_cleanup: true
+  on:
+    tags: true
