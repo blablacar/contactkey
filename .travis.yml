@@ -17,11 +17,5 @@ script:
   - go build -o cck
   - ./cck -h
 
-deploy:
-  provider: releases
-  api_key:
-    secure: $GITHUB_TOKEN
-  file: cck
-  skip_cleanup: true
-  on:
-    tags: true
+after_success:
+  test -n "$TRAVIS_TAG" && curl -s https://raw.githubusercontent.com/goreleaser/get/master/latest | bash
