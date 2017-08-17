@@ -45,8 +45,8 @@ func (d *DeployerGgn) listUnits(env string) ([]string, error) {
 
 	stdOut, err := ggnCmd.CombinedOutput()
 	d.Log.WithFields(log.Fields{
-		"cmd":  ggnCmd.Path,
-		"args": strings.Join(ggnCmd.Args, " "),
+		"cmd": ggnCmd.Path,
+		"out": string(stdOut),
 	}).Debug("Executing external command")
 
 	if err != nil {
@@ -74,8 +74,8 @@ func (d *DeployerGgn) catUnit(env string, unit string) (string, error) {
 	ggnCmd := ggn(env, "fleetctl", "cat", unit)
 	stdOut, err := ggnCmd.CombinedOutput()
 	d.Log.WithFields(log.Fields{
-		"cmd":  ggnCmd.Path,
-		"args": strings.Join(ggnCmd.Args, " "),
+		"cmd": strings.Join(ggnCmd.Args, " "),
+		"out": string(stdOut),
 	}).Debug("Executing external command")
 	if err != nil {
 		return "", err
@@ -170,8 +170,10 @@ func (d *DeployerGgn) Deploy(env string, podVersion string) error {
 	}
 
 	ggnCmd := ggn(ggnEnv, d.Service, "update", "-A", string(serviceAttrsJSON))
+	stdOut, err := ggnCmd.CombinedOutput()
 	d.Log.WithFields(log.Fields{
 		"cmd": strings.Join(ggnCmd.Args, " "),
+		"out": string(stdOut),
 	}).Debug("Executing external command")
 	// stdOut, err := ggnCmd.CombinedOutput()
 
