@@ -17,11 +17,13 @@ type Context struct {
 	Hooks             []hooks.Hooks
 	LockSystem        utils.Lock
 	Log               *log.Logger
+	ScreenMandatory   bool
 }
 
 func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 	ctx := &Context{
-		Log: log.New(),
+		Log:             log.New(),
+		ScreenMandatory: cfg.ScreenMandatory,
 	}
 	loglevel, err := log.ParseLevel(cfg.LogLevel)
 	if err != nil {

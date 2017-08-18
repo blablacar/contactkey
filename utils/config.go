@@ -16,6 +16,7 @@ type Config struct {
 	WorkPath           string `mapstructure:"workPath"`
 	LogLevel           string
 	GlobalEnvironments []string
+	ScreenMandatory    bool
 	DeployerConfig     `mapstructure:"deployers"`
 	VcsConfig          `mapstructure:"versionControlSystem"`
 	RepositoryManager  `mapstructure:"repositoryManager"`
