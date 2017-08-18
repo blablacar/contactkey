@@ -76,6 +76,7 @@ The file name will be service name in the cck command.
 deployment:                # Define the deployment type we are going to use
   ggn:                     # for this service.
     pod: pod-webhooks      # podName used in ggn
+    service: webhooks      # service used in ggn
 versionControlSystem:      
   branch: master           # The default "stable" branch we usually deploy
   stash:                   # Version control system used for the service. (Only one) 
