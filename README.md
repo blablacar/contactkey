@@ -15,6 +15,7 @@ Contactkey is a Go command and its aim is to deploy services on different enviro
  * Nexus
 ### Hooks
  * Slack
+ * ExecCommand
  * NewRelic (to do)
  * MailSender (to do)
 ### Lock System 
@@ -89,5 +90,9 @@ repositoryManager:
     artifact: pod-webhooks 
 hooks:                     # Hooks we are going to call before and after.
   slack:                   # the deployment. (You can have several one)
-    channel:   channel     
+    channel:   channel
+  execCommand:             # Execute a command before and after the deployment process.
+    list:
+      - "cd /tmp"
+      - "ls"
 ```

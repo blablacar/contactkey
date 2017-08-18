@@ -29,6 +29,10 @@ func TestLoadManifest(t *testing.T) {
 	if manifest.SlackManifest.Channel != "channel" {
 		t.Errorf("channel in the SlackManifest not found got %q", manifest.SlackManifest.Channel)
 	}
+
+	if len(manifest.ExecCommandManifest.List) != 2 {
+		t.Errorf("list in the SlackManifest should have a len of 2 instead got %d", len(manifest.ExecCommandManifest.List))
+	}
 }
 
 func TestDeployerGGNManifest(t *testing.T) {
