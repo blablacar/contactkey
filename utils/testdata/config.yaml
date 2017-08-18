@@ -4,6 +4,8 @@ globalEnvironments:
   - preprod
   - prod
 
+screenMandatory: true
+
 deployers:
   ggn:
     vcsRegexp: -v(.+)

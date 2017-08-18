@@ -65,6 +65,10 @@ func TestLoadConfig(t *testing.T) {
 	if cfg.FileLockConfig.FilePath != "/tmp" {
 		t.Errorf("/tmp exptected got %q", cfg.FileLockConfig.FilePath)
 	}
+
+	if cfg.ScreenMandatory != true {
+		t.Error("ScreenMandatory was expected to be true")
+	}
 }
 
 func TestDiscoverServices(t *testing.T) {

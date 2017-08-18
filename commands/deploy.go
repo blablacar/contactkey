@@ -8,6 +8,7 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/remyLemeunier/contactkey/context"
+	"github.com/remyLemeunier/contactkey/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -34,6 +35,11 @@ func (d *Deploy) execute() {
 	currentUser, err := user.Current()
 	if err == nil {
 		userName = currentUser.Name
+	}
+
+	if err := utils.CheckIfIsLaunchedInAScreen(); err != nil && d.Context.ScreenMandatory == true {
+		fmt.Fprint(d.Writer, "Screen error raised: %q", err)
+		return
 	}
 
 	// The lock system is not mandatory
