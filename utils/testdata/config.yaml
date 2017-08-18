@@ -4,7 +4,7 @@ globalEnvironments:
   - preprod
   - prod
 
-ScreenMandatory: true
+screenMandatory: true
 
 deployers:
   ggn:

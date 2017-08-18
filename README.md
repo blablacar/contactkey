@@ -34,7 +34,7 @@ The configuration file is located at ~/.contackey/config.yml
 ```yaml
 workPath: /tmp/manifests   # Location of services manifest
 
-ScreenMandatory: true      # Check if the user is launching cck in a screen/tmux (not mandatory)
+screenMandatory: true      # Check if the user is launching cck in a screen/tmux (not mandatory)
 
 globalEnvironments:        # Define the cck environment. It can be anything.
   - preprod                # It will be used as the cck environment for 
