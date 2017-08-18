@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"testing"
 
+	"os"
+
 	"github.com/olekukonko/tablewriter"
 	"github.com/remyLemeunier/contactkey/context"
 	log "github.com/sirupsen/logrus"
@@ -38,6 +40,7 @@ func TestListExecute(t *testing.T) {
 		Context: &context.Context{
 			Deployer: &DeployerMockGgn{},
 		},
+		Writer: os.Stdout,
 	}
 	out := new(bytes.Buffer)
 
