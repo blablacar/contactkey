@@ -14,3 +14,7 @@ repositoryManager:
 hooks:
   slack:
     channel:   channel
+  execCommand:
+    list:
+      - "cd /tmp"
+      - "ls"

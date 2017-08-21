@@ -47,11 +47,16 @@ type NexusManifest struct {
 }
 
 type HookManifest struct {
-	SlackManifest `mapstructure:"slack"`
+	SlackManifest       `mapstructure:"slack"`
+	ExecCommandManifest `mapstructure:"execCommand"`
 }
 
 type SlackManifest struct {
 	Channel string `mapstructure:"channel"`
+}
+
+type ExecCommandManifest struct {
+	List []string `mapstructure:"list"`
 }
 
 func LoadManifest(manifestReader []byte) (*Manifest, error) {

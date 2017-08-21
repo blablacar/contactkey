@@ -72,6 +72,12 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 			ctx.Log))
 	}
 
+	if len(manifest.HookManifest.ExecCommandManifest.List) > 0 {
+		ctx.Hooks = append(ctx.Hooks, hooks.NewExecommand(
+			manifest.HookManifest.ExecCommandManifest,
+			ctx.Log))
+	}
+
 	if cfg.LockSystemConfig.FileLockConfig != (utils.FileLockConfig{}) {
 		ctx.LockSystem = utils.NewFileLock(cfg.LockSystemConfig.FileLockConfig)
 	}

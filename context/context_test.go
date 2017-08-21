@@ -45,12 +45,16 @@ func TestNewContext(t *testing.T) {
 		t.Errorf("Type should be *services.Nexus instead got %q", reflect.TypeOf(ctxt.RepositoryManager).String())
 	}
 
-	if len(ctxt.Hooks) != 1 {
-		t.Fatalf("Hooks length shound be 1 instead got %q", len(ctxt.Hooks))
+	if len(ctxt.Hooks) != 2 {
+		t.Fatalf("Hooks length shound be 1 instead got %d", len(ctxt.Hooks))
 	}
 
 	if reflect.TypeOf(ctxt.Hooks[0]).String() != "*hooks.Slack" {
-		t.Errorf("Type should be *hooks.Slack instead got %q", reflect.TypeOf(ctxt.Hooks[1]).String())
+		t.Errorf("Type should be *hooks.Slack instead got %q", reflect.TypeOf(ctxt.Hooks[0]).String())
+	}
+
+	if reflect.TypeOf(ctxt.Hooks[1]).String() != "*hooks.ExecCommand" {
+		t.Errorf("Type should be *hooks.ExecCommand instead got %q", reflect.TypeOf(ctxt.Hooks[1]).String())
 	}
 
 	if reflect.TypeOf(ctxt.LockSystem).String() != "*utils.FileLock" {
