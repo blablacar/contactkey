@@ -11,12 +11,14 @@ import (
 type ExecCommand struct {
 	List []string
 	Log  *log.Logger
+	Stop bool
 }
 
 func NewExecommand(manifest utils.ExecCommandManifest, logger *log.Logger) *ExecCommand {
 	return &ExecCommand{
 		List: manifest.List,
 		Log:  logger,
+		Stop: manifest.StopOnError,
 	}
 }
 
@@ -41,4 +43,8 @@ func (e ExecCommand) executeCommands() error {
 	}
 
 	return err
+}
+
+func (e ExecCommand) StopOnError() bool {
+	return e.Stop
 }

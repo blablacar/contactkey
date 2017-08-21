@@ -24,6 +24,7 @@ func TestSlack(t *testing.T) {
 		"abc",
 		"channel",
 		log.New(),
+		false,
 	}
 	err := slack.postMessage("Some message.")
 	if err != nil {

@@ -22,3 +22,4 @@ hooks:
     list:
       - "cd /tmp"
       - "ls"
+    stopOnError: true

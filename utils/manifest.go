@@ -52,11 +52,13 @@ type HookManifest struct {
 }
 
 type SlackManifest struct {
-	Channel string `mapstructure:"channel"`
+	Channel     string `mapstructure:"channel"`
+	StopOnError bool   `mapstructure:"stopOnError"`
 }
 
 type ExecCommandManifest struct {
-	List []string `mapstructure:"list"`
+	List        []string `mapstructure:"list"`
+	StopOnError bool     `mapstructure:"stopOnError"`
 }
 
 func LoadManifest(manifestReader []byte) (*Manifest, error) {

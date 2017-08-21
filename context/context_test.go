@@ -50,11 +50,19 @@ func TestNewContext(t *testing.T) {
 	}
 
 	if reflect.TypeOf(ctxt.Hooks[0]).String() != "*hooks.Slack" {
-		t.Errorf("Type should be *hooks.Slack instead got %q", reflect.TypeOf(ctxt.Hooks[0]).String())
+		t.Fatalf("Type should be *hooks.Slack instead got %q", reflect.TypeOf(ctxt.Hooks[0]).String())
+	}
+
+	if ctxt.Hooks[0].StopOnError() != false {
+		t.Error("Exepected StopOnError from Slack to be false")
 	}
 
 	if reflect.TypeOf(ctxt.Hooks[1]).String() != "*hooks.ExecCommand" {
-		t.Errorf("Type should be *hooks.ExecCommand instead got %q", reflect.TypeOf(ctxt.Hooks[1]).String())
+		t.Fatalf("Type should be *hooks.ExecCommand instead got %q", reflect.TypeOf(ctxt.Hooks[1]).String())
+	}
+
+	if ctxt.Hooks[1].StopOnError() != true {
+		t.Error("Exepected StopOnError from ExecCommand to be true")
 	}
 
 	if reflect.TypeOf(ctxt.LockSystem).String() != "*utils.FileLock" {
