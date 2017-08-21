@@ -33,6 +33,14 @@ func TestLoadManifest(t *testing.T) {
 	if len(manifest.ExecCommandManifest.List) != 2 {
 		t.Errorf("list in the SlackManifest should have a len of 2 instead got %d", len(manifest.ExecCommandManifest.List))
 	}
+
+	if manifest.ExecCommandManifest.StopOnError != true {
+		t.Error("StopOnError for exec manifest expected to be true.")
+	}
+
+	if manifest.SlackManifest.StopOnError != false {
+		t.Error("StopOnError for slack manifest expected to be false.")
+	}
 }
 
 func TestDeployerGGNManifest(t *testing.T) {

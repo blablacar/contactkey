@@ -15,6 +15,7 @@ type Slack struct {
 	Token   string
 	Channel string
 	Log     *log.Logger
+	Stop    bool
 }
 
 func NewSlack(cfg utils.SlackConfig, manifest utils.SlackManifest, logger *log.Logger) *Slack {
@@ -23,6 +24,7 @@ func NewSlack(cfg utils.SlackConfig, manifest utils.SlackManifest, logger *log.L
 		Token:   cfg.Token,
 		Channel: manifest.Channel,
 		Log:     logger,
+		Stop:    manifest.StopOnError,
 	}
 }
 
@@ -70,4 +72,8 @@ func (s Slack) postMessage(message string) error {
 	}
 
 	return nil
+}
+
+func (e Slack) StopOnError() bool {
+	return e.Stop
 }

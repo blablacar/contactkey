@@ -18,3 +18,4 @@ hooks:
     list:
       - "cd /tmp"
       - "ls"
+    StopOnError: true
