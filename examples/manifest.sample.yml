@@ -19,7 +19,8 @@ hooks:
   slack:
     channel:   channel
   execCommand:
-    list:
-      - "cd /tmp"
-      - "ls"
+    onPredeploy:
+      - { command: "ls", args: ["-lah"] }
+    onPostDeploy:
+      - { command: "cd /tmp"}
     stopOnError: true

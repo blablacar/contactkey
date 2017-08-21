@@ -9,31 +9,33 @@ import (
 )
 
 type ExecCommand struct {
-	List []string
-	Log  *log.Logger
-	Stop bool
+	OnPreDeploy  []utils.CommandList
+	OnPostDeploy []utils.CommandList
+	Log          *log.Logger
+	Stop         bool
 }
 
 func NewExecommand(manifest utils.ExecCommandManifest, logger *log.Logger) *ExecCommand {
 	return &ExecCommand{
-		List: manifest.List,
-		Log:  logger,
-		Stop: manifest.StopOnError,
+		OnPreDeploy:  manifest.OnPreDeploy,
+		OnPostDeploy: manifest.OnPostDeploy,
+		Log:          logger,
+		Stop:         manifest.StopOnError,
 	}
 }
 
 func (e ExecCommand) PreDeployment(username string, env string, service string, podVersion string) error {
-	return e.executeCommands()
+	return executeCommands(e.OnPreDeploy)
 }
 
 func (e ExecCommand) PostDeployment(username string, env string, service string, podVersion string) error {
-	return e.executeCommands()
+	return executeCommands(e.OnPostDeploy)
 }
 
-func (e ExecCommand) executeCommands() error {
+func executeCommands(commandList []utils.CommandList) error {
 	var err error = nil
-	for _, commandName := range e.List {
-		if _, error := exec.Command(commandName).CombinedOutput(); error != nil {
+	for _, commandName := range commandList {
+		if _, error := exec.Command(commandName.Command, commandName.Args...).CombinedOutput(); error != nil {
 			if err != nil {
 				err = errors.New(err.Error() + error.Error())
 			} else {

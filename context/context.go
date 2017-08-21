@@ -72,7 +72,7 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 			ctx.Log))
 	}
 
-	if len(manifest.HookManifest.ExecCommandManifest.List) > 0 {
+	if len(manifest.HookManifest.ExecCommandManifest.OnPreDeploy) > 0 || len(manifest.HookManifest.ExecCommandManifest.OnPostDeploy) > 0 {
 		ctx.Hooks = append(ctx.Hooks, hooks.NewExecommand(
 			manifest.HookManifest.ExecCommandManifest,
 			ctx.Log))

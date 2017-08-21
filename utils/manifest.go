@@ -57,8 +57,14 @@ type SlackManifest struct {
 }
 
 type ExecCommandManifest struct {
-	List        []string `mapstructure:"list"`
-	StopOnError bool     `mapstructure:"stopOnError"`
+	OnPreDeploy  []CommandList `mapstructure:"onPreDeploy"`
+	OnPostDeploy []CommandList `mapstructure:"onPostDeploy"`
+	StopOnError  bool          `mapstructure:"stopOnError"`
+}
+
+type CommandList struct {
+	Command string   `mapstructure:"command"`
+	Args    []string `mapstructure:"args"`
 }
 
 func LoadManifest(manifestReader []byte) (*Manifest, error) {

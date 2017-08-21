@@ -93,8 +93,9 @@ hooks:                     # Hooks we are going to call before and after.
     channel:   channel
     stopOnError: false     # If an error occurs stop the deployment process (not mandatory default false)
   execCommand:             # Execute a command before and after the deployment process.
-    list:
-      - "cd /tmp"
-      - "ls"
+    onPredeploy:           # Only execute before the deployment
+      - { command: "ls", args: ["-lah"] } # args is not mandatory
+    onPostDeploy:          # Only Executed after the deployment
+      - { command: "cd /tmp"}
     stopOnError: true      # If an error occurs stop the deployment process (not mandatory default false)
 ```
