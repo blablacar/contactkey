@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/olekukonko/tablewriter"
@@ -19,13 +20,14 @@ type List struct {
 	Env         string
 	Service     string
 	TableWriter *tablewriter.Table
+	Writer      io.Writer
 }
 
 func (l List) execute() {
 	versions, err := l.Context.Deployer.ListVersions(l.Env)
 	if err != nil {
-		fmt.Printf("Failed to list versions : %s", err)
-		os.Exit(1)
+		fmt.Fprintf(l.Writer, "Failed to list versions : %s \n", err)
+		return
 	}
 
 	l.TableWriter.SetHeader([]string{"instance", "version"})
@@ -41,4 +43,5 @@ func (l *List) fill(context *context.Context, service string, env string) {
 	l.Service = service
 	l.Context = context
 	l.TableWriter = tablewriter.NewWriter(os.Stdout)
+	l.Writer = os.Stdout
 }

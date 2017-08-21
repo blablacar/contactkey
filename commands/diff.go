@@ -31,23 +31,23 @@ func (d Diff) execute() {
 	// If the branch is null it will use the default one.
 	sha1, err := d.Context.Vcs.RetrieveSha1ForProject(branch)
 	if err != nil {
-		fmt.Fprintf(d.Writer, "Failed to retrieve sha1: %q", err)
-		os.Exit(1)
+		fmt.Fprintf(d.Writer, "Failed to retrieve sha1: %q \n", err)
+		return
 	}
 	if sha1 == "" {
 		fmt.Fprintf(d.Writer, "No sha1 found for service %q \n", d.Service)
-		os.Exit(1)
+		return
 	}
 
 	versions, err := d.Context.Deployer.ListVcsVersions(d.Env)
 	if err != nil {
-		fmt.Fprintf(d.Writer, "Failed to list versions with error %q", err)
-		os.Exit(1)
+		fmt.Fprintf(d.Writer, "Failed to list versions with error %q \n", err)
+		return
 	}
 
 	if len(versions) == 0 {
-		fmt.Fprintf(d.Writer, "No service (%q) versions found for the Env: %q", d.Service, d.Env)
-		os.Exit(1)
+		fmt.Fprintf(d.Writer, "No service (%q) versions found for the Env: %q \n", d.Service, d.Env)
+		return
 	}
 
 	// Retrieve only unique versions
@@ -63,7 +63,7 @@ func (d Diff) execute() {
 	for _, uniqueVersion := range uniqueVersions {
 		changes, err := d.Context.Vcs.Diff(uniqueVersion, sha1)
 		if err != nil {
-			fmt.Fprintf(d.Writer, "Failed to retrieve sha1: %q", err)
+			fmt.Fprintf(d.Writer, "Failed to retrieve sha1: %q \n", err)
 			os.Exit(1)
 		}
 
