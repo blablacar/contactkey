@@ -91,10 +91,10 @@ repositoryManager:
 hooks:                     # Hooks we are going to call before and after.
   slack:                   # the deployment. (You can have several one)
     channel:   channel
-    StopOnError: false     # If an error occurs stop the deployment process (not mandatory default false)
+    stopOnError: false     # If an error occurs stop the deployment process (not mandatory default false)
   execCommand:             # Execute a command before and after the deployment process.
     list:
       - "cd /tmp"
       - "ls"
-    StopOnError: true      # If an error occurs stop the deployment process (not mandatory default false)
+    stopOnError: true      # If an error occurs stop the deployment process (not mandatory default false)
 ```
