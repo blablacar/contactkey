@@ -1,0 +1,96 @@
+[34m13:35:12[0m [32mINFO [0m [36m  g/v/g/b/d/b/template/file.go:75 [0m Templating file                             [0m [32mdst[0m=/var/folders/9l/z3zw1q611v11bh7xxx2n9vvh0000gn/T/prefix692016705 [32msrc[0m=/Users/olivierb/stash/build-tools/env/pp-dc3/services/webhooks/service-manifest.yml
+[34m13:35:14[0m [32mINFO [0m [36m           ggn/work/service.go:210[0m Locking                                     [0m [32menv[0m=pp-dc3 [32mmessage[0m=[olivierb@oliviers-MacBook-Pro.local] Update webhooks1 [32mservice[0m=webhooks [32mttl[0m=1h0m0s
+[0;32mEnv: pp-dc3 / Action : unit/update[0m
+[0;32mEnv: pp-dc3 / Action : service/lock[0m
+No expired maintenance to remove in Zabbix
+[34m13:35:15[0m [32mINFO [0m [36m      ggn/work/unit-command.go:83 [0m Remote service is already up to date        [0m [32menv[0m=pp-dc3 [32mservice[0m=webhooks [32munit[0m=webhooks1
+[34m13:36:11[0m [32mINFO [0m [36m      ggn/work/unit-command.go:85 [0m But service is not running                  [0m [32menv[0m=pp-dc3 [32mservice[0m=webhooks [32munit[0m=webhooks1
+[0;32mEnv: pp-dc3 / Action : unit/destroy[0m
+No expired maintenance to remove in Zabbix
+[0;32mEnv: pp-dc3 / Action : unit/load[0m
+No expired maintenance to remove in Zabbix
+[0;32mEnv: pp-dc3 / Action : unit/start[0m
+No expired maintenance to remove in Zabbix
+[0;35m[2m[SystemdCheck][webhooks][22m [1mwebhooks1[21m[22m - Checking that unit is running. (timeout in 120s)[0m
+[1A[K[0;35m[2m[SystemdCheck][webhooks][22m [1mwebhooks1[21m[22m - Checking that unit is running. (timeout in 120s)[0m
+[0;32m[2m[SystemdCheck][webhooks][22m [1mwebhooks1[21m[22m: Ok - Deployed on rf22-srv14[0m
+[0;35m[2m[SystemdCheck][webhooks][22m [1mwebhooks1[21m[22m - Checking that service adds key in zookeeper (timeout in 700s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 700s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 699s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 698s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 697s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 696s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 695s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 694s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 693s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 692s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 691s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 690s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 689s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 688s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 687s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 686s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 685s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 684s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 683s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 682s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 681s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 680s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 679s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 678s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 677s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 676s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 675s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 674s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 673s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 672s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 671s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 670s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 669s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 668s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 667s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 666s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 665s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 664s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 663s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 662s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 661s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 660s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 659s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 658s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 657s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 656s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 655s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 654s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 653s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 652s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 651s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 650s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 649s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 648s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 647s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 646s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 645s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 644s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 643s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 642s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 641s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 640s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 639s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 638s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 637s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 636s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 635s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 634s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 633s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 632s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 631s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 630s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 629s)[0m
+[1A[K[0;35m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m /services/webhooks - Checking that service adds key in zookeeper (timeout in 628s)[0m
+[0;32m[2m[ZkCheck][webhooks][22m [1mwebhooks1[21m[22m - /services/webhooks: Ok[0m
+[34m13:39:36[0m [32mINFO [0m [36m           ggn/work/service.go:195[0m Unlocking                                   [0m [32menv[0m=pp-dc3 [32mservice[0m=webhooks
+[0;32mEnv: pp-dc3 / Action : service/unlock[0m
+Script started on Tue Aug 22 13:35:12 2017
+
+Script done on Tue Aug 22 13:39:36 2017

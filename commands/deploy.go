@@ -8,6 +8,7 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/remyLemeunier/contactkey/context"
+	"github.com/remyLemeunier/contactkey/deployers"
 	"github.com/remyLemeunier/contactkey/utils"
 	"github.com/spf13/cobra"
 )
@@ -76,11 +77,11 @@ func (d *Deploy) execute() {
 		return
 	}
 
-	deployedVersions, err := d.Context.Deployer.ListVcsVersions(d.Env)
-	if err != nil {
-		fmt.Fprintf(d.Writer, "Failed to retrieve DEPLOYED version from service(%q) in env %q: %q \n", d.Service, d.Env, err)
-		return
-	}
+	//deployedVersions, err := d.Context.Deployer.ListVcsVersions(d.Env)
+	//if err != nil {
+	//	fmt.Fprintf(d.Writer, "Failed to retrieve DEPLOYED version from service(%q) in env %q: %q", d.Service, d.Env, err)
+	//	return
+	//}
 
 	if podVersion == "" {
 		fmt.Fprintf(d.Writer, "We have not found the pod version with the the sha1 %q \n"+
@@ -88,18 +89,17 @@ func (d *Deploy) execute() {
 		return
 	}
 
-	needToDeploy := false
-	for _, deployedVersion := range deployedVersions {
-		if deployedVersion != sha1ToDeploy {
-			needToDeploy = true
-		}
-	}
+	//needToDeploy := false
+	//for _, deployedVersion := range deployedVersions {
+	//	if deployedVersion != sha1ToDeploy {
+	//		needToDeploy = true
+	//	}
+	//}
 
-	if needToDeploy == false {
-		fmt.Fprintf(d.Writer, "I can't deploy(sorry) as the version you want to deploy \n"+
-			"is the same as the version deployed (%q) \n", sha1ToDeploy)
-		return
-	}
+	//if needToDeploy == false {
+	//	fmt.Fprintf(d.Writer, "Version %q is already deployed.", sha1ToDeploy)
+	//	return
+	//}
 
 	fmt.Fprintf(d.Writer, "Going to deploy pod version %q \n", podVersion)
 	for _, hook := range d.Context.Hooks {
@@ -111,9 +111,18 @@ func (d *Deploy) execute() {
 		}
 	}
 
-	if err := d.Context.Deployer.Deploy(d.Env, podVersion); err != nil {
-		fmt.Fprintf(d.Writer, "Failed to deploy : %q \n", err)
-	}
+	//if err := d.Context.Deployer.Deploy(d.Env, podVersion); err != nil {
+	//	fmt.Fprintf(d.Writer, "Failed to deploy : %q \n", err)
+	//}
+	stateStream := make(chan deployers.State)
+
+	go func() {
+		for {
+			state := <-stateStream
+			fmt.Fprintf(d.Writer, "%s : %d\n", state.Step, state.Progress)
+		}
+	}()
+	d.Context.Deployer.Deploy(d.Env, podVersion, stateStream)
 
 	for _, hook := range d.Context.Hooks {
 		//@TODO Add a logger and log error coming from hooks
