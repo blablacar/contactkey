@@ -1,6 +1,7 @@
 package deployers
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
@@ -8,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/remyLemeunier/contactkey/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -132,5 +134,31 @@ func TestListVcsVersions(t *testing.T) {
 	}
 }
 
-func TestNewDeployerGGN(t *testing.T) {
+func TestUpdate(t *testing.T) {
+	sts := States{}
+
+	ggnOutput, _ := os.Open("./testdata/already.stdout")
+	defer ggnOutput.Close()
+
+	ggnOutputReader := bufio.NewScanner(ggnOutput)
+	for ggnOutputReader.Scan() {
+		sts.updateStates(utils.VTClean(ggnOutputReader.Text()))
+	}
+
+	if len(sts) != 4 {
+		t.Errorf("Unexpected States : %q", sts)
+	}
+
+	stepFound := false
+	for _, s := range sts {
+		if s.Step == "[webhooks1] unit start" {
+			stepFound = true
+			if s.Progress != 100 {
+				t.Errorf("Unexpected unit start progress : %q", s.Progress)
+			}
+		}
+	}
+	if !stepFound {
+		t.Errorf("States is missing a step : %q", sts)
+	}
 }

@@ -1,6 +1,7 @@
 package deployers
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"os/exec"
@@ -12,6 +13,10 @@ import (
 )
 
 var execCommand = exec.Command
+
+func ggnfork(args ...string) *exec.Cmd {
+	return execCommand("/Users/olivierb/golang/src/github.com/blablacar/ggn/dist/ggn-v0-darwin-amd64/ggn", args...)
+}
 
 func ggn(args ...string) *exec.Cmd {
 	return execCommand("ggn", args...)
@@ -155,7 +160,7 @@ func (d *DeployerGgn) getGgnEnv(env string) (string, error) {
 	return val, nil
 }
 
-func (d *DeployerGgn) Deploy(env string, podVersion string) error {
+func (d *DeployerGgn) Deploy(env string, podVersion string, c chan State) error {
 	serviceAttrs := make(map[string]string)
 
 	ggnEnv, err := d.getGgnEnv(env)
@@ -169,13 +174,88 @@ func (d *DeployerGgn) Deploy(env string, podVersion string) error {
 		return err
 	}
 
-	ggnCmd := ggn(ggnEnv, d.Service, "update", "-A", string(serviceAttrsJSON))
-	stdOut, err := ggnCmd.CombinedOutput()
+	ggnCmd := ggn(ggnEnv, d.Service, "update", "-y", "-A", string(serviceAttrsJSON))
 	d.Log.WithFields(log.Fields{
 		"cmd": strings.Join(ggnCmd.Args, " "),
-		"out": string(stdOut),
-	}).Debug("Executing external command")
-	// stdOut, err := ggnCmd.CombinedOutput()
+	})
+	reader, err := utils.StreamCombinedOutput(ggnCmd)
+	if err != nil {
+		return err
+	}
 
+	scanner := bufio.NewScanner(reader)
+	//statuses := States{}
+	ggnCmd.Start()
+	for scanner.Scan() {
+		d.Log.Info(utils.VTClean(scanner.Text()))
+		state := extractState(utils.VTClean(scanner.Text()))
+		if state != (State{}) {
+			c <- state
+		}
+	}
+
+	ggnCmd.Wait()
 	return nil
+}
+
+func extractState(ggnOutput string) State {
+	s := State{}
+	unitUpdate := regexp.MustCompile(`Remote service is already up to date .* unit=([\w\d]+)`)
+	unitStart := regexp.MustCompile(`([\w\d]+) - Checking that unit is running.`)
+	unitStartDone := regexp.MustCompile(`([\w\d]+): Ok - Deployed on`)
+
+	if regexp.MustCompile(`Locking`).MatchString(ggnOutput) {
+		s.Step = "locking"
+		s.Progress = 100
+	} else if m := unitUpdate.FindStringSubmatch(ggnOutput); m != nil {
+		s.Step = fmt.Sprintf("[%s] unit updating", m[1])
+		s.Progress = 100
+	} else if m := unitStart.FindStringSubmatch(ggnOutput); m != nil {
+		s.Step = fmt.Sprintf("[%s] unit start", m[1])
+		s.Progress = 1
+	} else if m := unitStartDone.FindStringSubmatch(ggnOutput); m != nil {
+		s.Step = fmt.Sprintf("[%s] unit start", m[1])
+		s.Progress = 100
+	} else if regexp.MustCompile(`Unlocking`).MatchString(ggnOutput) {
+		s.Step = "unlocking"
+		s.Progress = 100
+	}
+	return s
+}
+
+func (sts *States) updateStates(ggnOutput string) {
+	unitUpdate := regexp.MustCompile(`Remote service is already up to date .* unit=([\w\d]+)`)
+	unitStart := regexp.MustCompile(`([\w\d]+) - Checking that unit is running.`)
+	unitStartDone := regexp.MustCompile(`([\w\d]+): Ok - Deployed on`)
+	s := State{}
+
+	if regexp.MustCompile(`Locking`).MatchString(ggnOutput) {
+		s.Step = "locking"
+		s.Progress = 100
+	} else if m := unitUpdate.FindStringSubmatch(ggnOutput); m != nil {
+		s.Step = fmt.Sprintf("[%s] unit updating", m[1])
+		s.Progress = 100
+	} else if m := unitStart.FindStringSubmatch(ggnOutput); m != nil {
+		s.Step = fmt.Sprintf("[%s] unit start", m[1])
+		s.Progress = 1
+	} else if m := unitStartDone.FindStringSubmatch(ggnOutput); m != nil {
+		s.Step = fmt.Sprintf("[%s] unit start", m[1])
+		s.Progress = 100
+	} else if regexp.MustCompile(`Unlocking`).MatchString(ggnOutput) {
+		s.Step = "unlocking"
+		s.Progress = 100
+	}
+
+	if s != (State{}) {
+		// update in place
+		for i, is := range *sts {
+			if is.Step == s.Step {
+				(*sts)[i] = s
+				return
+			}
+		}
+
+		// or append
+		*sts = append(*sts, s)
+	}
 }
