@@ -26,10 +26,15 @@ repositoryManager:
     url:        127.0.0.1
     repository: repository
     group:      group
+
 hooks:
   slack:
     url:   127.0.0.1
     token: token
+  newRelic:
+    url:    127.0.0.1
+    apiKey: "123"
+
 lockSystem:
   fileLock:
     filePath: /tmp

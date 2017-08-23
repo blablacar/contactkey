@@ -16,7 +16,7 @@ Contactkey is a Go command and its aim is to deploy services on different enviro
 ### Hooks
  * Slack
  * ExecCommand
- * NewRelic (to do)
+ * NewRelic
  * MailSender (to do)
 ### Lock System 
  * FileLock
@@ -67,6 +67,10 @@ hooks:                     # Define various hooks used in service manifest.
     url:   127.0.0.1      
     token: token          
 
+  newRelic:
+    url: https://api.newrelic.com
+    apiKey: "<your_api_key>"
+
 lockSystem:                # Define a lock system in order to avoid multiple command launch. (Not mandatory)
   fileLock:                # Currently we only have the lock by file.
     filePath: /tmp         # Path where the is going to be written.
@@ -91,7 +95,10 @@ repositoryManager:
 hooks:                     # Hooks we are going to call before and after.
   slack:                   # the deployment. (You can have several one)
     channel:   channel
-    stopOnError: false     # If an error occurs stop the deployment process (not mandatory default false)
+    stopOnError: false     # If an error occurs stop the deployment process (not mandatory, default: false)
+  newRelic:
+    applicationId: "<id>"
+    stopOnError: false     # If an error occurs stop the deployment process (not mandatory, default: false)
   execCommand:             # Execute a command before and after the deployment process.
     onPredeploy:           # Only execute before the deployment
       - { command: "ls", args: ["-lah"] } # args is not mandatory

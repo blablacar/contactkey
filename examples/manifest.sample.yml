@@ -18,6 +18,8 @@ repositoryManager:
 hooks:
   slack:
     channel:   channel
+  newRelic:
+    applicationId: "123"
   execCommand:
     onPredeploy:
       - { command: "ls", args: ["-lah"] }
