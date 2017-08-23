@@ -45,6 +45,11 @@ type StashConfig struct {
 	Sha1MaxSize int    `mapstructure:"sha1MaxSize"`
 }
 
+type NewRelicConfig struct {
+	Url    string `mapstructure:"url"`
+	ApiKey string `mapstructure:"apiKey"`
+}
+
 type RepositoryManager struct {
 	NexusConfig `mapstructure:"nexus"`
 }
@@ -56,7 +61,8 @@ type NexusConfig struct {
 }
 
 type HookConfig struct {
-	SlackConfig `mapstructure:"slack"`
+	SlackConfig    `mapstructure:"slack"`
+	NewRelicConfig `mapstructure:"newRelic"`
 }
 
 type SlackConfig struct {

@@ -48,12 +48,18 @@ type NexusManifest struct {
 
 type HookManifest struct {
 	SlackManifest       `mapstructure:"slack"`
+	NewRelicManifest    `mapstructure:"newRelic"`
 	ExecCommandManifest `mapstructure:"execCommand"`
 }
 
 type SlackManifest struct {
 	Channel     string `mapstructure:"channel"`
 	StopOnError bool   `mapstructure:"stopOnError"`
+}
+
+type NewRelicManifest struct {
+	ApplicationId string `mapstructure:"applicationId"`
+	StopOnError   bool   `mapstructure:"stopOnError"`
 }
 
 type ExecCommandManifest struct {

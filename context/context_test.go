@@ -45,8 +45,8 @@ func TestNewContext(t *testing.T) {
 		t.Errorf("Type should be *services.Nexus instead got %q", reflect.TypeOf(ctxt.RepositoryManager).String())
 	}
 
-	if len(ctxt.Hooks) != 2 {
-		t.Fatalf("Hooks length shound be 1 instead got %d", len(ctxt.Hooks))
+	if len(ctxt.Hooks) != 3 {
+		t.Fatalf("Unexpected Hooks length: %q", len(ctxt.Hooks))
 	}
 
 	if reflect.TypeOf(ctxt.Hooks[0]).String() != "*hooks.Slack" {
@@ -57,11 +57,14 @@ func TestNewContext(t *testing.T) {
 		t.Error("Exepected StopOnError from Slack to be false")
 	}
 
-	if reflect.TypeOf(ctxt.Hooks[1]).String() != "*hooks.ExecCommand" {
-		t.Fatalf("Type should be *hooks.ExecCommand instead got %q", reflect.TypeOf(ctxt.Hooks[1]).String())
+	if reflect.TypeOf(ctxt.Hooks[1]).String() != "*hooks.NewRelicClient" {
+		t.Fatalf("Type should be *hooks.NewRelicClient instead got %q", reflect.TypeOf(ctxt.Hooks[1]).String())
+	}
+	if reflect.TypeOf(ctxt.Hooks[2]).String() != "*hooks.ExecCommand" {
+		t.Fatalf("Type should be *hooks.ExecCommand instead got %q", reflect.TypeOf(ctxt.Hooks[2]).String())
 	}
 
-	if ctxt.Hooks[1].StopOnError() != true {
+	if ctxt.Hooks[2].StopOnError() != true {
 		t.Error("Exepected StopOnError from ExecCommand to be true")
 	}
 
