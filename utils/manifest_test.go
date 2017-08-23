@@ -30,8 +30,32 @@ func TestLoadManifest(t *testing.T) {
 		t.Errorf("channel in the SlackManifest not found got %q", manifest.SlackManifest.Channel)
 	}
 
-	if len(manifest.ExecCommandManifest.List) != 2 {
-		t.Errorf("list in the SlackManifest should have a len of 2 instead got %d", len(manifest.ExecCommandManifest.List))
+	if len(manifest.ExecCommandManifest.OnPreDeploy) != 1 {
+		t.Fatalf("OnPredDeploy in the ExecCommandManifest should have a len of 1 instead got %d", len(manifest.ExecCommandManifest.OnPreDeploy))
+	}
+
+	if len(manifest.ExecCommandManifest.OnPostDeploy) != 1 {
+		t.Fatalf("OnPostDeploy in the ExecCommandManifest should have a len of 1 instead got %d", len(manifest.ExecCommandManifest.OnPostDeploy))
+	}
+
+	if manifest.ExecCommandManifest.OnPreDeploy[0].Command != "ls" {
+		t.Errorf("The OnPreDeploy commant should be 'ls' instead got %d", manifest.ExecCommandManifest.OnPreDeploy[0].Command)
+	}
+
+	if len(manifest.ExecCommandManifest.OnPreDeploy[0].Args) != 1 {
+		t.Fatalf("Args len from OnPredDeploy in the ExecCommandManifest should have a len of 1 instead got %d", len(manifest.ExecCommandManifest.OnPreDeploy[0].Args))
+	}
+
+	if manifest.ExecCommandManifest.OnPreDeploy[0].Args[0] != "-lah" {
+		t.Errorf("Args from OnPreDeploy should have been -lah instead got %d", manifest.ExecCommandManifest.OnPreDeploy[0].Args[0])
+	}
+
+	if manifest.ExecCommandManifest.OnPostDeploy[0].Command != "cd /tmp" {
+		t.Errorf("The OnPostDeploy commant should be 'cd /tmp' instead got %d", manifest.ExecCommandManifest.OnPreDeploy[0].Command)
+	}
+
+	if len(manifest.ExecCommandManifest.OnPostDeploy[0].Args) != 0 {
+		t.Fatalf("Args len from OnPostDeploy in the ExecCommandManifest should have a len of 0 instead got %d", len(manifest.ExecCommandManifest.OnPostDeploy[0].Args))
 	}
 
 	if manifest.ExecCommandManifest.StopOnError != true {
