@@ -25,6 +25,7 @@ func (d *DeployerMockGgn) ListVcsVersions(env string) ([]string, error) {
 }
 
 func (d *DeployerMockGgn) Deploy(env string, podVersion string, c chan deployers.State) error {
+
 	c <- deployers.State{
 		Step:     "locking",
 		Progress: 100,
