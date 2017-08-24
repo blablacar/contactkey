@@ -14,10 +14,6 @@ import (
 
 var execCommand = exec.Command
 
-func ggnfork(args ...string) *exec.Cmd {
-	return execCommand("/Users/olivierb/golang/src/github.com/blablacar/ggn/dist/ggn-v0-darwin-amd64/ggn", args...)
-}
-
 func ggn(args ...string) *exec.Cmd {
 	return execCommand("ggn", args...)
 }
