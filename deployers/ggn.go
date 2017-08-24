@@ -184,7 +184,7 @@ func (d *DeployerGgn) Deploy(env string, podVersion string, c chan State) error 
 	ggnCmd.Start()
 	for scanner.Scan() {
 		d.Log.Info(utils.VTClean(scanner.Text()))
-		state := extractState(utils.VTClean(scanner.Text()))
+		state := ExtractState(utils.VTClean(scanner.Text()))
 		if state != (State{}) {
 			c <- state
 		}
@@ -194,64 +194,39 @@ func (d *DeployerGgn) Deploy(env string, podVersion string, c chan State) error 
 	return nil
 }
 
-func extractState(ggnOutput string) State {
+func ExtractState(ggnOutput string) State {
 	s := State{}
 	unitUpdate := regexp.MustCompile(`Remote service is already up to date .* unit=([\w\d]+)`)
 	unitStart := regexp.MustCompile(`([\w\d]+) - Checking that unit is running.`)
 	unitStartDone := regexp.MustCompile(`([\w\d]+): Ok - Deployed on`)
+	unitHealthy := regexp.MustCompile(`\[ZkCheck\].* ([\w\d]+) .* - Checking that service adds key in zookeeper`)
+	unitHealthyDone := regexp.MustCompile(`\[ZkCheck\].* ([\w\d]+) - .*: Ok`)
 
 	if regexp.MustCompile(`Locking`).MatchString(ggnOutput) {
-		s.Step = "locking"
+		s.Step = "locking deployment"
 		s.Progress = 100
 	} else if m := unitUpdate.FindStringSubmatch(ggnOutput); m != nil {
-		s.Step = fmt.Sprintf("[%s] unit updating", m[1])
+		s.Step = fmt.Sprintf("[%s] updating service in fleet", m[1])
 		s.Progress = 100
 	} else if m := unitStart.FindStringSubmatch(ggnOutput); m != nil {
-		s.Step = fmt.Sprintf("[%s] unit start", m[1])
+		s.Step = fmt.Sprintf("[%s] starting instance", m[1])
 		s.Progress = 1
 	} else if m := unitStartDone.FindStringSubmatch(ggnOutput); m != nil {
-		s.Step = fmt.Sprintf("[%s] unit start", m[1])
+		s.Step = fmt.Sprintf("[%s] starting instance", m[1])
+		s.Progress = 100
+	} else if m := unitHealthy.FindStringSubmatch(ggnOutput); m != nil {
+		s.Step = fmt.Sprintf("[%s] checking instance health", m[1])
+		s.Progress = 1
+	} else if m := unitHealthyDone.FindStringSubmatch(ggnOutput); m != nil {
+		s.Step = fmt.Sprintf("[%s] checking instance health", m[1])
 		s.Progress = 100
 	} else if regexp.MustCompile(`Unlocking`).MatchString(ggnOutput) {
-		s.Step = "unlocking"
+		s.Step = "unlocking deployment"
+		s.Progress = 100
+	} else if regexp.MustCompile(`Victory !`).MatchString(ggnOutput) {
+		s.Step = "victory"
 		s.Progress = 100
 	}
+
 	return s
-}
-
-func (sts *States) updateStates(ggnOutput string) {
-	unitUpdate := regexp.MustCompile(`Remote service is already up to date .* unit=([\w\d]+)`)
-	unitStart := regexp.MustCompile(`([\w\d]+) - Checking that unit is running.`)
-	unitStartDone := regexp.MustCompile(`([\w\d]+): Ok - Deployed on`)
-	s := State{}
-
-	if regexp.MustCompile(`Locking`).MatchString(ggnOutput) {
-		s.Step = "locking"
-		s.Progress = 100
-	} else if m := unitUpdate.FindStringSubmatch(ggnOutput); m != nil {
-		s.Step = fmt.Sprintf("[%s] unit updating", m[1])
-		s.Progress = 100
-	} else if m := unitStart.FindStringSubmatch(ggnOutput); m != nil {
-		s.Step = fmt.Sprintf("[%s] unit start", m[1])
-		s.Progress = 1
-	} else if m := unitStartDone.FindStringSubmatch(ggnOutput); m != nil {
-		s.Step = fmt.Sprintf("[%s] unit start", m[1])
-		s.Progress = 100
-	} else if regexp.MustCompile(`Unlocking`).MatchString(ggnOutput) {
-		s.Step = "unlocking"
-		s.Progress = 100
-	}
-
-	if s != (State{}) {
-		// update in place
-		for i, is := range *sts {
-			if is.Step == s.Step {
-				(*sts)[i] = s
-				return
-			}
-		}
-
-		// or append
-		*sts = append(*sts, s)
-	}
 }
