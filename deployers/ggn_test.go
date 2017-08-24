@@ -8,7 +8,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -136,10 +135,9 @@ func TestListVcsVersions(t *testing.T) {
 func TestExtractState(t *testing.T) {
 	s := State{}
 
-	s = ExtractState("[SystemdCheck][webhooks] webhooks2 - Checking that service adds key in zookeeper")
+	s = ExtractState("[ZkCheck][webhooks] webhooks2 /services/wehooks - Checking that service adds key in zookeeper")
 	if s.Step != "[webhooks2] checking instance health" {
 		t.Errorf("Unexpected step : %q", s.Step)
 	}
 	s = ExtractState("[ZkCheck][webhooks] webhooks2 - /services/webhooks: Ok")
-	spew.Dump(s)
 }
