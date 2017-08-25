@@ -111,15 +111,13 @@ func (d *Deploy) execute() {
 		}
 	}
 
-	//if err := d.Context.Deployer.Deploy(d.Env, podVersion); err != nil {
-	//	fmt.Fprintf(d.Writer, "Failed to deploy : %q \n", err)
-	//}
 	stateStream := make(chan deployers.State)
-
 	go func() {
 		for {
 			state := <-stateStream
-			fmt.Fprintf(d.Writer, "%s : %d\n", state.Step, state.Progress)
+			//fmt.Fprintf(d.Writer, "%s : %d\n", state.Step, state.Progress)
+			utils.RenderProgres(d.Writer, state.Step, state.Progress)
+
 		}
 	}()
 	d.Context.Deployer.Deploy(d.Env, podVersion, stateStream)

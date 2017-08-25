@@ -180,10 +180,9 @@ func (d *DeployerGgn) Deploy(env string, podVersion string, c chan State) error 
 	}
 
 	scanner := bufio.NewScanner(reader)
-	//statuses := States{}
 	ggnCmd.Start()
 	for scanner.Scan() {
-		d.Log.Info(utils.VTClean(scanner.Text()))
+		d.Log.Debug(utils.VTClean(scanner.Text()))
 		state := ExtractState(utils.VTClean(scanner.Text()))
 		if state != (State{}) {
 			c <- state
