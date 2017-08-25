@@ -43,14 +43,26 @@ func (c NewRelicClient) StopOnError() bool {
 	return c.Stop
 }
 
-func NewNewRelicClient(cfg utils.NewRelicConfig, manifest utils.NewRelicManifest, logger *log.Logger) *NewRelicClient {
+func NewNewRelicClient(cfg utils.NewRelicConfig, manifest utils.NewRelicManifest, logger *log.Logger) (*NewRelicClient, error) {
+	if cfg.Url == "" {
+		return nil, errors.New("You need to define an url for newrelic in the config.")
+	}
+
+	if cfg.ApiKey == "" {
+		return nil, errors.New("You need to define an apiKey for newrelic in the config.")
+	}
+
+	if manifest.ApplicationId == "" {
+		return nil, errors.New("You need to define an applicationId for newrelic in the manifest.")
+	}
+
 	return &NewRelicClient{
 		Url:           cfg.Url,
 		ApiKey:        cfg.ApiKey,
 		ApplicationId: manifest.ApplicationId,
 		Log:           logger,
 		Stop:          manifest.StopOnError,
-	}
+	}, nil
 }
 
 // https://rpm.newrelic.com/api/explore/application_deployments/create

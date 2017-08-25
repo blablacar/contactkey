@@ -1,8 +1,6 @@
 package commands
 
 import (
-	"os"
-
 	"fmt"
 
 	"github.com/remyLemeunier/contactkey/utils"
@@ -15,19 +13,19 @@ func Execute() {
 	configFile, err := utils.ReadFile(utils.DefaultHome)
 	if err != nil {
 		fmt.Printf("Failed to read default file: %q", err)
-		os.Exit(1)
+		return
 	}
 
 	cfg, err := utils.LoadConfig(configFile)
 	if err != nil {
 		fmt.Printf("Failed load config: %q", err)
-		os.Exit(1)
+		return
 	}
 
 	services, err := cfg.DiscoverServices()
 	if err != nil {
 		fmt.Printf("Failed to find services: %q", err)
-		os.Exit(1)
+		return
 	}
 
 	rootCmd := &cobra.Command{
@@ -63,6 +61,6 @@ func Execute() {
 
 	err = rootCmd.Execute()
 	if err != nil {
-		os.Exit(1)
+		fmt.Println(err)
 	}
 }

@@ -55,7 +55,31 @@ type StashResponse struct {
 	} `json:"values"`
 }
 
-func NewStash(cfg utils.StashConfig, manifest utils.StashManifest, logger *log.Logger) *Stash {
+func NewStash(cfg utils.StashConfig, manifest utils.StashManifest, logger *log.Logger) (*Stash, error) {
+	if cfg.User == "" {
+		return nil, errors.New("You need to define a user for stash in the config.")
+	}
+
+	if cfg.Password == "" {
+		return nil, errors.New("You need to define an password for stash in the config.")
+	}
+
+	if cfg.Url == "" {
+		return nil, errors.New("You need to define an url for stash in the config.")
+	}
+
+	if manifest.Repository == "" {
+		return nil, errors.New("You need to define a repository for stash in the manifest.")
+	}
+
+	if manifest.Project == "" {
+		return nil, errors.New("You need to define a project for stash in the manifest.")
+	}
+
+	if manifest.Branch == "" {
+		return nil, errors.New("You need to define a branch for stash in the manifest.")
+	}
+
 	return &Stash{
 		Repository:  manifest.Repository,
 		Project:     manifest.Project,
@@ -65,7 +89,7 @@ func NewStash(cfg utils.StashConfig, manifest utils.StashManifest, logger *log.L
 		Branch:      manifest.Branch,
 		sha1MaxSize: cfg.Sha1MaxSize,
 		Log:         logger,
-	}
+	}, nil
 }
 
 func (s Stash) RetrieveSha1ForProject(branch string) (string, error) {

@@ -3,7 +3,6 @@ package commands
 import (
 	"errors"
 	"fmt"
-	"os"
 	"path"
 
 	"github.com/remyLemeunier/contactkey/context"
@@ -19,7 +18,10 @@ func makeInstance(cfg *utils.Config, name string, service string, env string) (C
 	}
 
 	cckCommand := typeRegistry[name]
-	fill(cckCommand, cfg, service, env)
+	err := fill(cckCommand, cfg, service, env)
+	if err != nil {
+		return nil, err
+	}
 
 	return cckCommand, nil
 }
@@ -36,27 +38,26 @@ type CckCommand interface {
 	execute()
 }
 
-func fill(cck CckCommand, config *utils.Config, service string, env string) {
+func fill(cck CckCommand, config *utils.Config, service string, env string) error {
 	filePath := path.Join(config.WorkPath, fmt.Sprintf("%s.yml", service))
 	manifestFile, err := utils.ReadFile(filePath)
 	if err != nil {
-		fmt.Printf("Unable to read file: %q with err: %q", filePath, err)
-		os.Exit(1)
+		return errors.New(fmt.Sprintf("Unable to read file: %q with err: %q", filePath, err))
 	}
 
 	manifest, err := utils.LoadManifest(manifestFile)
 	if err != nil {
-		fmt.Printf("LoadConfig failed with err %q", err)
-		os.Exit(1)
+		return errors.New(fmt.Sprintf("LoadConfig failed with err %q", err))
 	}
 
 	ctxt, err := context.NewContext(config, manifest)
 	if err != nil {
-		fmt.Printf("NewContext failed with err %q", err)
-		os.Exit(1)
+		return errors.New(fmt.Sprintf("NewContext failed with err %q", err))
 	}
 
 	cck.fill(ctxt, service, env)
+
+	return nil
 }
 
 func execute(cck CckCommand) {
