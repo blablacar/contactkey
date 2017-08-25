@@ -32,10 +32,13 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 	ctx.Log.SetLevel(loglevel)
 
 	if manifest.DeployerManifest.DeployerGgnManifest != (utils.DeployerGgnManifest{}) {
-		ctx.Deployer = deployers.NewDeployerGgn(
+		ctx.Deployer, err = deployers.NewDeployerGgn(
 			cfg.DeployerConfig.DeployerGgnConfig,
 			manifest.DeployerManifest.DeployerGgnManifest,
 			ctx.Log)
+		if err != nil {
+			return nil, err
+		}
 	} else {
 		return nil, fmt.Errorf(
 			"Deployer unknown : %q",
@@ -44,11 +47,13 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 	}
 
 	if manifest.VcsManifest.StashManifest != (utils.StashManifest{}) {
-		ctx.Vcs = services.NewStash(
+		ctx.Vcs, err = services.NewStash(
 			cfg.VcsConfig.StashConfig,
 			manifest.VcsManifest.StashManifest,
 			ctx.Log)
-
+		if err != nil {
+			return nil, err
+		}
 	} else {
 		return nil, fmt.Errorf(
 			"Vcs unknown : %q",
@@ -57,25 +62,40 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 	}
 
 	if manifest.RepositoryManagerManifest.NexusManifest != (utils.NexusManifest{}) {
-		ctx.RepositoryManager = services.NewNexus(
+		ctx.RepositoryManager, err = services.NewNexus(
 			cfg.RepositoryManager.NexusConfig,
 			manifest.RepositoryManagerManifest.NexusManifest,
 			ctx.Log)
+		if err != nil {
+			return nil, err
+		}
 	} else {
 		return nil, fmt.Errorf("Repository manager not found, You should check in your manifest if it's well formated.")
 	}
 
 	if manifest.HookManifest.SlackManifest != (utils.SlackManifest{}) {
-		ctx.Hooks = append(ctx.Hooks, hooks.NewSlack(
+		slack, err := hooks.NewSlack(
 			cfg.HookConfig.SlackConfig,
 			manifest.HookManifest.SlackManifest,
-			ctx.Log))
+			ctx.Log)
+
+		if err != nil {
+			return nil, err
+		}
+
+		ctx.Hooks = append(ctx.Hooks, slack)
 	}
 	if manifest.HookManifest.NewRelicManifest != (utils.NewRelicManifest{}) {
-		ctx.Hooks = append(ctx.Hooks, hooks.NewNewRelicClient(
+		newRelic, err := hooks.NewNewRelicClient(
 			cfg.HookConfig.NewRelicConfig,
 			manifest.HookManifest.NewRelicManifest,
-			ctx.Log))
+			ctx.Log)
+
+		if err != nil {
+			return nil, err
+		}
+
+		ctx.Hooks = append(ctx.Hooks, newRelic)
 	}
 
 	if len(manifest.HookManifest.ExecCommandManifest.OnPreDeploy) > 0 || len(manifest.HookManifest.ExecCommandManifest.OnPostDeploy) > 0 {
@@ -85,7 +105,11 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 	}
 
 	if cfg.LockSystemConfig.FileLockConfig != (utils.FileLockConfig{}) {
-		ctx.LockSystem = utils.NewFileLock(cfg.LockSystemConfig.FileLockConfig)
+		ctx.LockSystem, err = utils.NewFileLock(cfg.LockSystemConfig.FileLockConfig)
+
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return ctx, nil

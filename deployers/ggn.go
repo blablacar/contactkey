@@ -8,6 +8,8 @@ import (
 	"regexp"
 	"strings"
 
+	"errors"
+
 	"github.com/remyLemeunier/contactkey/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -29,7 +31,19 @@ type DeployerGgn struct {
 
 func NewDeployerGgn(cfg utils.DeployerGgnConfig,
 	manifest utils.DeployerGgnManifest,
-	logger *log.Logger) *DeployerGgn {
+	logger *log.Logger) (*DeployerGgn, error) {
+	if manifest.Service == "" {
+		return nil, errors.New("You need to define a service name for ggn in the manifest.")
+	}
+
+	if manifest.Pod == "" {
+		return nil, errors.New("You need to define a pod name for ggn in the manifest.")
+	}
+
+	if len(cfg.Environments) == 0 {
+		return nil, errors.New("You need to define at least a pair of env for ggn in the config(Array between cck env and ggn env).")
+	}
+
 	return &DeployerGgn{
 		WorkPath:     cfg.WorkPath,
 		Service:      manifest.Service,
@@ -37,7 +51,7 @@ func NewDeployerGgn(cfg utils.DeployerGgnConfig,
 		Environments: cfg.Environments,
 		Log:          logger,
 		VcsRegexp:    cfg.VcsRegexp,
-	}
+	}, nil
 }
 
 func (d *DeployerGgn) listUnits(env string) ([]string, error) {

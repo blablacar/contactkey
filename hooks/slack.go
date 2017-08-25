@@ -18,14 +18,26 @@ type Slack struct {
 	Stop    bool
 }
 
-func NewSlack(cfg utils.SlackConfig, manifest utils.SlackManifest, logger *log.Logger) *Slack {
+func NewSlack(cfg utils.SlackConfig, manifest utils.SlackManifest, logger *log.Logger) (*Slack, error) {
+	if cfg.Url == "" {
+		return nil, errors.New("You need to define an url for Slack in the config.")
+	}
+
+	if cfg.Token == "" {
+		return nil, errors.New("You need to define a token for Slack in the config.")
+	}
+
+	if manifest.Channel == "" {
+		return nil, errors.New("You need to define a channel for Slack in the manifest.")
+	}
+
 	return &Slack{
 		Url:     cfg.Url,
 		Token:   cfg.Token,
 		Channel: manifest.Channel,
 		Log:     logger,
 		Stop:    manifest.StopOnError,
-	}
+	}, nil
 }
 
 // @TODO Later we could pass directly messages and use the go templater instead.

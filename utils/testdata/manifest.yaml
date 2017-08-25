@@ -3,9 +3,10 @@ manifestVersion: v1
 deployment:
   ggn:
     pod: pod-webhooks
+    service: webhooks
 versionControlSystem:
-  branch: master
   stash:
+    branch: master
     repository: repository
     project: project
 repositoryManager:

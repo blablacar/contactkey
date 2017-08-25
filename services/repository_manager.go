@@ -34,14 +34,30 @@ type NexusResponse struct {
 	} `xml:"versioning"`
 }
 
-func NewNexus(cfg utils.NexusConfig, manifest utils.NexusManifest, logger *log.Logger) *Nexus {
+func NewNexus(cfg utils.NexusConfig, manifest utils.NexusManifest, logger *log.Logger) (*Nexus, error) {
+	if cfg.Url == "" {
+		return nil, errors.New("You need to define an url for nexus in the config.")
+	}
+
+	if cfg.Repository == "" {
+		return nil, errors.New("You need to define a repository for nexus in the config.")
+	}
+
+	if cfg.Group == "" {
+		return nil, errors.New("You need to define a group for nexus in the config.")
+	}
+
+	if manifest.Artifact == "" {
+		return nil, errors.New("You need to define an artifact for nexus in the manifest.")
+	}
+
 	return &Nexus{
 		Url:        cfg.Url,
 		Repository: cfg.Repository,
 		Group:      cfg.Group,
 		Artifact:   manifest.Artifact,
 		Log:        logger,
-	}
+	}, nil
 }
 
 // If no sha1 is given to this function

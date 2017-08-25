@@ -6,8 +6,8 @@ deployment:
     pod: pod-webhooks
 
 versionControlSystem:
-  branch: master
   stash:
+    branch: master
     repository: repository
     project: project
 

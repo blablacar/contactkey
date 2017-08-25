@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -13,10 +14,14 @@ type Lock interface {
 	Unlock(env string, service string) error
 }
 
-func NewFileLock(config FileLockConfig) *FileLock {
+func NewFileLock(config FileLockConfig) (*FileLock, error) {
+	if config.FilePath == "" {
+		return nil, errors.New("You need to define a filePath for fileLock in the config.")
+	}
+
 	return &FileLock{
 		config.FilePath,
-	}
+	}, nil
 }
 
 type FileLock struct {

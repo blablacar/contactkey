@@ -85,8 +85,8 @@ deployment:                # Define the deployment type we are going to use
     pod: pod-webhooks      # podName used in ggn
     service: webhooks      # service used in ggn
 versionControlSystem:      
-  branch: master           # The default "stable" branch we usually deploy
   stash:                   # Version control system used for the service. (Only one) 
+    branch: master         # The default "stable" branch we usually deploy
     repository: repository 
     project: project       
 repositoryManager:         
