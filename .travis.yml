@@ -4,6 +4,7 @@ go:
   - 1.8
 
 install:
+  - sudo apt-get install -y --force-yes upx
   - go get -u github.com/golang/dep/cmd/dep
   - dep ensure
 
