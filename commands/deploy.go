@@ -14,9 +14,11 @@ import (
 )
 
 var userName = "Mister Robot"
+var force = false
 
 func init() {
 	deployCmd.PersistentFlags().StringVar(&branch, "branch", "", "Change the branch from the default one.")
+	deployCmd.PersistentFlags().BoolVar(&force, "force", false, "Force the deployement, even if already up to date")
 }
 
 var deployCmd = &cobra.Command{
@@ -67,7 +69,7 @@ func (d *Deploy) execute() {
 	// If the branch is null it will use the default one.
 	sha1ToDeploy, err := d.Context.Vcs.RetrieveSha1ForProject(branch)
 	if err != nil {
-		fmt.Fprintf(d.Writer, "Failed to retrieve version from service(%q): %q \n", d.Service, err)
+		fmt.Fprintf(d.Writer, "Failed to retrieve source changes for %q : %q \n", d.Service, err)
 		return
 	}
 
@@ -77,11 +79,11 @@ func (d *Deploy) execute() {
 		return
 	}
 
-	//deployedVersions, err := d.Context.Deployer.ListVcsVersions(d.Env)
-	//if err != nil {
-	//	fmt.Fprintf(d.Writer, "Failed to retrieve DEPLOYED version from service(%q) in env %q: %q", d.Service, d.Env, err)
-	//	return
-	//}
+	deployedVersions, err := d.Context.Deployer.ListVcsVersions(d.Env)
+	if err != nil {
+		fmt.Fprintf(d.Writer, "Failed to retrieve DEPLOYED version from service(%q) in env %q: %q", d.Service, d.Env, err)
+		return
+	}
 
 	if podVersion == "" {
 		fmt.Fprintf(d.Writer, "We have not found the pod version with the the sha1 %q \n"+
@@ -89,17 +91,17 @@ func (d *Deploy) execute() {
 		return
 	}
 
-	//needToDeploy := false
-	//for _, deployedVersion := range deployedVersions {
-	//	if deployedVersion != sha1ToDeploy {
-	//		needToDeploy = true
-	//	}
-	//}
+	needToDeploy := force
+	for _, deployedVersion := range deployedVersions {
+		if deployedVersion != sha1ToDeploy {
+			needToDeploy = true
+		}
+	}
 
-	//if needToDeploy == false {
-	//	fmt.Fprintf(d.Writer, "Version %q is already deployed.", sha1ToDeploy)
-	//	return
-	//}
+	if needToDeploy == false {
+		fmt.Fprintf(d.Writer, "Version %q is already deployed.", sha1ToDeploy)
+		return
+	}
 
 	fmt.Fprintf(d.Writer, "Going to deploy pod version %q \n", podVersion)
 	for _, hook := range d.Context.Hooks {
