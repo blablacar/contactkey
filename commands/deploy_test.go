@@ -17,8 +17,8 @@ func TestExecute(t *testing.T) {
 	out := new(bytes.Buffer)
 	d := &Deploy{
 		Context: &context.Context{
-			Deployer:          &DeployerMockGgn{},
-			Vcs:               &SourcesMock{},
+			Deployer: &DeployerMockGgn{},
+			Vcs:      &SourcesMock{},
 			Binaries: &BinariesMock{},
 		},
 		Writer: out,
@@ -28,7 +28,7 @@ func TestExecute(t *testing.T) {
 		t.Errorf("Unexpected stdout : %q", out)
 	}
 
-	if !regexp.MustCompile(`locking : 100`).MatchString(out.String()) {
+	if !regexp.MustCompile(`locking`).MatchString(out.String()) {
 		t.Errorf("Stdout is missing locking step : %q", out)
 	}
 
