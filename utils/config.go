@@ -19,7 +19,7 @@ type Config struct {
 	ScreenMandatory    bool
 	DeployerConfig     `mapstructure:"deployers"`
 	VcsConfig          `mapstructure:"sources"`
-	Binaries  `mapstructure:"binaries"`
+	Binaries           `mapstructure:"binaries"`
 	HookConfig         `mapstructure:"hooks"`
 	LockSystemConfig   `mapstructure:"lockSystem"`
 }
