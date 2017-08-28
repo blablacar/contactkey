@@ -8,10 +8,10 @@ import (
 )
 
 type Manifest struct {
-	DeployerManifest          `mapstructure:"deployment"`
-	VcsManifest               `mapstructure:"sources"`
+	DeployerManifest `mapstructure:"deployment"`
+	VcsManifest      `mapstructure:"sources"`
 	BinariesManifest `mapstructure:"binaries"`
-	HookManifest              `mapstructure:"hooks"`
+	HookManifest     `mapstructure:"hooks"`
 }
 
 type VcsManifest struct {

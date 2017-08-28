@@ -11,13 +11,13 @@ import (
 )
 
 type Context struct {
-	Deployer          deployers.Deployer
-	Vcs               services.Sources
-	Binaries services.Binaries
-	Hooks             []hooks.Hooks
-	LockSystem        utils.Lock
-	Log               *log.Logger
-	ScreenMandatory   bool
+	Deployer        deployers.Deployer
+	Vcs             services.Sources
+	Binaries        services.Binaries
+	Hooks           []hooks.Hooks
+	LockSystem      utils.Lock
+	Log             *log.Logger
+	ScreenMandatory bool
 }
 
 func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
