@@ -106,6 +106,10 @@ func (d *DeployerGgn) buildVersionRegexp() *regexp.Regexp {
 	return regexp.MustCompile(fmt.Sprintf(`%s_aci-\S+:(\S+)`, d.Pod))
 }
 
+func (d *DeployerGgn) InstanceState() string {
+	return ""
+}
+
 func (d *DeployerGgn) ListVersions(env string) (map[string]string, error) {
 	ggnEnv, err := d.getGgnEnv(env)
 	if err != nil {
