@@ -41,8 +41,8 @@ func TestNewContext(t *testing.T) {
 		t.Errorf("Type should be *services.Stash instead got %q", reflect.TypeOf(ctxt.Vcs).String())
 	}
 
-	if reflect.TypeOf(ctxt.RepositoryManager).String() != "*services.Nexus" {
-		t.Errorf("Type should be *services.Nexus instead got %q", reflect.TypeOf(ctxt.RepositoryManager).String())
+	if reflect.TypeOf(ctxt.Binaries).String() != "*services.Nexus" {
+		t.Errorf("Type should be *services.Nexus instead got %q", reflect.TypeOf(ctxt.Binaries).String())
 	}
 
 	if len(ctxt.Hooks) != 3 {

@@ -18,8 +18,8 @@ func TestExecute(t *testing.T) {
 	d := &Deploy{
 		Context: &context.Context{
 			Deployer:          &DeployerMockGgn{},
-			Vcs:               &VCSMock{},
-			RepositoryManager: &RepositoryManagerMock{},
+			Vcs:               &SourcesMock{},
+			Binaries: &BinariesMock{},
 		},
 		Writer: out,
 	}

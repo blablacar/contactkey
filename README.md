@@ -4,7 +4,7 @@ Contactkey is a Go command and its aim is to deploy services on different enviro
 
 ## Deployment Flow
 ![this](https://docs.google.com/drawings/d/1N7mgky_Dq3KWrT_gRxR4iwxGjCDY6rbgc455mJgEMtA/pub?w=594&h=1155)
-# Deployers, VCS, Repository Manager, Hooks, Lock System
+# Deployers, Sources, Repository Manager, Hooks, Lock System
 ### Deployers
  * GGN 
  * kubernetes (to do) 
@@ -26,7 +26,7 @@ Contactkey is a Go command and its aim is to deploy services on different enviro
 ## Commands
 ```bash
 cck deploy environment service    Deploy the service in an environment
-cck diff environment service      Diff between what's currently deployed and what's going to be deployed (VCS)
+cck diff environment service      Diff between what's currently deployed and what's going to be deployed (Sources)
 cck list environment service      List versions of the service in an environment
 cck rollback environment service  Rollback the service in an environment
 ```
@@ -49,14 +49,14 @@ deployers:                 # Define the various deployers used in service manife
       preprod: staging    
       prod:    production 
 
-versionControlSystem:      # Define various version control system used in service manifest.
+sources:      # Define various version control system used in service manifest.
   stash:                   # Currently we have only Stash supported. 
     user:        user     
     password:    password 
     url:         url       
     sha1MaxSize: 2         # Cut a sha1 if it's too long. (E.g: abcd => ab) (Not mendatory) 
 
-repositoryManager:         # Define various repository manager used in service manifest. 
+binaries:         # Define various repository manager used in service manifest. 
   nexus:                   # Currently we have only Nexus supported. 
     url:        127.0.0.1  
     repository: repository 
@@ -84,12 +84,12 @@ deployment:                # Define the deployment type we are going to use
   ggn:                     # for this service.
     pod: pod-webhooks      # podName used in ggn
     service: webhooks      # service used in ggn
-versionControlSystem:      
+sources:      
   stash:                   # Version control system used for the service. (Only one) 
     branch: master         # The default "stable" branch we usually deploy
     repository: repository 
     project: project       
-repositoryManager:         
+binaries:         
   nexus:                   # Repository manager used for the service. (Only one)
     artifact: pod-webhooks 
 hooks:                     # Hooks we are going to call before and after.

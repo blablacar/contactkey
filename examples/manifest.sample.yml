@@ -5,13 +5,13 @@ deployment:
     service: webhooks
     pod: pod-webhooks
 
-versionControlSystem:
+sources:
   stash:
     branch: master
     repository: repository
     project: project
 
-repositoryManager:
+binaries:
   nexus:
     artifact: pod-webhooks
 
