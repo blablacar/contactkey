@@ -98,6 +98,10 @@ func (d *Deploy) execute() {
 		}
 	}
 
+	if len(deployedVersions) == 0 {
+		needToDeploy = true
+	}
+
 	if needToDeploy == false {
 		fmt.Fprintf(d.Writer, "Version %q is already deployed.", sha1ToDeploy)
 		return
