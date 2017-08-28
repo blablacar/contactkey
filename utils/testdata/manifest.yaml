@@ -4,12 +4,12 @@ deployment:
   ggn:
     pod: pod-webhooks
     service: webhooks
-versionControlSystem:
+sources:
   stash:
     branch: master
     repository: repository
     project: project
-repositoryManager:
+binaries:
   nexus:
     artifact: pod-webhooks
 hooks:

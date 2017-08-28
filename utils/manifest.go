@@ -9,8 +9,8 @@ import (
 
 type Manifest struct {
 	DeployerManifest          `mapstructure:"deployment"`
-	VcsManifest               `mapstructure:"versionControlSystem"`
-	RepositoryManagerManifest `mapstructure:"repositoryManager"`
+	VcsManifest               `mapstructure:"sources"`
+	BinariesManifest `mapstructure:"binaries"`
 	HookManifest              `mapstructure:"hooks"`
 }
 
@@ -38,7 +38,7 @@ type DeployerHelmManifest struct {
 	ReleaseName string `mapstructure:"release"`
 }
 
-type RepositoryManagerManifest struct {
+type BinariesManifest struct {
 	NexusManifest `mapstructure:"nexus"`
 }
 

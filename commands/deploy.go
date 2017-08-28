@@ -71,7 +71,7 @@ func (d *Deploy) execute() {
 		return
 	}
 
-	podVersion, err := d.Context.RepositoryManager.RetrievePodVersion(sha1ToDeploy)
+	podVersion, err := d.Context.Binaries.RetrievePodVersion(sha1ToDeploy)
 	if err != nil {
 		fmt.Fprintf(d.Writer, "Failed to retrieve pod version: %q \n", err)
 		return

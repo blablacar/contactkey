@@ -12,8 +12,8 @@ import (
 
 type Context struct {
 	Deployer          deployers.Deployer
-	Vcs               services.VersionControlSystem
-	RepositoryManager services.RepositoryManager
+	Vcs               services.Sources
+	Binaries services.Binaries
 	Hooks             []hooks.Hooks
 	LockSystem        utils.Lock
 	Log               *log.Logger
@@ -61,10 +61,10 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 		)
 	}
 
-	if manifest.RepositoryManagerManifest.NexusManifest != (utils.NexusManifest{}) {
-		ctx.RepositoryManager, err = services.NewNexus(
-			cfg.RepositoryManager.NexusConfig,
-			manifest.RepositoryManagerManifest.NexusManifest,
+	if manifest.BinariesManifest.NexusManifest != (utils.NexusManifest{}) {
+		ctx.Binaries, err = services.NewNexus(
+			cfg.Binaries.NexusConfig,
+			manifest.BinariesManifest.NexusManifest,
 			ctx.Log)
 		if err != nil {
 			return nil, err

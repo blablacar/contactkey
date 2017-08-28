@@ -18,8 +18,8 @@ type Config struct {
 	GlobalEnvironments []string
 	ScreenMandatory    bool
 	DeployerConfig     `mapstructure:"deployers"`
-	VcsConfig          `mapstructure:"versionControlSystem"`
-	RepositoryManager  `mapstructure:"repositoryManager"`
+	VcsConfig          `mapstructure:"sources"`
+	Binaries  `mapstructure:"binaries"`
 	HookConfig         `mapstructure:"hooks"`
 	LockSystemConfig   `mapstructure:"lockSystem"`
 }
@@ -50,7 +50,7 @@ type NewRelicConfig struct {
 	ApiKey string `mapstructure:"apiKey"`
 }
 
-type RepositoryManager struct {
+type Binaries struct {
 	NexusConfig `mapstructure:"nexus"`
 }
 

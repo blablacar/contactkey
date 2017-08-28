@@ -34,19 +34,19 @@ func (d *DeployerMockGgn) Deploy(env string, podVersion string, c chan deployers
 	return nil
 }
 
-type VCSMock struct {
+type SourcesMock struct {
 }
 
-func (v VCSMock) RetrieveSha1ForProject(branch string) (string, error) {
+func (v SourcesMock) RetrieveSha1ForProject(branch string) (string, error) {
 	return "vb0f586a", nil
 }
 
-func (v VCSMock) Diff(deployedSha1 string, sha1ToDeploy string) (*services.Changes, error) {
+func (v SourcesMock) Diff(deployedSha1 string, sha1ToDeploy string) (*services.Changes, error) {
 	return &services.Changes{}, nil
 }
 
-type RepositoryManagerMock struct{}
+type BinariesMock struct{}
 
-func (r RepositoryManagerMock) RetrievePodVersion(sha1 string) (string, error) {
+func (r BinariesMock) RetrievePodVersion(sha1 string) (string, error) {
 	return "26.1501244191-vb0f586a", nil
 }

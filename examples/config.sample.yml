@@ -10,14 +10,14 @@ deployers:
     environments:
       preprod: pp
 
-versionControlSystem:
+sources:
   stash:
     user:        user
     password:    password
     url:         url
     sha1MaxSize: 7
 
-repositoryManager:
+binaries:
   nexus:
     url:        127.0.0.1
     repository: repository

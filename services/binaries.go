@@ -12,7 +12,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type RepositoryManager interface {
+type Binaries interface {
 	RetrievePodVersion(sha1 string) (string, error)
 }
 

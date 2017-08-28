@@ -13,7 +13,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type VersionControlSystem interface {
+type Sources interface {
 	RetrieveSha1ForProject(branch string) (string, error)
 	Diff(deployedSha1 string, sha1ToDeploy string) (*Changes, error)
 }
