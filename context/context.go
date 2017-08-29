@@ -16,26 +16,23 @@ type Context struct {
 	Binaries        services.Binaries
 	Hooks           []hooks.Hooks
 	LockSystem      utils.Lock
-	Log             *log.Logger
 	ScreenMandatory bool
 }
 
 func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 	ctx := &Context{
-		Log:             log.New(),
 		ScreenMandatory: cfg.ScreenMandatory,
 	}
 	loglevel, err := log.ParseLevel(cfg.LogLevel)
 	if err != nil {
 		loglevel = log.WarnLevel
 	}
-	ctx.Log.SetLevel(loglevel)
+	log.SetLevel(loglevel)
 
 	if manifest.DeployerManifest.DeployerGgnManifest != (utils.DeployerGgnManifest{}) {
 		ctx.Deployer, err = deployers.NewDeployerGgn(
 			cfg.DeployerConfig.DeployerGgnConfig,
-			manifest.DeployerManifest.DeployerGgnManifest,
-			ctx.Log)
+			manifest.DeployerManifest.DeployerGgnManifest)
 		if err != nil {
 			return nil, err
 		}
@@ -49,8 +46,7 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 	if manifest.VcsManifest.StashManifest != (utils.StashManifest{}) {
 		ctx.Vcs, err = services.NewStash(
 			cfg.VcsConfig.StashConfig,
-			manifest.VcsManifest.StashManifest,
-			ctx.Log)
+			manifest.VcsManifest.StashManifest)
 		if err != nil {
 			return nil, err
 		}
@@ -64,8 +60,7 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 	if manifest.BinariesManifest.NexusManifest != (utils.NexusManifest{}) {
 		ctx.Binaries, err = services.NewNexus(
 			cfg.Binaries.NexusConfig,
-			manifest.BinariesManifest.NexusManifest,
-			ctx.Log)
+			manifest.BinariesManifest.NexusManifest)
 		if err != nil {
 			return nil, err
 		}
@@ -76,8 +71,7 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 	if manifest.HookManifest.SlackManifest != (utils.SlackManifest{}) {
 		slack, err := hooks.NewSlack(
 			cfg.HookConfig.SlackConfig,
-			manifest.HookManifest.SlackManifest,
-			ctx.Log)
+			manifest.HookManifest.SlackManifest)
 
 		if err != nil {
 			return nil, err
@@ -88,8 +82,7 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 	if manifest.HookManifest.NewRelicManifest != (utils.NewRelicManifest{}) {
 		newRelic, err := hooks.NewNewRelicClient(
 			cfg.HookConfig.NewRelicConfig,
-			manifest.HookManifest.NewRelicManifest,
-			ctx.Log)
+			manifest.HookManifest.NewRelicManifest)
 
 		if err != nil {
 			return nil, err
@@ -99,9 +92,7 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 	}
 
 	if len(manifest.HookManifest.ExecCommandManifest.OnPreDeploy) > 0 || len(manifest.HookManifest.ExecCommandManifest.OnPostDeploy) > 0 {
-		ctx.Hooks = append(ctx.Hooks, hooks.NewExecommand(
-			manifest.HookManifest.ExecCommandManifest,
-			ctx.Log))
+		ctx.Hooks = append(ctx.Hooks, hooks.NewExecommand(manifest.HookManifest.ExecCommandManifest))
 	}
 
 	if cfg.LockSystemConfig.FileLockConfig != (utils.FileLockConfig{}) {

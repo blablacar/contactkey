@@ -15,7 +15,6 @@ type NewRelicClient struct {
 	Url           string
 	ApiKey        string
 	ApplicationId string
-	Log           *log.Logger
 	Stop          bool
 }
 
@@ -43,7 +42,7 @@ func (c NewRelicClient) StopOnError() bool {
 	return c.Stop
 }
 
-func NewNewRelicClient(cfg utils.NewRelicConfig, manifest utils.NewRelicManifest, logger *log.Logger) (*NewRelicClient, error) {
+func NewNewRelicClient(cfg utils.NewRelicConfig, manifest utils.NewRelicManifest) (*NewRelicClient, error) {
 	if cfg.Url == "" {
 		return nil, errors.New("You need to define an url for newrelic in the config.")
 	}
@@ -60,7 +59,6 @@ func NewNewRelicClient(cfg utils.NewRelicConfig, manifest utils.NewRelicManifest
 		Url:           cfg.Url,
 		ApiKey:        cfg.ApiKey,
 		ApplicationId: manifest.ApplicationId,
-		Log:           logger,
 		Stop:          manifest.StopOnError,
 	}, nil
 }
@@ -73,7 +71,7 @@ func (c NewRelicClient) CreateDeployment(d *NewRelicDeployment) error {
 		c.ApplicationId,
 	)
 
-	c.Log.WithFields(log.Fields{
+	log.WithFields(log.Fields{
 		"url": url,
 	}).Debug("Creating NewRelic deployment.")
 
@@ -91,7 +89,7 @@ func (c NewRelicClient) CreateDeployment(d *NewRelicDeployment) error {
 	if err != nil {
 		return err
 	}
-	c.Log.WithFields(log.Fields{
+	log.WithFields(log.Fields{
 		"statusCode": response.StatusCode,
 	}).Debug("NewRelic response status code.")
 

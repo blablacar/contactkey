@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	log "github.com/sirupsen/logrus"
 )
 
 func TestNexus(t *testing.T) {
@@ -27,7 +25,6 @@ func TestNexus(t *testing.T) {
 		"repo",
 		"service-name",
 		"this.is.a.group",
-		log.New(),
 	}
 
 	podVersion, err := nexus.RetrievePodVersion("")

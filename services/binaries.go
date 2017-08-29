@@ -21,7 +21,6 @@ type Nexus struct {
 	Repository string
 	Artifact   string
 	Group      string
-	Log        *log.Logger
 }
 
 type NexusResponse struct {
@@ -34,7 +33,7 @@ type NexusResponse struct {
 	} `xml:"versioning"`
 }
 
-func NewNexus(cfg utils.NexusConfig, manifest utils.NexusManifest, logger *log.Logger) (*Nexus, error) {
+func NewNexus(cfg utils.NexusConfig, manifest utils.NexusManifest) (*Nexus, error) {
 	if cfg.Url == "" {
 		return nil, errors.New("You need to define an url for nexus in the config.")
 	}
@@ -56,7 +55,6 @@ func NewNexus(cfg utils.NexusConfig, manifest utils.NexusManifest, logger *log.L
 		Repository: cfg.Repository,
 		Group:      cfg.Group,
 		Artifact:   manifest.Artifact,
-		Log:        logger,
 	}, nil
 }
 
@@ -73,7 +71,7 @@ func (n Nexus) RetrievePodVersion(sha1 string) (string, error) {
 		n.Artifact,
 	)
 
-	n.Log.WithFields(log.Fields{
+	log.WithFields(log.Fields{
 		"fullPath":   url,
 		"nexusUrl":   n.Url,
 		"repository": n.Repository,
@@ -91,7 +89,7 @@ func (n Nexus) RetrievePodVersion(sha1 string) (string, error) {
 		return "", err
 	}
 
-	n.Log.WithFields(log.Fields{
+	log.WithFields(log.Fields{
 		"statusCode": response.StatusCode,
 	}).Debug("Status code from Nexus")
 
@@ -104,7 +102,7 @@ func (n Nexus) RetrievePodVersion(sha1 string) (string, error) {
 		return "", err
 	}
 
-	n.Log.WithFields(log.Fields{
+	log.WithFields(log.Fields{
 		"body": string(body),
 	}).Debug("Response body from Nexus")
 
@@ -126,7 +124,7 @@ func (n Nexus) RetrievePodVersion(sha1 string) (string, error) {
 		serviceVersion = nexusResponse.Versioning.Latest
 	}
 
-	n.Log.WithFields(log.Fields{
+	log.WithFields(log.Fields{
 		"serviceVersion": serviceVersion,
 	}).Debug("Version retrieved in Nexus")
 

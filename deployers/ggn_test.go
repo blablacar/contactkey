@@ -7,8 +7,6 @@ import (
 	"regexp"
 	"strings"
 	"testing"
-
-	log "github.com/sirupsen/logrus"
 )
 
 func mockggn(command string, args ...string) *exec.Cmd {
@@ -21,7 +19,7 @@ func mockggn(command string, args ...string) *exec.Cmd {
 
 func TestListUnits(t *testing.T) {
 	execCommand = mockggn
-	d := DeployerGgn{Log: log.New()}
+	d := DeployerGgn{}
 	units, err := d.listUnits("staging")
 	if err != nil {
 		t.Fatal("listUnits failed")
@@ -33,7 +31,7 @@ func TestListUnits(t *testing.T) {
 
 func TestCatUnit(t *testing.T) {
 	execCommand = mockggn
-	d := DeployerGgn{Log: log.New()}
+	d := DeployerGgn{}
 	unit, err := d.catUnit("staging", "staging_webhooks_webhooks.service")
 	if err != nil {
 		t.Fatalf("CatUnits() failed : %q", err)
@@ -73,7 +71,6 @@ func TestListVersions(t *testing.T) {
 	execCommand = mockggn
 	d := DeployerGgn{Pod: "webhooks",
 		Service:      "webhooks",
-		Log:          log.New(),
 		Environments: envs}
 	v, err := d.ListVersions("staging")
 	if err != nil {
@@ -114,7 +111,6 @@ func TestListVcsVersions(t *testing.T) {
 	d := DeployerGgn{
 		Service:      "webhooks",
 		Pod:          "pod-webhooks",
-		Log:          log.New(),
 		Environments: envs,
 		VcsRegexp:    "-(.+)"}
 	result, err := d.ListVcsVersions("staging")

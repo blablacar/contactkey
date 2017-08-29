@@ -26,7 +26,6 @@ type Stash struct {
 	Url         string
 	Branch      string
 	sha1MaxSize int
-	Log         *log.Logger
 }
 
 type Changes struct {
@@ -55,7 +54,7 @@ type StashResponse struct {
 	} `json:"values"`
 }
 
-func NewStash(cfg utils.StashConfig, manifest utils.StashManifest, logger *log.Logger) (*Stash, error) {
+func NewStash(cfg utils.StashConfig, manifest utils.StashManifest) (*Stash, error) {
 	if cfg.User == "" {
 		return nil, errors.New("You need to define a user for stash in the config.")
 	}
@@ -88,7 +87,6 @@ func NewStash(cfg utils.StashConfig, manifest utils.StashManifest, logger *log.L
 		Url:         cfg.Url,
 		Branch:      manifest.Branch,
 		sha1MaxSize: cfg.Sha1MaxSize,
-		Log:         logger,
 	}, nil
 }
 
@@ -134,7 +132,7 @@ func (s Stash) Diff(deployedSha1 string, sha1ToDeploy string) (*Changes, error) 
 		changes.Commits = append(changes.Commits, commits)
 	}
 
-	s.Log.WithFields(log.Fields{
+	log.WithFields(log.Fields{
 		"changes": changes,
 	}).Debug("Struct Changes")
 
@@ -150,7 +148,7 @@ func (s Stash) getStashResponse(params url.Values) (*StashResponse, error) {
 		s.Repository,
 	)
 
-	s.Log.WithFields(log.Fields{
+	log.WithFields(log.Fields{
 		"fullPath":   baseUrl,
 		"stashUrl":   s.Url,
 		"project":    s.Project,
@@ -168,7 +166,7 @@ func (s Stash) getStashResponse(params url.Values) (*StashResponse, error) {
 		return nil, err
 	}
 
-	s.Log.WithFields(log.Fields{
+	log.WithFields(log.Fields{
 		"statusCode": response.StatusCode,
 	}).Debug("Stash response status code")
 
@@ -181,7 +179,7 @@ func (s Stash) getStashResponse(params url.Values) (*StashResponse, error) {
 		return nil, err
 	}
 
-	s.Log.WithFields(log.Fields{
+	log.WithFields(log.Fields{
 		"body": string(body),
 	}).Debug("Response body from Stash")
 
@@ -191,7 +189,7 @@ func (s Stash) getStashResponse(params url.Values) (*StashResponse, error) {
 		return nil, err
 	}
 
-	s.Log.WithFields(log.Fields{
+	log.WithFields(log.Fields{
 		"stashResponse": stashResponse,
 	}).Debug("Struct StashResponse")
 

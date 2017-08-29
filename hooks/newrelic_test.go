@@ -4,8 +4,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	log "github.com/sirupsen/logrus"
 )
 
 var apiStub = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +24,6 @@ func TestCreateDeployment(t *testing.T) {
 		Url:           apiStub.URL,
 		ApiKey:        "123",
 		ApplicationId: "456",
-		Log:           log.New(),
 		Stop:          false,
 	}
 	//c.Log.SetLevel(log.DebugLevel)

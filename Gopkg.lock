@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  name = "github.com/coreos/go-systemd"
+  packages = ["journal"]
+  revision = "d2196463941895ee908e13531a23a39feb9e1243"
+  version = "v15"
+
+[[projects]]
   branch = "master"
   name = "github.com/inconshreveable/mousetrap"
   packages = ["."]
@@ -45,6 +51,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/wercker/journalhook"
+  packages = ["."]
+  revision = "158dbb9fcbfcc3386437e516bc71b58690606e91"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
   revision = "7a4fde3fda8ef580a89dbae8138c26041be14299"
@@ -58,6 +70,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d2f2970d70c8d9f21dc93a32f62e4d0778d4577ca53bd0f61bc0775a833ac167"
+  inputs-digest = "5e58f9449f040b554c9002f6625e4c115bdf612729f40c5a3844d4ace9664d65"
   solver-name = "gps-cdcl"
   solver-version = 1

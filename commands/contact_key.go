@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/remyLemeunier/contactkey/utils"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -12,19 +13,19 @@ var branch = ""
 func Execute() {
 	configFile, err := utils.ReadFile(utils.DefaultHome)
 	if err != nil {
-		fmt.Printf("Failed to read default file: %q", err)
+		log.Errorln(fmt.Sprintf("Failed to read default file: %q", err))
 		return
 	}
 
 	cfg, err := utils.LoadConfig(configFile)
 	if err != nil {
-		fmt.Printf("Failed load config: %q", err)
+		log.Errorln(fmt.Sprintf("Failed load config: %q", err))
 		return
 	}
 
 	services, err := cfg.DiscoverServices()
 	if err != nil {
-		fmt.Printf("Failed to find services: %q", err)
+		log.Errorln(fmt.Sprintf("Failed to find services: %q", err))
 		return
 	}
 
@@ -33,7 +34,6 @@ func Execute() {
 	}
 
 	rootCmd.PersistentFlags().StringVarP(&cfg.LogLevel, "loglevel", "L", "warn", "log level")
-
 	rootCmd.AddCommand(deployCmd)
 	rootCmd.AddCommand(diffCmd)
 	rootCmd.AddCommand(listCmd)
@@ -61,6 +61,6 @@ func Execute() {
 
 	err = rootCmd.Execute()
 	if err != nil {
-		fmt.Println(err)
+		log.Errorln(err)
 	}
 }

@@ -4,8 +4,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	log "github.com/sirupsen/logrus"
 )
 
 func TestSlack(t *testing.T) {
@@ -23,7 +21,6 @@ func TestSlack(t *testing.T) {
 		apiStub.URL,
 		"abc",
 		"channel",
-		log.New(),
 		false,
 	}
 	err := slack.postMessage("Some message.")

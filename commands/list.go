@@ -7,6 +7,7 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/remyLemeunier/contactkey/context"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -26,7 +27,7 @@ type List struct {
 func (l List) execute() {
 	versions, err := l.Context.Deployer.ListVersions(l.Env)
 	if err != nil {
-		fmt.Fprintf(l.Writer, "Failed to list versions : %s \n", err)
+		log.Errorln(fmt.Sprintf("Failed to list versions : %q", err))
 		return
 	}
 

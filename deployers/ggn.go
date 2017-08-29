@@ -26,12 +26,9 @@ type DeployerGgn struct {
 	VcsRegexp    string
 	WorkPath     string
 	Environments map[string]string
-	Log          *log.Logger
 }
 
-func NewDeployerGgn(cfg utils.DeployerGgnConfig,
-	manifest utils.DeployerGgnManifest,
-	logger *log.Logger) (*DeployerGgn, error) {
+func NewDeployerGgn(cfg utils.DeployerGgnConfig, manifest utils.DeployerGgnManifest) (*DeployerGgn, error) {
 	if manifest.Service == "" {
 		return nil, errors.New("You need to define a service name for ggn in the manifest.")
 	}
@@ -49,7 +46,6 @@ func NewDeployerGgn(cfg utils.DeployerGgnConfig,
 		Service:      manifest.Service,
 		Pod:          manifest.Pod,
 		Environments: cfg.Environments,
-		Log:          logger,
 		VcsRegexp:    cfg.VcsRegexp,
 	}, nil
 }
@@ -59,13 +55,13 @@ func (d *DeployerGgn) listUnits(env string) ([]string, error) {
 	ggnCmd := ggn(env, "list-units")
 
 	stdOut, err := ggnCmd.CombinedOutput()
-	d.Log.WithFields(log.Fields{
+	log.WithFields(log.Fields{
 		"cmd": ggnCmd.Path,
 		"out": string(stdOut),
 	}).Debug("Executing external command")
 
 	if err != nil {
-		d.Log.WithFields(log.Fields{
+		log.WithFields(log.Fields{
 			"args": strings.Join(ggnCmd.Args, " "),
 		}).Error("Failed to run external command")
 		return nil, fmt.Errorf("Command `%s` failed with %q",
@@ -88,7 +84,7 @@ func (d *DeployerGgn) listUnits(env string) ([]string, error) {
 func (d *DeployerGgn) catUnit(env string, unit string) (string, error) {
 	ggnCmd := ggn(env, "fleetctl", "cat", unit)
 	stdOut, err := ggnCmd.CombinedOutput()
-	d.Log.WithFields(log.Fields{
+	log.WithFields(log.Fields{
 		"cmd": strings.Join(ggnCmd.Args, " "),
 		"out": string(stdOut),
 	}).Debug("Executing external command")
@@ -124,12 +120,12 @@ func (d *DeployerGgn) ListVersions(env string) (map[string]string, error) {
 		return nil, err
 	}
 
-	d.Log.Debugf("Matching for units with regex %q", unitRegexp)
+	log.Debugf("Matching for units with regex %q", unitRegexp)
 	for _, unit := range units {
 		if !unitRegexp.MatchString(unit) {
 			continue
 		}
-		d.Log.Debugf("Found unit %q", unit)
+		log.Debugf("Found unit %q", unit)
 		file, err := d.catUnit(ggnEnv, unit)
 		if err != nil {
 			// @TODO what should we do there ?
@@ -141,7 +137,7 @@ func (d *DeployerGgn) ListVersions(env string) (map[string]string, error) {
 		}
 		if version[1] != "" {
 			versions[unit] = version[1]
-			d.Log.Debugf("Found version %q for unit %q", versions[unit], unit)
+			log.Debugf("Found version %q for unit %q", versions[unit], unit)
 		}
 	}
 
@@ -189,7 +185,7 @@ func (d *DeployerGgn) Deploy(env string, podVersion string, c chan State) error 
 	}
 
 	ggnCmd := ggn(ggnEnv, d.Service, "update", "-y", "-A", string(serviceAttrsJSON))
-	d.Log.WithFields(log.Fields{
+	log.WithFields(log.Fields{
 		"cmd": strings.Join(ggnCmd.Args, " "),
 	})
 	reader, err := utils.StreamCombinedOutput(ggnCmd)
@@ -200,7 +196,7 @@ func (d *DeployerGgn) Deploy(env string, podVersion string, c chan State) error 
 	scanner := bufio.NewScanner(reader)
 	ggnCmd.Start()
 	for scanner.Scan() {
-		d.Log.Debug(utils.VTClean(scanner.Text()))
+		log.Debug(utils.VTClean(scanner.Text()))
 		state := ExtractState(utils.VTClean(scanner.Text()))
 		if state != (State{}) {
 			c <- state
