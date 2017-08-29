@@ -22,6 +22,7 @@ type Config struct {
 	Binaries           `mapstructure:"binaries"`
 	HookConfig         `mapstructure:"hooks"`
 	LockSystemConfig   `mapstructure:"lockSystem"`
+	MetricsConfig      `mapstructure:"metrics"`
 }
 
 type DeployerConfig struct {
@@ -76,6 +77,14 @@ type LockSystemConfig struct {
 
 type FileLockConfig struct {
 	FilePath string `mapstructure:"filePath"`
+}
+
+type MetricsConfig struct {
+	PrometheusConfig `mapstructure:"prometheus"`
+}
+
+type PrometheusConfig struct {
+	Url string `mapstructure:"url"`
 }
 
 func LoadConfig(cfgReader []byte) (*Config, error) {
