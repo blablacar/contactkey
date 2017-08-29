@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/user"
 
-	"github.com/olekukonko/tablewriter"
 	"github.com/remyLemeunier/contactkey/context"
 	"github.com/remyLemeunier/contactkey/deployers"
 	"github.com/remyLemeunier/contactkey/utils"
@@ -27,11 +26,10 @@ var deployCmd = &cobra.Command{
 }
 
 type Deploy struct {
-	Env         string
-	Service     string
-	Context     *context.Context
-	TableWriter *tablewriter.Table
-	Writer      io.Writer
+	Env     string
+	Service string
+	Context *context.Context
+	Writer  io.Writer
 }
 
 func (d *Deploy) execute() {
@@ -41,27 +39,28 @@ func (d *Deploy) execute() {
 	}
 
 	if err := utils.CheckIfIsLaunchedInAScreen(); err != nil && d.Context.ScreenMandatory == true {
-		fmt.Fprintf(d.Writer, "Screen error raised: %q \n", err)
+		d.Context.Log.Errorln(fmt.Sprintf("Screen error raised: %q", err))
 		return
 	}
 
 	// The lock system is not mandatory
 	if d.Context.LockSystem != nil {
-		fmt.Fprintf(d.Writer, "Trying to lock the lock command for service %q and env %q \n", d.Service, d.Env)
+		d.Context.Log.Println(fmt.Sprintf("Trying to lock the lock command for service %q and env %q", d.Service, d.Env))
 		canLock, err := d.Context.LockSystem.Lock(d.Env, d.Service)
 		if err != nil {
-			fmt.Fprintf(d.Writer, "Failed to lock, error raised: %q \n", err)
+			d.Context.Log.Errorln(fmt.Sprintf("Failed to lock, error raised: %q", err))
+			return
 		}
 
 		if canLock == false {
-			fmt.Fprintln(d.Writer, "Another command is currently running")
+			d.Context.Log.Errorln("Another command is currently running")
 			return
 		}
 
 		defer func(d *Deploy) {
 			d.Context.LockSystem.Unlock(d.Env, d.Service)
 			if err != nil {
-				fmt.Fprintf(d.Writer, "Failed to unlock, error raised: %q \n", err)
+				d.Context.Log.Errorln(fmt.Sprintf("Failed to unlock, error raised: %q", err))
 			}
 		}(d)
 	}
@@ -69,25 +68,25 @@ func (d *Deploy) execute() {
 	// If the branch is null it will use the default one.
 	sha1ToDeploy, err := d.Context.Vcs.RetrieveSha1ForProject(branch)
 	if err != nil {
-		fmt.Fprintf(d.Writer, "Failed to retrieve source changes for %q : %q \n", d.Service, err)
+		d.Context.Log.Errorln(fmt.Sprintf("Failed to retrieve source changes for %q : %q", d.Service, err))
 		return
 	}
 
 	podVersion, err := d.Context.Binaries.RetrievePodVersion(sha1ToDeploy)
 	if err != nil {
-		fmt.Fprintf(d.Writer, "Failed to retrieve pod version: %q \n", err)
+		d.Context.Log.Errorln(fmt.Sprintf("Failed to retrieve pod version: %q", err))
 		return
 	}
 
 	deployedVersions, err := d.Context.Deployer.ListVcsVersions(d.Env)
 	if err != nil {
-		fmt.Fprintf(d.Writer, "Failed to retrieve DEPLOYED version from service(%q) in env %q: %q", d.Service, d.Env, err)
+		d.Context.Log.Errorln(fmt.Sprintf("Failed to retrieve DEPLOYED version from service(%q) in env %q: %q", d.Service, d.Env, err))
 		return
 	}
 
 	if podVersion == "" {
-		fmt.Fprintf(d.Writer, "We have not found the pod version with the the sha1 %q \n"+
-			"The pod has not been created. \n", sha1ToDeploy)
+		d.Context.Log.Errorln(fmt.Sprintf("We have not found the pod version with the the sha1 %q \n"+
+			"The pod has not been created.", sha1ToDeploy))
 		return
 	}
 
@@ -103,17 +102,18 @@ func (d *Deploy) execute() {
 	}
 
 	if needToDeploy == false {
-		fmt.Fprintf(d.Writer, "Version %q is already deployed.", sha1ToDeploy)
+		d.Context.Log.Errorln(fmt.Sprintf("Version %q is already deployed.", sha1ToDeploy))
 		return
 	}
 
-	fmt.Fprintf(d.Writer, "Going to deploy pod version %q \n", podVersion)
+	d.Context.Log.Println(fmt.Sprintf("Going to deploy pod version %q \n", podVersion))
 	for _, hook := range d.Context.Hooks {
-		//@TODO Add a logger and log error coming from hooks
 		err = hook.PreDeployment(userName, d.Env, d.Service, podVersion)
 		if hook.StopOnError() == true && err != nil {
-			fmt.Fprintf(d.Writer, "Predeployment failed: %q \n", err)
+			d.Context.Log.Errorln(fmt.Sprintf("Predeployment failed: %q", err))
 			return
+		} else if err != nil {
+			d.Context.Log.Debugln(fmt.Sprintf("Predeployment failed: %q", err))
 		}
 	}
 
@@ -121,7 +121,6 @@ func (d *Deploy) execute() {
 	go func() {
 		for {
 			state := <-stateStream
-			//fmt.Fprintf(d.Writer, "%s : %d\n", state.Step, state.Progress)
 			utils.RenderProgres(d.Writer, state.Step, state.Progress)
 
 		}
@@ -129,17 +128,18 @@ func (d *Deploy) execute() {
 	d.Context.Deployer.Deploy(d.Env, podVersion, stateStream)
 
 	for _, hook := range d.Context.Hooks {
-		//@TODO Add a logger and log error coming from hooks
-		hook.PostDeployment(userName, d.Env, d.Service, podVersion)
+		err = hook.PostDeployment(userName, d.Env, d.Service, podVersion)
+		if err != nil {
+			d.Context.Log.Debugln(fmt.Sprintf("PostDeployment failed: %q", err))
+		}
 	}
 
-	fmt.Fprintln(d.Writer, "Deployment has successfully ended")
+	d.Context.Log.Println("Deployment has successfully ended")
 }
 
 func (d *Deploy) fill(context *context.Context, service string, env string) {
 	d.Env = env
 	d.Service = service
 	d.Context = context
-	d.TableWriter = tablewriter.NewWriter(os.Stdout)
 	d.Writer = os.Stdout
 }

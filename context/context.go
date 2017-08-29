@@ -8,6 +8,7 @@ import (
 	"github.com/remyLemeunier/contactkey/services"
 	"github.com/remyLemeunier/contactkey/utils"
 	log "github.com/sirupsen/logrus"
+	"github.com/wercker/journalhook"
 )
 
 type Context struct {
@@ -30,6 +31,7 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 		loglevel = log.WarnLevel
 	}
 	ctx.Log.SetLevel(loglevel)
+	ctx.Log.Hooks.Add(&journalhook.JournalHook{})
 
 	if manifest.DeployerManifest.DeployerGgnManifest != (utils.DeployerGgnManifest{}) {
 		ctx.Deployer, err = deployers.NewDeployerGgn(

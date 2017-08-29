@@ -8,6 +8,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"github.com/remyLemeunier/contactkey/context"
 	"github.com/remyLemeunier/contactkey/services"
+	log "github.com/sirupsen/logrus"
 )
 
 type VcsMock struct{}
@@ -29,18 +30,23 @@ func (v *VcsMock) Diff(deployedSha1 string, sha1ToDeploy string) (*services.Chan
 }
 
 func TestDiffExecute(t *testing.T) {
+	// Catch stdout
+	out := new(bytes.Buffer)
+
+	logger := log.New()
+	logger.Out = out
+
 	cmd := &Diff{
 		Env:     "staging",
 		Service: "webhooks",
 		Context: &context.Context{
 			Deployer: &DeployerMockGgn{},
 			Vcs:      &VcsMock{},
+			Log:      logger,
 		},
 	}
-	// Catch stdout
-	out := new(bytes.Buffer)
+
 	cmd.TableWriter = tablewriter.NewWriter(out)
-	cmd.Writer = out
 
 	cmd.execute()
 	if out.String() == "" {
@@ -48,8 +54,8 @@ func TestDiffExecute(t *testing.T) {
 	}
 
 	// Check if we display at the least the right information
-	if !strings.Contains(out.String(), "Diff between \"b0f586a\"(deployed) and \"abcde\"(branch) \n") {
-		t.Error("AuthorFullName not found")
+	if !strings.Contains(out.String(), "Diff between \\\"b0f586a\\\"(deployed) and \\\"abcde\\\"(branch)") {
+		t.Error("Diff not found")
 	}
 
 	if !strings.Contains(out.String(), "AuthorFullName") {

@@ -11,15 +11,21 @@ import (
 	"github.com/remyLemeunier/contactkey/context"
 	"github.com/remyLemeunier/contactkey/deployers"
 	"github.com/remyLemeunier/contactkey/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 func TestExecute(t *testing.T) {
+	// Catch stdout
 	out := new(bytes.Buffer)
+	logger := log.New()
+	logger.Out = out
+
 	d := &Deploy{
 		Context: &context.Context{
 			Deployer: &DeployerMockGgn{},
 			Vcs:      &SourcesMock{},
 			Binaries: &BinariesMock{},
+			Log:      logger,
 		},
 		Writer: out,
 	}
