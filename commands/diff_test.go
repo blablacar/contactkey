@@ -2,6 +2,7 @@ package commands
 
 import (
 	"bytes"
+	"io"
 	"strings"
 	"testing"
 
@@ -32,9 +33,8 @@ func (v *VcsMock) Diff(deployedSha1 string, sha1ToDeploy string) (*services.Chan
 func TestDiffExecute(t *testing.T) {
 	// Catch stdout
 	out := new(bytes.Buffer)
-
-	logger := log.New()
-	logger.Out = out
+	writer := io.Writer(out)
+	log.SetOutput(writer)
 
 	cmd := &Diff{
 		Env:     "staging",
@@ -42,7 +42,6 @@ func TestDiffExecute(t *testing.T) {
 		Context: &context.Context{
 			Deployer: &DeployerMockGgn{},
 			Vcs:      &VcsMock{},
-			Log:      logger,
 		},
 	}
 

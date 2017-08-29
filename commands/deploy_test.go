@@ -8,6 +8,8 @@ import (
 	"regexp"
 	"testing"
 
+	"io"
+
 	"github.com/remyLemeunier/contactkey/context"
 	"github.com/remyLemeunier/contactkey/deployers"
 	"github.com/remyLemeunier/contactkey/utils"
@@ -17,15 +19,14 @@ import (
 func TestExecute(t *testing.T) {
 	// Catch stdout
 	out := new(bytes.Buffer)
-	logger := log.New()
-	logger.Out = out
+	writer := io.Writer(out)
+	log.SetOutput(writer)
 
 	d := &Deploy{
 		Context: &context.Context{
 			Deployer: &DeployerMockGgn{},
 			Vcs:      &SourcesMock{},
 			Binaries: &BinariesMock{},
-			Log:      logger,
 		},
 		Writer: out,
 	}
@@ -41,8 +42,6 @@ func TestExecute(t *testing.T) {
 }
 
 func TestUpdateSlow(t *testing.T) {
-	//sts := deployers.States{}
-
 	ggnCmd := exec.Command("script", "-dp", "./testdata/already.script")
 	reader, _ := utils.StreamCombinedOutput(ggnCmd)
 	scanner := bufio.NewScanner(reader)
@@ -51,7 +50,6 @@ func TestUpdateSlow(t *testing.T) {
 	for scanner.Scan() {
 		state := deployers.ExtractState(utils.VTClean(scanner.Text()))
 		if state != (deployers.State{}) {
-			//fmt.Printf("%s : %d\n", state.Step, state.Progress)
 			utils.RenderProgres(os.Stdout, state.Step, state.Progress)
 		}
 	}

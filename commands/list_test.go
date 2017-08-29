@@ -2,6 +2,7 @@ package commands
 
 import (
 	"bytes"
+	"io"
 	"os"
 	"testing"
 
@@ -13,15 +14,14 @@ import (
 func TestListExecute(t *testing.T) {
 	// Catch stdout
 	out := new(bytes.Buffer)
-	logger := log.New()
-	logger.Out = out
+	writer := io.Writer(out)
+	log.SetOutput(writer)
 
 	cmd := &List{
 		Env:     "staging",
 		Service: "webhooks",
 		Context: &context.Context{
 			Deployer: &DeployerMockGgn{},
-			Log:      logger,
 		},
 		Writer:      os.Stdout,
 		TableWriter: tablewriter.NewWriter(out),

@@ -9,6 +9,7 @@ import (
 	"github.com/remyLemeunier/contactkey/context"
 	"github.com/remyLemeunier/contactkey/deployers"
 	"github.com/remyLemeunier/contactkey/utils"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -39,28 +40,28 @@ func (d *Deploy) execute() {
 	}
 
 	if err := utils.CheckIfIsLaunchedInAScreen(); err != nil && d.Context.ScreenMandatory == true {
-		d.Context.Log.Errorln(fmt.Sprintf("Screen error raised: %q", err))
+		log.Errorln(fmt.Sprintf("Screen error raised: %q", err))
 		return
 	}
 
 	// The lock system is not mandatory
 	if d.Context.LockSystem != nil {
-		d.Context.Log.Println(fmt.Sprintf("Trying to lock the lock command for service %q and env %q", d.Service, d.Env))
+		log.Println(fmt.Sprintf("Trying to lock the lock command for service %q and env %q", d.Service, d.Env))
 		canLock, err := d.Context.LockSystem.Lock(d.Env, d.Service)
 		if err != nil {
-			d.Context.Log.Errorln(fmt.Sprintf("Failed to lock, error raised: %q", err))
+			log.Errorln(fmt.Sprintf("Failed to lock, error raised: %q", err))
 			return
 		}
 
 		if canLock == false {
-			d.Context.Log.Errorln("Another command is currently running")
+			log.Errorln("Another command is currently running")
 			return
 		}
 
 		defer func(d *Deploy) {
 			d.Context.LockSystem.Unlock(d.Env, d.Service)
 			if err != nil {
-				d.Context.Log.Errorln(fmt.Sprintf("Failed to unlock, error raised: %q", err))
+				log.Errorln(fmt.Sprintf("Failed to unlock, error raised: %q", err))
 			}
 		}(d)
 	}
@@ -68,24 +69,24 @@ func (d *Deploy) execute() {
 	// If the branch is null it will use the default one.
 	sha1ToDeploy, err := d.Context.Vcs.RetrieveSha1ForProject(branch)
 	if err != nil {
-		d.Context.Log.Errorln(fmt.Sprintf("Failed to retrieve source changes for %q : %q", d.Service, err))
+		log.Errorln(fmt.Sprintf("Failed to retrieve source changes for %q : %q", d.Service, err))
 		return
 	}
 
 	podVersion, err := d.Context.Binaries.RetrievePodVersion(sha1ToDeploy)
 	if err != nil {
-		d.Context.Log.Errorln(fmt.Sprintf("Failed to retrieve pod version: %q", err))
+		log.Errorln(fmt.Sprintf("Failed to retrieve pod version: %q", err))
 		return
 	}
 
 	deployedVersions, err := d.Context.Deployer.ListVcsVersions(d.Env)
 	if err != nil {
-		d.Context.Log.Errorln(fmt.Sprintf("Failed to retrieve DEPLOYED version from service(%q) in env %q: %q", d.Service, d.Env, err))
+		log.Errorln(fmt.Sprintf("Failed to retrieve DEPLOYED version from service(%q) in env %q: %q", d.Service, d.Env, err))
 		return
 	}
 
 	if podVersion == "" {
-		d.Context.Log.Errorln(fmt.Sprintf("We have not found the pod version with the the sha1 %q \n"+
+		log.Errorln(fmt.Sprintf("We have not found the pod version with the the sha1 %q \n"+
 			"The pod has not been created.", sha1ToDeploy))
 		return
 	}
@@ -102,18 +103,18 @@ func (d *Deploy) execute() {
 	}
 
 	if needToDeploy == false {
-		d.Context.Log.Errorln(fmt.Sprintf("Version %q is already deployed.", sha1ToDeploy))
+		log.Errorln(fmt.Sprintf("Version %q is already deployed.", sha1ToDeploy))
 		return
 	}
 
-	d.Context.Log.Println(fmt.Sprintf("Going to deploy pod version %q \n", podVersion))
+	log.Println(fmt.Sprintf("Going to deploy pod version %q \n", podVersion))
 	for _, hook := range d.Context.Hooks {
 		err = hook.PreDeployment(userName, d.Env, d.Service, podVersion)
 		if hook.StopOnError() == true && err != nil {
-			d.Context.Log.Errorln(fmt.Sprintf("Predeployment failed: %q", err))
+			log.Errorln(fmt.Sprintf("Predeployment failed: %q", err))
 			return
 		} else if err != nil {
-			d.Context.Log.Debugln(fmt.Sprintf("Predeployment failed: %q", err))
+			log.Debugln(fmt.Sprintf("Predeployment failed: %q", err))
 		}
 	}
 
@@ -130,11 +131,11 @@ func (d *Deploy) execute() {
 	for _, hook := range d.Context.Hooks {
 		err = hook.PostDeployment(userName, d.Env, d.Service, podVersion)
 		if err != nil {
-			d.Context.Log.Debugln(fmt.Sprintf("PostDeployment failed: %q", err))
+			log.Debugln(fmt.Sprintf("PostDeployment failed: %q", err))
 		}
 	}
 
-	d.Context.Log.Println("Deployment has successfully ended")
+	log.Println("Deployment has successfully ended")
 }
 
 func (d *Deploy) fill(context *context.Context, service string, env string) {

@@ -5,21 +5,18 @@ import (
 	"os/exec"
 
 	"github.com/remyLemeunier/contactkey/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 type ExecCommand struct {
 	OnPreDeploy  []utils.CommandList
 	OnPostDeploy []utils.CommandList
-	Log          *log.Logger
 	Stop         bool
 }
 
-func NewExecommand(manifest utils.ExecCommandManifest, logger *log.Logger) *ExecCommand {
+func NewExecommand(manifest utils.ExecCommandManifest) *ExecCommand {
 	return &ExecCommand{
 		OnPreDeploy:  manifest.OnPreDeploy,
 		OnPostDeploy: manifest.OnPostDeploy,
-		Log:          logger,
 		Stop:         manifest.StopOnError,
 	}
 }

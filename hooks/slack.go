@@ -14,11 +14,10 @@ type Slack struct {
 	Url     string
 	Token   string
 	Channel string
-	Log     *log.Logger
 	Stop    bool
 }
 
-func NewSlack(cfg utils.SlackConfig, manifest utils.SlackManifest, logger *log.Logger) (*Slack, error) {
+func NewSlack(cfg utils.SlackConfig, manifest utils.SlackManifest) (*Slack, error) {
 	if cfg.Url == "" {
 		return nil, errors.New("You need to define an url for Slack in the config.")
 	}
@@ -35,7 +34,6 @@ func NewSlack(cfg utils.SlackConfig, manifest utils.SlackManifest, logger *log.L
 		Url:     cfg.Url,
 		Token:   cfg.Token,
 		Channel: manifest.Channel,
-		Log:     logger,
 		Stop:    manifest.StopOnError,
 	}, nil
 }
@@ -58,7 +56,7 @@ func (s Slack) postMessage(message string) error {
 		s.Channel,
 	)
 
-	s.Log.WithFields(log.Fields{
+	log.WithFields(log.Fields{
 		"baseUrl": url,
 		"url":     s.Url,
 		"token":   s.Token,
@@ -75,7 +73,7 @@ func (s Slack) postMessage(message string) error {
 		return err
 	}
 
-	s.Log.WithFields(log.Fields{
+	log.WithFields(log.Fields{
 		"statusCode": response.StatusCode,
 	}).Debug("Slack response status code.")
 
