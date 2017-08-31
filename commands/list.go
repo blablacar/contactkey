@@ -25,15 +25,15 @@ type List struct {
 }
 
 func (l List) execute() {
-	versions, err := l.Context.Deployer.ListVersions(l.Env)
+	instances, err := l.Context.Deployer.ListInstances(l.Env)
 	if err != nil {
 		log.Errorln(fmt.Sprintf("Failed to list versions : %q", err))
 		return
 	}
 
-	l.TableWriter.SetHeader([]string{"instance", "version"})
-	for i, v := range versions {
-		l.TableWriter.Append([]string{i, v})
+	l.TableWriter.SetHeader([]string{"instance", "state", "version"})
+	for _, instance := range instances {
+		l.TableWriter.Append([]string{instance.Name, instance.State, instance.Version})
 	}
 	l.TableWriter.Render()
 

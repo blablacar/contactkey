@@ -28,6 +28,12 @@ type DeployerGgn struct {
 	Environments map[string]string
 }
 
+type FleetUnit struct {
+	name   string
+	active string
+	sub    string
+}
+
 func NewDeployerGgn(cfg utils.DeployerGgnConfig, manifest utils.DeployerGgnManifest) (*DeployerGgn, error) {
 	if manifest.Service == "" {
 		return nil, errors.New("You need to define a service name for ggn in the manifest.")
@@ -50,37 +56,6 @@ func NewDeployerGgn(cfg utils.DeployerGgnConfig, manifest utils.DeployerGgnManif
 	}, nil
 }
 
-func (d *DeployerGgn) listUnits(env string) ([]string, error) {
-	units := []string{}
-	ggnCmd := ggn(env, "list-units")
-
-	stdOut, err := ggnCmd.CombinedOutput()
-	log.WithFields(log.Fields{
-		"cmd": ggnCmd.Path,
-		"out": string(stdOut),
-	}).Debug("Executing external command")
-
-	if err != nil {
-		log.WithFields(log.Fields{
-			"args": strings.Join(ggnCmd.Args, " "),
-		}).Error("Failed to run external command")
-		return nil, fmt.Errorf("Command `%s` failed with %q",
-			strings.Join(ggnCmd.Args, " "),
-			err)
-	}
-
-	r := regexp.MustCompile(".*.service")
-	for _, line := range strings.Split(string(stdOut), "\n") {
-		unit := r.FindString(line)
-		if unit != "" {
-			units = append(units, unit)
-		}
-	}
-
-	return units, nil
-
-}
-
 func (d *DeployerGgn) catUnit(env string, unit string) (string, error) {
 	ggnCmd := ggn(env, "fleetctl", "cat", unit)
 	stdOut, err := ggnCmd.CombinedOutput()
@@ -95,7 +70,7 @@ func (d *DeployerGgn) catUnit(env string, unit string) (string, error) {
 }
 
 func (d *DeployerGgn) buildUnitRegexp(env string) *regexp.Regexp {
-	return regexp.MustCompile(fmt.Sprintf("^%s_%s_", env, d.Service))
+	return regexp.MustCompile(fmt.Sprintf(`%s_%s_`, env, d.Service))
 }
 
 func (d *DeployerGgn) buildVersionRegexp() *regexp.Regexp {
@@ -106,53 +81,48 @@ func (d *DeployerGgn) InstanceState() string {
 	return ""
 }
 
-func (d *DeployerGgn) ListVersions(env string) (map[string]string, error) {
+func (d *DeployerGgn) ListInstances(env string) ([]Instance, error) {
+	instances := []Instance{}
 	ggnEnv, err := d.getGgnEnv(env)
 	if err != nil {
 		return nil, err
 	}
 	unitRegexp := d.buildUnitRegexp(ggnEnv)
-	versionRegexp := d.buildVersionRegexp()
-	versions := make(map[string]string)
 
-	units, err := d.listUnits(ggnEnv)
+	units, err := d.listFleetUnits(ggnEnv)
 	if err != nil {
 		return nil, err
 	}
 
-	log.Debugf("Matching for units with regex %q", unitRegexp)
+	log.Debugf("Matching units against regex %q", unitRegexp)
 	for _, unit := range units {
-		if !unitRegexp.MatchString(unit) {
+		if !unitRegexp.MatchString(unit.name) {
 			continue
 		}
-		log.Debugf("Found unit %q", unit)
-		file, err := d.catUnit(ggnEnv, unit)
+		log.Debugf("Found unit %q", unit.name)
+		file, err := d.catUnit(ggnEnv, unit.name)
 		if err != nil {
-			// @TODO what should we do there ?
+			log.Warn("Failed to cat unit %q", unit.name)
 			continue
 		}
-		version := versionRegexp.FindStringSubmatch(file)
-		if len(version) == 0 {
-			continue
-		}
-		if version[1] != "" {
-			versions[unit] = version[1]
-			log.Debugf("Found version %q for unit %q", versions[unit], unit)
+		if m := d.buildVersionRegexp().FindStringSubmatch(file); m != nil {
+			instances = append(instances, Instance{Name: unit.name, State: unit.sub, Version: m[1]})
+			log.Debugf("Found instance %q", unit.name)
 		}
 	}
 
-	return versions, nil
+	return instances, nil
 }
 
 func (d *DeployerGgn) ListVcsVersions(env string) ([]string, error) {
-	versions, err := d.ListVersions(env)
+	instances, err := d.ListInstances(env)
 	if err != nil {
 		return nil, err
 	}
 	regexp := regexp.MustCompile(d.VcsRegexp)
 	vcsVersions := make([]string, 0)
-	for _, version := range versions {
-		vcsVersion := regexp.FindStringSubmatch(version)
+	for _, instance := range instances {
+		vcsVersion := regexp.FindStringSubmatch(instance.Version)
 		if len(vcsVersion) == 2 {
 			vcsVersions = append(vcsVersions, vcsVersion[1])
 		}
@@ -242,4 +212,37 @@ func ExtractState(ggnOutput string) State {
 	}
 
 	return s
+}
+
+func (d DeployerGgn) listFleetUnits(ggnEnv string) ([]FleetUnit, error) {
+	units := []FleetUnit{}
+	unitRegexp := regexp.MustCompile(`(\S+)\t+(\S+)\t+(\S+)\t+(\S+)\t+(\S+)\t+(\S+)`)
+	cmd := ggn(ggnEnv, "fleetctl", "--", "list-units", "--no-legend", "--fields='active,hash,load,machine,sub,unit'")
+
+	log.WithFields(log.Fields{"cmd": strings.Join(cmd.Args, " ")}).Debug("Executing external command")
+
+	reader, err := cmd.StdoutPipe()
+	if err != nil {
+		return nil, err
+	}
+
+	scanner := bufio.NewScanner(reader)
+	cmd.Start()
+
+	for scanner.Scan() {
+		if m := unitRegexp.FindStringSubmatch(scanner.Text()); m != nil {
+			units = append(units, FleetUnit{
+				active: m[1],
+				sub:    m[5],
+				name:   m[6],
+			})
+		}
+
+	}
+
+	if err := cmd.Wait(); err != nil {
+		return nil, err
+	}
+
+	return units, nil
 }
