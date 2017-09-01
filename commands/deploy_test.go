@@ -27,6 +27,7 @@ func TestExecute(t *testing.T) {
 			Deployer: &DeployerMockGgn{},
 			Vcs:      &SourcesMock{},
 			Binaries: &BinariesMock{},
+			Metrics:  utils.NewBlackholeMetricsRegistry(),
 		},
 		Writer: out,
 	}

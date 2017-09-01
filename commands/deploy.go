@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/user"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/remyLemeunier/contactkey/context"
 	"github.com/remyLemeunier/contactkey/deployers"
 	"github.com/remyLemeunier/contactkey/utils"
@@ -13,8 +14,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var userName = "Mister Robot"
-var force = false
+var (
+	userName       = "Mister Robot"
+	force          = false
+	deployDuration = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "contactkey_deploy_duration",
+		Help: "The deploy duration of a project, in seconds",
+	}, []string{"env", "project"})
+)
 
 func init() {
 	deployCmd.PersistentFlags().StringVar(&branch, "branch", "", "Change the branch from the default one.")
@@ -34,6 +41,11 @@ type Deploy struct {
 }
 
 func (d *Deploy) execute() {
+	timer := prometheus.NewTimer(prometheus.ObserverFunc(
+		deployDuration.With(prometheus.Labels{"env": d.Env, "project": d.Service}).Set))
+	d.Context.Metrics.Add(deployDuration)
+	defer timer.ObserveDuration()
+
 	currentUser, err := user.Current()
 	if err == nil {
 		userName = currentUser.Name
@@ -135,7 +147,13 @@ func (d *Deploy) execute() {
 		}
 	}
 
-	log.Println("Deployment has successfully ended")
+	timer.ObserveDuration()
+	err = d.Context.Metrics.Push()
+	if err != nil {
+		fmt.Fprintf(d.Writer, "Pushing metrics failed: %q \n", err)
+	}
+
+	log.Println(d.Writer, "Deployment has successfully ended")
 }
 
 func (d *Deploy) fill(context *context.Context, service string, env string) {

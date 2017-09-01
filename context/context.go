@@ -17,6 +17,8 @@ type Context struct {
 	Hooks           []hooks.Hooks
 	LockSystem      utils.Lock
 	ScreenMandatory bool
+	Log             *log.Logger
+	Metrics         *utils.MetricsRegistry
 }
 
 func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
@@ -103,5 +105,10 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 		}
 	}
 
+	if cfg.MetricsConfig.PrometheusConfig != (utils.PrometheusConfig{}) {
+		ctx.Metrics = utils.NewPrometheusMetricsRegistry(cfg.MetricsConfig.PrometheusConfig)
+	} else {
+		ctx.Metrics = utils.NewBlackholeMetricsRegistry()
+	}
 	return ctx, nil
 }
