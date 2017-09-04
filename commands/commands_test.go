@@ -10,12 +10,11 @@ type DeployerMockGgn struct {
 	Log *log.Logger
 }
 
-func (d *DeployerMockGgn) ListVersions(env string) (map[string]string, error) {
-	versions := map[string]string{
-		"staging_webhooks_webhooks1.service": "26.1501244191-vb0f586a",
-		"staging_webhooks_webhooks2.service": "26.1501244191-vb0f586a",
-	}
-	return versions, nil
+func (d *DeployerMockGgn) ListInstances(env string) ([]deployers.Instance, error) {
+	return []deployers.Instance{
+		{Name: "staging_webhooks_webhooks1.service", Version: "26.1501244191-vb0f586a"},
+		{Name: "staging_webhooks_webhooks2.service", Version: "26.1501244191-vb0f586a"},
+	}, nil
 }
 
 func (d *DeployerMockGgn) ListVcsVersions(env string) ([]string, error) {

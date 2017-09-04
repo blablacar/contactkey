@@ -7,6 +7,8 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+
+	"github.com/remyLemeunier/contactkey/deployers/testdata"
 )
 
 func mockggn(command string, args ...string) *exec.Cmd {
@@ -17,22 +19,24 @@ func mockggn(command string, args ...string) *exec.Cmd {
 	return cmd
 }
 
-func TestListUnits(t *testing.T) {
-	execCommand = mockggn
-	d := DeployerGgn{}
-	units, err := d.listUnits("staging")
-	if err != nil {
-		t.Fatal("listUnits failed")
+func TestHelperProcess(t *testing.T) {
+	if os.Getenv("GO_WANT_HELPER_PROCESS") != "1" {
+		return
 	}
-	if units[0] != "staging_webhooks_webhooks.service" {
-		t.Errorf("Unexpected units[0] : %q", units[0])
+	defer os.Exit(0)
+	args := strings.Join(os.Args, " ")
+	switch {
+	case testdata.CatUnitRegexp.MatchString(args):
+		fmt.Printf(testdata.CatUnit)
+	case testdata.ListFleetUnitsRegexp.MatchString(args):
+		fmt.Printf(testdata.ListFleetUnits)
 	}
 }
 
 func TestCatUnit(t *testing.T) {
 	execCommand = mockggn
 	d := DeployerGgn{}
-	unit, err := d.catUnit("staging", "staging_webhooks_webhooks.service")
+	unit, err := d.catUnit("staging", "staging_webhooks_webhooks1.service")
 	if err != nil {
 		t.Fatalf("CatUnits() failed : %q", err)
 	}
@@ -42,13 +46,14 @@ func TestCatUnit(t *testing.T) {
 	}
 
 }
+
 func TestBuildUnitRegexp(t *testing.T) {
 	d := DeployerGgn{
-		Service: "wehooks",
+		Service: "webhooks",
 	}
 	r := d.buildUnitRegexp("staging")
 
-	if r.String() != "^staging_wehooks_" {
+	if r.String() != "staging_webhooks_" {
 		t.Errorf("Unexpected UnitRegexp : %q", r)
 	}
 }
@@ -64,7 +69,7 @@ func TestVersionRegexp(t *testing.T) {
 	}
 }
 
-func TestListVersions(t *testing.T) {
+func TestListInstances(t *testing.T) {
 	envs := make(map[string]string)
 	envs["staging"] = "staging"
 
@@ -72,35 +77,12 @@ func TestListVersions(t *testing.T) {
 	d := DeployerGgn{Pod: "webhooks",
 		Service:      "webhooks",
 		Environments: envs}
-	v, err := d.ListVersions("staging")
+	i, err := d.ListInstances("staging")
 	if err != nil {
 		t.Fatal("listUnits failed")
 	}
-	if v["staging_webhooks_webhooks.service"] != "1.8.1-1" {
-		t.Errorf("Unexpected unit version %q",
-			v["staging_webhooks_webhooks.service"])
-	}
-
-}
-
-func TestHelperProcess(t *testing.T) {
-	if os.Getenv("GO_WANT_HELPER_PROCESS") != "1" {
-		return
-	}
-	defer os.Exit(0)
-	args := strings.Join(os.Args, " ")
-	listUnits := regexp.MustCompile("-- ggn staging list-units$")
-	catUnit := regexp.MustCompile("-- ggn staging fleetctl cat staging_webhooks_webhooks.service")
-	switch {
-	case listUnits.MatchString(args):
-		fmt.Printf(`
-staging_webhooks_webhooks.service						a34b757badea4abcaa518d0c686f82eb/10.13.35.193	active		running
-staging_webhooks_webhooks.service					b102fa1e59ae42e28936dd676829236d/10.13.33.193	active		running
-		`)
-	case catUnit.MatchString(args):
-		fmt.Printf(
-			`ExecStart=/opt/bin/rkt      --insecure-options=all run      --set-env=TEMPLATER_OVERRIDE='${ATTR_0}'      --set-env=TEMPLATER_OVERRIDE_BASE64='${ATTR_BASE64_0}${ATTR_BASE64_1}'      --set-env=HOSTNAME='webhooks'      --set-env=HOST="%H"      --hostname=webhooks      --dns=10.254.0.3 --dns=10.254.0.4       --dns-search=pp-bourse.par-1.h.blbl.cr       --uuid-file-save=/mnt/sda9/rkt-uuid/pp-bourse/webhooks      --set-env=DOMAINNAME='pp.par-1.h.blbl.cr'      --net='bond0'      --set-env=AIRFLOW_HOME='/opt/webhooks'      aci.blbl.cr/pod-webhooks_aci-go-synapse:1.8.1-1    aci.blbl.cr/pod-webhooks_aci-go-nerve:1.8.1-1    aci.blbl.cr/pod-webhooks_aci-confd:1.8.1-1    aci.blbl.cr/pod-webhooks_aci-embulk:1.8.1-1    aci.blbl.cr/pod-webhooks_aci-zabbix-agent:1.8.1-1    aci.blbl.cr/pod-webhooks_aci-webhooks:1.8.1-1 --exec /usr/local/bin/webhooks -- scheduler ---
-	`)
+	if i[1].Version != "1.8.1-1" {
+		t.Errorf("Unexpected unit version %q", i[1])
 	}
 }
 
@@ -112,14 +94,15 @@ func TestListVcsVersions(t *testing.T) {
 		Service:      "webhooks",
 		Pod:          "pod-webhooks",
 		Environments: envs,
-		VcsRegexp:    "-(.+)"}
+		VcsRegexp:    "-(.+)",
+	}
 	result, err := d.ListVcsVersions("staging")
 	if err != nil {
 		t.Fatalf("ListVcsVersions() failed : %q", err)
 	}
 
-	if len(result) != 1 {
-		t.Fatal("We should have found only 1 version")
+	if len(result) != 3 {
+		t.Errorf("We should have found only 3 versions, found %q", result)
 	}
 
 	// We are receiving "1.8.1-1" when parsed with the regexp above it should "1" (string)
@@ -136,4 +119,18 @@ func TestExtractState(t *testing.T) {
 		t.Errorf("Unexpected step : %q", s.Step)
 	}
 	s = ExtractState("[ZkCheck][webhooks] webhooks2 - /services/webhooks: Ok")
+}
+
+func TestListFleetUnits(t *testing.T) {
+	d := DeployerGgn{}
+	units, err := d.listFleetUnits("staging")
+	if err != nil {
+		t.Fatalf("Unexpected error : %q", err)
+	}
+	if len(units) != 4 {
+		t.Errorf("Unexpected units : %q", units)
+	}
+	if units[0].name != "staging_sleepy_sleepy0.service" {
+		t.Errorf("Unexpected unit[0] : %q", units[0])
+	}
 }
