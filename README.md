@@ -1,28 +1,33 @@
 # contactkey [![Build Status](https://travis-ci.org/remyLemeunier/contactkey.svg?branch=master)](https://travis-ci.org/remyLemeunier/contactkey)
 
-Contactkey is a Go command and its aim is to deploy services on different environments.
+Contactkey is a Go command-line tool that orchestrate deployments on complex environments.
 
 ## Deployment Flow
 ![this](https://docs.google.com/drawings/d/1N7mgky_Dq3KWrT_gRxR4iwxGjCDY6rbgc455mJgEMtA/pub?w=594&h=1155)
-# Deployers, Sources, Repository Manager, Hooks, Lock System
+# Deployers, Sources, Binaries, Hooks, Lock System
 ### Deployers
  * GGN 
- * kubernetes (to do) 
-### Version Control System
+ * Kubernetes (to do) 
+
+### Sources (upstream application code)
  * Stash 
  * Github (to do)
-### Repository Manager 
+
+### Binaries (container images)
  * Nexus
+
 ### Hooks
  * Slack
  * ExecCommand
  * NewRelic
  * MailSender (to do)
+
 ### Lock System 
  * FileLock
- * etcd (to do)
+ * Etcd (to do)
  * Redis (to do)
  
+
 ## Commands
 ```bash
 cck deploy environment service    Deploy the service in an environment
@@ -30,6 +35,8 @@ cck diff environment service      Diff between what's currently deployed and wha
 cck list environment service      List versions of the service in an environment
 cck rollback environment service  Rollback the service in an environment
 ```
+
+
 ## Global configuration file for the cck command.
 The configuration file is located at ~/.contackey/config.yml
 ```yaml
@@ -70,6 +77,10 @@ hooks:                     # Define various hooks used in service manifest.
   newRelic:
     url: https://api.newrelic.com
     apiKey: "<your_api_key>"
+
+metrics:
+  prometheus:              # Push internal metrics to a prometheus gateway
+    url: http://demo.robustperception.io:9091
 
 lockSystem:                # Define a lock system in order to avoid multiple command launch. (Not mandatory)
   fileLock:                # Currently we only have the lock by file.
