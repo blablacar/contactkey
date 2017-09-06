@@ -22,10 +22,16 @@ binaries:
     url:        127.0.0.1
     repository: repository
     group:      group
+
 hooks:
   slack:
     url:   127.0.0.1
     token: token
+
+metrics:
+  prometheus:
+    url: http://demo.robustperception.io:9091
+
 lockSystem:
   fileLock:
     filePath: /tmp
