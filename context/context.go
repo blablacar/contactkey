@@ -85,7 +85,6 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 		newRelic, err := hooks.NewNewRelicClient(
 			cfg.HookConfig.NewRelicConfig,
 			manifest.HookManifest.NewRelicManifest)
-
 		if err != nil {
 			return nil, err
 		}
