@@ -58,8 +58,8 @@ type SlackManifest struct {
 }
 
 type NewRelicManifest struct {
-	ApplicationId string `mapstructure:"applicationId"`
-	StopOnError   bool   `mapstructure:"stopOnError"`
+	ApplicationFilter string `mapstructure:"applicationFilter"`
+	StopOnError       bool   `mapstructure:"stopOnError"`
 }
 
 type ExecCommandManifest struct {

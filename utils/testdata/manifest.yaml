@@ -16,7 +16,7 @@ hooks:
   slack:
     channel:   channel
   newRelic:
-    applicationId: "456"
+    applicationFilter: "Webhooks - {{.env}}"
   execCommand:
     onPredeploy:
       - { command: "ls", args: ["-lah"] }
