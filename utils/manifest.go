@@ -25,17 +25,18 @@ type StashManifest struct {
 }
 
 type DeployerManifest struct {
-	DeployerGgnManifest  `mapstructure:"ggn"`
-	DeployerHelmManifest `mapstructure:"helm"`
+	DeployerGgnManifest `mapstructure:"ggn"`
+	DeployerK8sManifest `mapstructure:"k8s"`
+}
+
+type DeployerK8sManifest struct {
+	Release   string `mapstructure:"release"`
+	Namespace string `mapstructure:"namespace"`
 }
 
 type DeployerGgnManifest struct {
 	Service string `mapstructure:"service"`
 	Pod     string `mapstructure:"pod"`
-}
-
-type DeployerHelmManifest struct {
-	ReleaseName string `mapstructure:"release"`
 }
 
 type BinariesManifest struct {
@@ -91,6 +92,16 @@ func LoadManifest(manifestReader []byte) (*Manifest, error) {
 func (m *DeployerGgnManifest) validate() error {
 	if m.Service == "" {
 		return fmt.Errorf("Missing field Service")
+	}
+	return nil
+}
+
+func (m *DeployerK8sManifest) validate() error {
+	if m.Release == "" {
+		return fmt.Errorf("Missing field Release")
+	}
+	if m.Namespace == "" {
+		return fmt.Errorf("Missing field Namespace")
 	}
 	return nil
 }

@@ -138,7 +138,10 @@ func (d *Deploy) execute() {
 
 		}
 	}()
-	d.Context.Deployer.Deploy(d.Env, podVersion, stateStream)
+	err = d.Context.Deployer.Deploy(d.Env, podVersion, stateStream)
+	if err != nil {
+		log.Debugf("Deployment failed: %q", err)
+	}
 
 	for _, hook := range d.Context.Hooks {
 		err = hook.PostDeployment(userName, d.Env, d.Service, podVersion)

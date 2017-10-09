@@ -49,12 +49,19 @@ globalEnvironments:        # Define the cck environment. It can be anything.
   - prod                   # the command line.
 
 deployers:                 # Define the various deployers used in service manifest.
-  ggn:                     # Currently we have only ggn supported .
+  ggn:                     # This will enable the ggn deployment feature
     vcsRegexp: -v(.+)      # Extract the vcs sha1 from pod version. (Not mandatory)
     workPath: /tmp       
     environments:          # Link between ggn environment and cck environment created above. 
       preprod: staging    
       prod:    production 
+   k8s:                    # This will enable deployment on k8s using helm
+    workPath: /tmp         
+    environments:          # Link between cck environments and k8s clusters
+      local:
+        cluster: ops
+      preprod:
+        cluster: preprod
 
 sources:      # Define various version control system used in service manifest.
   stash:                   # Currently we have only Stash supported. 
@@ -88,6 +95,7 @@ lockSystem:                # Define a lock system in order to avoid multiple com
 
 ```
 ## Configuration by service (manifest)
+
 One file per service. They must be located in the workPath defined above.
 The file name will be service name in the cck command.
 ```yaml
@@ -117,3 +125,6 @@ hooks:                     # Hooks we are going to call before and after.
       - { command: "cd /tmp"}
     stopOnError: true      # If an error occurs stop the deployment process (not mandatory default false)
 ```
+
+There are multiple `deployers`, the above example uses `ggn`, but you can deploy to kubernetes as well.
+Here is an example  : [k8s-manifest.sample.yaml](./examples/k8s-manifest.sample.yml).
