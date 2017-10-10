@@ -149,7 +149,7 @@ func (s Stash) getStashResponse(params url.Values) (*StashResponse, error) {
 	)
 
 	log.WithFields(log.Fields{
-		"fullPath":   baseUrl,
+		"fullUrl":    baseUrl + params.Encode(),
 		"stashUrl":   s.Url,
 		"project":    s.Project,
 		"repository": s.Repository,

@@ -9,6 +9,13 @@ deployers:
     workPath: /tmp
     environments:
       preprod: pp
+  k8s:
+    workPath: /tmp
+    environments:
+      local:
+        cluster: ops
+      preprod:
+        cluster: preprod
 
 sources:
   stash:

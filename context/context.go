@@ -38,6 +38,14 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 		if err != nil {
 			return nil, err
 		}
+	} else if manifest.DeployerManifest.DeployerK8sManifest != (utils.DeployerK8sManifest{}) {
+		log.Debug("Creating a new DeployerK8s instance")
+		ctx.Deployer, err = deployers.NewDeployerK8s(
+			cfg.DeployerConfig.DeployerK8sConfig,
+			manifest.DeployerManifest.DeployerK8sManifest)
+		if err != nil {
+			return nil, err
+		}
 	} else {
 		return nil, fmt.Errorf(
 			"Deployer unknown : %q",

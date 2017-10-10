@@ -74,3 +74,27 @@ func TestDeployerGGNManifest(t *testing.T) {
 		t.Error("Validate() on incomplete manifest did not return err")
 	}
 }
+
+func TestK8sManifest(t *testing.T) {
+	configFile, err := ReadFile("./testdata/manifest-k8s.yaml")
+	if err != nil {
+		t.Fatalf("ReadFile failed with err %q", err)
+	}
+
+	manifest, err := LoadManifest(configFile)
+	if err != nil {
+		t.Fatalf("LoadDeployfile failed with err %q", err)
+	}
+
+	if manifest == (&Manifest{}) {
+		t.Errorf("Unexpected manifest %q", manifest)
+	}
+
+	if manifest.DeployerK8sManifest.Release != "webhooks" {
+		t.Errorf("Unexpected manifest %q", manifest)
+	}
+
+	if manifest.DeployerK8sManifest.Namespace != "webapps" {
+		t.Errorf("Unexpected manifest %q", manifest)
+	}
+}

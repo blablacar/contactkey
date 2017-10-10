@@ -27,6 +27,16 @@ type Config struct {
 
 type DeployerConfig struct {
 	DeployerGgnConfig `mapstructure:"ggn"`
+	DeployerK8sConfig `mapstructure:"k8s"`
+}
+
+type K8sEnvironment struct {
+	Cluster string `mapstructure:"cluster"`
+}
+
+type DeployerK8sConfig struct {
+	WorkPath     string                    `mapstructure:"workPath"`
+	Environments map[string]K8sEnvironment `mapstructure:"environments"`
 }
 
 type DeployerGgnConfig struct {

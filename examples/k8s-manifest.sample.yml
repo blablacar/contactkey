@@ -1,0 +1,29 @@
+manifestVersion: v1
+
+deployment:
+deployment:
+  k8s:
+    namespace: webapps
+    release: webhooks
+
+sources:
+  stash:
+    branch: master
+    repository: repository
+    project: project
+
+binaries:
+  nexus:
+    artifact: pod-webhooks
+
+hooks:
+  slack:
+    channel:   channel
+  newRelic:
+    application: "Webhooks - {{.env}}"
+  execCommand:
+    onPredeploy:
+      - { command: "ls", args: ["-lah"] }
+    onPostDeploy:
+      - { command: "cd /tmp"}
+    stopOnError: true

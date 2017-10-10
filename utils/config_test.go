@@ -78,15 +78,18 @@ func TestDiscoverServices(t *testing.T) {
 		t.Fatalf("DiscoverServices failed with err %q", err)
 	}
 
-	if len(services) != 2 {
-		t.Errorf("Services'lenght should be 2 instead got %d", len(services))
+	if len(services) != 3 {
+		t.Errorf("Services'lenght should be 3 instead got %d", len(services))
 	}
 
 	if services[0] != "config" {
 		t.Errorf("Should be 'config' instead got: %q", services[0])
 	}
+	if services[1] != "manifest-k8s" {
+		t.Errorf("Should be 'manifest' instead got: %q", services[1])
+	}
 
-	if services[1] != "manifest" {
+	if services[2] != "manifest" {
 		t.Errorf("Should be 'manifest' instead got: %q", services[1])
 	}
 }

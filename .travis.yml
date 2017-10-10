@@ -1,7 +1,7 @@
 language: go
 
 go:
-  - 1.8
+  - 1.9
 
 install:
   - sudo apt-get install -y --force-yes upx
@@ -12,7 +12,7 @@ script:
   - mkdir /home/travis/.contactkey
   - cp examples/config.sample.yml  /home/travis/.contactkey/config.yml
   - mkdir /tmp/manifests
-  - cp examples/manifest.sample.yml /tmp/manifests/manifest.yml
+  - cp examples/ggn-manifest.sample.yml /tmp/manifests/ggn-manifest.yml
   - ./hack/verify-gofmt.sh
   - go test --cover $(go list ./... | grep -v /vendor/)
   - go build -o /tmp/cck
