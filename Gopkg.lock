@@ -233,7 +233,7 @@
   branch = "master"
   name = "github.com/remyLemeunier/k8s-deploy"
   packages = ["helmclient","releases"]
-  revision = "d6e63f868b2820b60d6a5e7443347dee00a3242f"
+  revision = "f67cfc046ddac940ed619ec34a7a971090165279"
 
 [[projects]]
   branch = "master"

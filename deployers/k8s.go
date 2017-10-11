@@ -60,7 +60,6 @@ func (d *DeployerK8s) ListInstances(env string) ([]Instance, error) {
 	if err != nil {
 		return nil, err
 	}
-	// spew.Dump(content.Release.Config.Values)
 
 	return []Instance{
 		{
@@ -107,6 +106,11 @@ func (d *DeployerK8s) Deploy(env string, podVersion string, c chan State) error 
 			return err
 		}
 	}
+
+	overrides := []string{
+		fmt.Sprintf("image.tag=%s", podVersion),
+	}
+	d.Release.AddValues([]string{}, overrides)
 
 	log.Debugf("Deploying %s, version %s", d.ReleaseName, podVersion)
 	c <- State{Step: "deploying release", Progress: 0}
