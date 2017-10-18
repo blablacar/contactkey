@@ -37,6 +37,7 @@ type K8sEnvironment struct {
 type DeployerK8sConfig struct {
 	WorkPath     string                    `mapstructure:"workPath"`
 	Environments map[string]K8sEnvironment `mapstructure:"environments"`
+	VcsRegexp    string                    `mapstructure:"vcsRegexp"`
 }
 
 type DeployerGgnConfig struct {

@@ -14,6 +14,13 @@ deployers:
       preprod: pp
       prod: da-prod
 
+  k8s:
+    vcsRegexp: tag:\s?v(.+)
+    workPath: /tmp
+    environments:
+      local:
+        cluster: ops
+
 sources:
   stash:
     user:        user
