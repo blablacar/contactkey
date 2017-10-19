@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"path"
+	"regexp"
 
 	"github.com/remyLemeunier/contactkey/utils"
 	"github.com/remyLemeunier/k8s-deploy/releases"
@@ -20,6 +21,7 @@ type DeployerK8s struct {
 	values       []string
 	Environments map[string]utils.K8sEnvironment
 	workPath     string
+	vcsRegexp    string
 }
 
 func NewDeployerK8s(cfg utils.DeployerK8sConfig, manifest utils.DeployerK8sManifest) (*DeployerK8s, error) {
@@ -33,6 +35,7 @@ func NewDeployerK8s(cfg utils.DeployerK8sConfig, manifest utils.DeployerK8sManif
 	deployer.Namespace = manifest.Namespace
 	deployer.Environments = cfg.Environments
 	deployer.workPath = cfg.WorkPath
+	deployer.vcsRegexp = cfg.VcsRegexp
 	return &deployer, nil
 }
 
@@ -71,9 +74,32 @@ func (d *DeployerK8s) ListInstances(env string) ([]Instance, error) {
 }
 
 func (d *DeployerK8s) ListVcsVersions(env string) ([]string, error) {
-	//TODO: implement this
+	context, err := d.getK8sContext(env)
+	if err != nil {
+		return nil, err
+	}
+
 	log.Debug("ListVcsVersions")
-	return []string{"0"}, nil
+	log.Debugf("Environment %s matched to : cluster=%s", env, context.Cluster)
+
+	if d.Release == nil {
+		d.Release, err = d.getRelease(context.Cluster, d.Namespace)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	content, err := d.Release.Content()
+	if err != nil {
+		return nil, err
+	}
+
+	vcsVersion := regexp.MustCompile(d.vcsRegexp).FindStringSubmatch(content.String())
+	if len(vcsVersion) != 2 {
+		return nil, fmt.Errorf("Could not find vcsVersion")
+	}
+
+	return []string{vcsVersion[1]}, nil
 }
 
 func (d *DeployerK8s) getK8sContext(env string) (utils.K8sEnvironment, error) {

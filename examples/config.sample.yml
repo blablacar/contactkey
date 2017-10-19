@@ -9,7 +9,9 @@ deployers:
     workPath: /tmp
     environments:
       preprod: pp
+
   k8s:
+    vcsRegexp: -v(.+)
     workPath: /tmp
     environments:
       local:
