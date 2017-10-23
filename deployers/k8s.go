@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path"
 	"regexp"
+	"strings"
 
 	"github.com/remyLemeunier/contactkey/utils"
 	"github.com/remyLemeunier/k8s-deploy/releases"
@@ -81,7 +82,6 @@ func (d *DeployerK8s) ListVcsVersions(env string) ([]string, error) {
 
 	log.Debug("ListVcsVersions")
 	log.Debugf("Environment %s matched to : cluster=%s", env, context.Cluster)
-
 	if d.Release == nil {
 		d.Release, err = d.getRelease(context.Cluster, d.Namespace)
 		if err != nil {
@@ -91,6 +91,10 @@ func (d *DeployerK8s) ListVcsVersions(env string) ([]string, error) {
 
 	content, err := d.Release.Content()
 	if err != nil {
+		// Crappy stuff
+		if strings.Contains(err.Error(), "not found") == true {
+			return nil, nil
+		}
 		return nil, err
 	}
 
