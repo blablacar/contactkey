@@ -6,15 +6,17 @@ import (
 	"reflect"
 
 	"github.com/remyLemeunier/contactkey/utils"
+	"github.com/spf13/viper"
 )
 
 func TestNewContext(t *testing.T) {
-	configFile, err := utils.ReadFile("../utils/testdata/config.yaml")
+	_, err := utils.ReadFile("../utils/testdata/config.yaml")
 	if err != nil {
 		t.Fatalf("ReadFile failed with err %q", err)
 	}
 
-	cfg, err := utils.LoadConfig(configFile)
+	viper.AddConfigPath("../utils/testdata")
+	cfg, err := utils.LoadConfig()
 	if err != nil {
 		t.Fatalf("LoadConfig failed with err %q", err)
 	}

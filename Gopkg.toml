@@ -20,9 +20,18 @@
 #  name = "github.com/x/y"
 #  version = "2.4.0"
 
+
 [[constraint]]
   branch = "master"
-  name = "github.com/spf13/viper"
+  name = "github.com/mitchellh/mapstructure"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/olekukonko/tablewriter"
+
+[[constraint]]
+  name = "github.com/sirupsen/logrus"
+  version = "1.0.3"
 
 [[constraint]]
   branch = "master"
@@ -39,3 +48,10 @@
 [[constraint]]
   branch = "master"
   name = "github.com/remyLemeunier/k8s-deploy"
+[[constraint]]
+  name = "github.com/spf13/viper"
+  version = "1.0.0"
+
+[[constraint]]
+  branch = "v2"
+  name = "gopkg.in/yaml.v2"

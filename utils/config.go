@@ -2,15 +2,11 @@ package utils
 
 import (
 	"io/ioutil"
-	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/mitchellh/mapstructure"
-	yaml "gopkg.in/yaml.v2"
+	"github.com/spf13/viper"
 )
-
-var DefaultHome = filepath.Join(os.Getenv("HOME"), ".contactkey", "config.yml")
 
 type Config struct {
 	WorkPath           string `mapstructure:"workPath"`
@@ -98,16 +94,18 @@ type PrometheusConfig struct {
 	Url string `mapstructure:"url"`
 }
 
-func LoadConfig(cfgReader []byte) (*Config, error) {
+func LoadConfig() (*Config, error) {
 	cfg := &Config{}
-	cfgAux := make(map[string]interface{})
-	err := yaml.Unmarshal(cfgReader, &cfgAux)
-	if err != nil {
+	viper.SetConfigType("yaml")
+	viper.SetConfigName("config")            // name of config file (without extension)
+	viper.AddConfigPath("$HOME/.contactkey") // call multiple times to add many search paths
+	viper.AddConfigPath("$HOME/.cck")        // call multiple times to add many search paths
+	viper.AddConfigPath(".")                 // optionally look for config in the working directory
+	err := viper.ReadInConfig()              // Find and read the config file
+	if err != nil {                          // Handle errors reading the config file
 		return nil, err
 	}
-	if err := mapstructure.Decode(cfgAux, cfg); err != nil {
-		return nil, err
-	}
+	viper.Unmarshal(&cfg)
 	return cfg, nil
 }
 
