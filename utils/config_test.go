@@ -1,16 +1,13 @@
 package utils
 
 import (
+	"github.com/spf13/viper"
 	"testing"
 )
 
 func TestLoadConfig(t *testing.T) {
-	configFile, err := ReadFile("./testdata/config.yaml")
-	if err != nil {
-		t.Fatalf("ReadFile failed with err %q", err)
-	}
-
-	cfg, err := LoadConfig(configFile)
+	viper.AddConfigPath("./testdata")
+	cfg, err := LoadConfig()
 	if err != nil {
 		t.Fatalf("LoadConfig failed with err %q", err)
 	}

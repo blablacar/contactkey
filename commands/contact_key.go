@@ -11,13 +11,7 @@ import (
 var branch = ""
 
 func Execute() {
-	configFile, err := utils.ReadFile(utils.DefaultHome)
-	if err != nil {
-		log.Errorln(fmt.Sprintf("Failed to read default file: %q", err))
-		return
-	}
-
-	cfg, err := utils.LoadConfig(configFile)
+	cfg, err := utils.LoadConfig()
 	if err != nil {
 		log.Errorln(fmt.Sprintf("Failed load config: %q", err))
 		return
