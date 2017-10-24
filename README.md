@@ -56,6 +56,7 @@ deployers:                 # Define the various deployers used in service manife
       preprod: staging    
       prod:    production 
    k8s:                    # This will enable deployment on k8s using helm
+    vcsRegexp: -v(.+)      # Extract the vcs sha1 from pod version. (Not mandatory)
     workPath: /tmp         
     environments:          # Link between cck environments and k8s clusters
       local:
