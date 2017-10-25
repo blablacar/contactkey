@@ -56,6 +56,7 @@ func (d *DeployerK8s) ListInstances(env string) ([]Instance, error) {
 	}
 
 	status, err := d.Release.Status()
+
 	if err != nil {
 		return nil, err
 	}
@@ -65,11 +66,21 @@ func (d *DeployerK8s) ListInstances(env string) ([]Instance, error) {
 		return nil, err
 	}
 
+	tag := regexp.MustCompile(d.vcsRegexp).FindStringSubmatch(content.String())
+	if len(tag) != 2 {
+		return nil, fmt.Errorf("Could not find aciVersion")
+	}
+
+	aciVersion := strings.Split(tag[0], ":")
+	if len(aciVersion) != 2 {
+		return nil, fmt.Errorf("Could not find aciVersion")
+	}
+
 	return []Instance{
 		{
 			Name:    status.Name,
 			State:   status.Info.Status.Code.String(),
-			Version: content.Release.Chart.Metadata.Version,
+			Version: aciVersion[1],
 		},
 	}, nil
 }
