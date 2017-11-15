@@ -47,8 +47,18 @@ func (d *Deploy) execute() {
 	defer timer.ObserveDuration()
 
 	currentUser, err := user.Current()
-	if err == nil {
+	if err == nil && currentUser.Name != "" {
 		userName = currentUser.Name
+	}
+
+	if len(d.Context.PotentialUsername) > 0 {
+		for _, value := range d.Context.PotentialUsername {
+			potentialUserName := os.Getenv(value)
+			if potentialUserName != "" {
+				userName = potentialUserName
+				break
+			}
+		}
 	}
 
 	if err := utils.CheckIfIsLaunchedInAScreen(); err != nil && d.Context.ScreenMandatory == true {

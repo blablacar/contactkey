@@ -19,6 +19,7 @@ type Config struct {
 	HookConfig         `mapstructure:"hooks"`
 	LockSystemConfig   `mapstructure:"lockSystem"`
 	MetricsConfig      `mapstructure:"metrics"`
+	PotentialUsername  []string
 }
 
 type DeployerConfig struct {
