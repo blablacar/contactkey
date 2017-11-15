@@ -11,14 +11,15 @@ import (
 )
 
 type Context struct {
-	Deployer        deployers.Deployer
-	Vcs             services.Sources
-	Binaries        services.Binaries
-	Hooks           []hooks.Hooks
-	LockSystem      utils.Lock
-	ScreenMandatory bool
-	Log             *log.Logger
-	Metrics         *utils.MetricsRegistry
+	Deployer          deployers.Deployer
+	Vcs               services.Sources
+	Binaries          services.Binaries
+	Hooks             []hooks.Hooks
+	LockSystem        utils.Lock
+	ScreenMandatory   bool
+	PotentialUsername []string
+	Log               *log.Logger
+	Metrics           *utils.MetricsRegistry
 }
 
 func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
@@ -110,6 +111,10 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	if len(cfg.PotentialUsername) > 0 {
+		ctx.PotentialUsername = cfg.PotentialUsername
 	}
 
 	if cfg.MetricsConfig.PrometheusConfig != (utils.PrometheusConfig{}) {

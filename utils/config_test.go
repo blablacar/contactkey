@@ -1,8 +1,9 @@
 package utils
 
 import (
-	"github.com/spf13/viper"
 	"testing"
+
+	"github.com/spf13/viper"
 )
 
 func TestLoadConfig(t *testing.T) {
@@ -65,6 +66,14 @@ func TestLoadConfig(t *testing.T) {
 
 	if cfg.ScreenMandatory != true {
 		t.Error("ScreenMandatory was expected to be true")
+	}
+
+	if len(cfg.PotentialUsername) != 2 {
+		t.Fatalf("PotentialUsername length should be 2 instead got: %q", len(cfg.PotentialUsername))
+	}
+
+	if cfg.PotentialUsername[0] != "USER" || cfg.PotentialUsername[1] != "bamboo.jira.username" {
+		t.Error("Error PotentialUsername doesn't contain the right informations.")
 	}
 }
 
