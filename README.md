@@ -95,8 +95,8 @@ lockSystem:                # Define a lock system in order to avoid multiple com
     filePath: /tmp         # Path where the is going to be written.
 
 potentialUsername:       # By default get the current user.
-  - USER                 # You can also have a list of env variable
-  - bamboo.jira.username # where you can find the username
+  - USER                 # You can also have a list of env variable where you can find the username.
+  - bamboo.jira.username # It stops on the first username found in the list.
 ```
 ## Configuration by service (manifest)
 
