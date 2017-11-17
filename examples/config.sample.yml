@@ -44,3 +44,7 @@ metrics:
 lockSystem:
   fileLock:
     filePath: /tmp
+
+potentialUsername:
+  - USER
+  - bamboo.jira.username
