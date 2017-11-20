@@ -50,7 +50,7 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 	} else {
 		return nil, fmt.Errorf(
 			"Deployer unknown : %q",
-			manifest.DeployerGgnManifest,
+			manifest.DeployerManifest,
 		)
 	}
 
