@@ -10,7 +10,7 @@ import (
 
 type Config struct {
 	WorkPath           string `mapstructure:"workPath"`
-	LogLevel           string
+	Verbose            bool
 	GlobalEnvironments []string
 	ScreenMandatory    bool
 	DeployerConfig     `mapstructure:"deployers"`
@@ -107,6 +107,7 @@ func LoadConfig() (*Config, error) {
 		return nil, err
 	}
 	viper.Unmarshal(&cfg)
+
 	return cfg, nil
 }
 

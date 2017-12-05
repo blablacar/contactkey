@@ -3,6 +3,8 @@ package context
 import (
 	"fmt"
 
+	"io/ioutil"
+
 	"github.com/remyLemeunier/contactkey/deployers"
 	"github.com/remyLemeunier/contactkey/hooks"
 	"github.com/remyLemeunier/contactkey/services"
@@ -26,12 +28,12 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 	ctx := &Context{
 		ScreenMandatory: cfg.ScreenMandatory,
 	}
-	loglevel, err := log.ParseLevel(cfg.LogLevel)
-	if err != nil {
-		loglevel = log.WarnLevel
-	}
-	log.SetLevel(loglevel)
 
+	log.SetLevel(log.DebugLevel)
+	if cfg.Verbose == false {
+		log.SetOutput(ioutil.Discard)
+	}
+	var err error
 	if manifest.DeployerManifest.DeployerGgnManifest != (utils.DeployerGgnManifest{}) {
 		ctx.Deployer, err = deployers.NewDeployerGgn(
 			cfg.DeployerConfig.DeployerGgnConfig,
