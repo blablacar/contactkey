@@ -2,11 +2,17 @@ package utils
 
 import (
 	"io/ioutil"
-	"path/filepath"
 	"strings"
+
+	"path/filepath"
 
 	"github.com/spf13/viper"
 )
+
+type ServiceTree struct {
+	Child   map[string]ServiceTree
+	Service []string
+}
 
 type Config struct {
 	WorkPath           string `mapstructure:"workPath"`
@@ -111,27 +117,44 @@ func LoadConfig() (*Config, error) {
 	return cfg, nil
 }
 
-func (c Config) DiscoverServices() ([]string, error) {
-	services := make([]string, 0)
-
-	files, err := ioutil.ReadDir(c.WorkPath)
+func (c Config) DiscoverServices() (ServiceTree, error) {
+	mainTree := ServiceTree{}
+	mainTree.Child = make(map[string]ServiceTree)
+	err := runThroughDir(&mainTree, c.WorkPath)
 	if err != nil {
-		return nil, err
+		return mainTree, err
+	}
+
+	return mainTree, nil
+}
+
+func runThroughDir(serviceTree *ServiceTree, path string) error {
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		return err
 	}
 
 	for _, file := range files {
 		if file.IsDir() == true {
+			st := ServiceTree{}
+			st.Child = make(map[string]ServiceTree)
+			err := runThroughDir(&st, path+"/"+file.Name())
+			if err != nil {
+				return err
+			}
+
+			serviceTree.Child[file.Name()] = st
 			continue
 		}
 
 		ext := filepath.Ext(file.Name())
 		if ext == ".yaml" || ext == ".yml" {
 			baseNameWithoutExt := strings.TrimSuffix(filepath.Base(file.Name()), ext)
-			services = append(services, baseNameWithoutExt)
+			serviceTree.Service = append(serviceTree.Service, baseNameWithoutExt)
 		}
 	}
 
-	return services, nil
+	return nil
 }
 
 func ReadFile(path string) ([]byte, error) {

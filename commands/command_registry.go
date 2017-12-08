@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"path"
 
+	"os"
+
+	"github.com/davecgh/go-spew/spew"
 	"github.com/remyLemeunier/contactkey/context"
 	"github.com/remyLemeunier/contactkey/utils"
 	log "github.com/sirupsen/logrus"
@@ -39,6 +42,8 @@ type CckCommand interface {
 }
 
 func fill(cck CckCommand, config *utils.Config, service string, env string) error {
+	spew.Dump(config)
+	os.Exit(0)
 	filePath := path.Join(config.WorkPath, fmt.Sprintf("%s.yml", service))
 	manifestFile, err := utils.ReadFile(filePath)
 	if err != nil {
