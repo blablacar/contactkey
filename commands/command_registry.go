@@ -2,11 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"path"
 
-	"os"
-
-	"github.com/davecgh/go-spew/spew"
 	"github.com/remyLemeunier/contactkey/context"
 	"github.com/remyLemeunier/contactkey/utils"
 	log "github.com/sirupsen/logrus"
@@ -14,14 +10,14 @@ import (
 
 var typeRegistry = make(map[string]CckCommand)
 
-func makeInstance(cfg *utils.Config, name string, service string, env string) (CckCommand, error) {
+func makeInstance(cfg *utils.Config, name string, service string, env string, filePath string) (CckCommand, error) {
 	if _, ok := typeRegistry[name]; !ok {
 		return nil, fmt.Errorf("Struct not found %s", name)
 
 	}
 
 	cckCommand := typeRegistry[name]
-	err := fill(cckCommand, cfg, service, env)
+	err := fill(cckCommand, cfg, service, env, filePath)
 	if err != nil {
 		return nil, err
 	}
@@ -41,10 +37,7 @@ type CckCommand interface {
 	execute()
 }
 
-func fill(cck CckCommand, config *utils.Config, service string, env string) error {
-	spew.Dump(config)
-	os.Exit(0)
-	filePath := path.Join(config.WorkPath, fmt.Sprintf("%s.yml", service))
+func fill(cck CckCommand, config *utils.Config, service string, env string, filePath string) error {
 	manifestFile, err := utils.ReadFile(filePath)
 	if err != nil {
 		return fmt.Errorf("Unable to read file: %q with err: %q", filePath, err)

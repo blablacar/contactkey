@@ -32,7 +32,7 @@ func Execute() {
 		rootCmd.AddCommand(command)
 		envsCmd := addEnvironmentToCommand(command, cfg.GlobalEnvironments)
 		for _, envCmd := range envsCmd {
-			addServiceNameToCommand(tree, envCmd, cfg, deployCmd.Name(), envCmd.Name())
+			addServiceNameToCommand(tree, envCmd, cfg, command.Name(), envCmd.Name())
 		}
 	}
 

@@ -20,12 +20,12 @@ func addEnvironmentToCommand(cmd *cobra.Command, envs []string) map[int]*cobra.C
 }
 
 func addServiceNameToCommand(serviceTree utils.ServiceTree, cmd *cobra.Command, cfg *utils.Config, commandName string, env string) {
-	for _, serviceName := range serviceTree.Service {
+	for serviceName, filePath := range serviceTree.Service {
 		serviceCmd2 := &cobra.Command{
 			Use:   serviceName,
 			Short: "Run command for " + serviceName,
 			RunE: func(cmd *cobra.Command, args []string) error {
-				cckCommand, err := makeInstance(cfg, commandName, cmd.Name(), env)
+				cckCommand, err := makeInstance(cfg, commandName, cmd.Name(), env, filePath)
 				if err != nil {
 					return err
 				}
