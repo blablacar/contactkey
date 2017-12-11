@@ -79,24 +79,104 @@ func TestLoadConfig(t *testing.T) {
 
 func TestDiscoverServices(t *testing.T) {
 	c := Config{WorkPath: "./testdata"}
-	services, err := c.DiscoverServices()
+	serviceTree, err := c.DiscoverServices()
 	if err != nil {
 		t.Fatalf("DiscoverServices failed with err %q", err)
 	}
 
-	if len(services) != 3 {
-		t.Errorf("Services'lenght should be 3 instead got %d", len(services))
+	if len(serviceTree.Service) != 3 {
+		t.Errorf("ServiceTree length should be 3 instead got %d", len(serviceTree.Service))
 	}
 
-	if services[0] != "config" {
-		t.Errorf("Should be 'config' instead got: %q", services[0])
-	}
-	if services[1] != "manifest-k8s" {
-		t.Errorf("Should be 'manifest' instead got: %q", services[1])
+	if _, ok := serviceTree.Service["config"]; !ok {
+		t.Error("Key 'config' not found.")
 	}
 
-	if services[2] != "manifest" {
-		t.Errorf("Should be 'manifest' instead got: %q", services[1])
+	if _, ok := serviceTree.Service["manifest-k8s"]; !ok {
+		t.Error("Key 'manifest-k8s' not found.")
+	}
+
+	if _, ok := serviceTree.Service["manifest"]; !ok {
+		t.Error("Key 'manifest' not found.")
+	}
+
+	if len(serviceTree.Child) != 2 {
+		t.Fatalf("ServiceTree child length should be 2 instead got %d", len(serviceTree.Child))
+	}
+
+	dirOne, ok := serviceTree.Child["dirOne"]
+	if !ok {
+		t.Fatal("Key 'dirOne' not found in Child.")
+	}
+
+	dirTwo, ok := serviceTree.Child["dirTwo"]
+	if !ok {
+		t.Fatal("Key 'dirTwo' not found in Child.")
+	}
+
+	if len(dirOne.Service) != 2 {
+		t.Fatalf("dirOne should have 2 services, found %s", len(dirOne.Service))
+	}
+
+	if len(dirOne.Child) != 1 {
+		t.Fatalf("dirOne should have 1 child, found %s", len(dirOne.Child))
+	}
+
+	if len(dirTwo.Service) != 1 {
+		t.Fatalf("dirTwo should have 1 service, found %s", len(dirTwo.Service))
+	}
+
+	if len(dirTwo.Child) != 0 {
+		t.Fatalf("dirTwo have no child, found %s", len(dirTwo.Child))
+	}
+
+	confa, ok := dirOne.Service["confa"]
+	if !ok {
+		t.Fatal("Key 'confa' not found in dirOne's service")
+	}
+
+	if confa != "./testdata/dirOne/confa.yaml" {
+		t.Errorf("confa's path should be './testdata/dirOne/confa.yaml' instead found %s", confa)
+	}
+
+	confb, ok := dirOne.Service["confb"]
+	if !ok {
+		t.Fatal("Key 'confb' not found in dirOne's service")
+	}
+
+	if confb != "./testdata/dirOne/confb.yaml" {
+		t.Errorf("confb's path should be './testdata/dirOne/confa.yaml' instead found %s", confb)
+	}
+
+	confd, ok := dirTwo.Service["confd"]
+	if !ok {
+		t.Fatal("Key 'confd' not found in dirTwo's service")
+	}
+
+	if confd != "./testdata/dirTwo/confd.yaml" {
+		t.Errorf("confd's path should be './testdata/dirTwo/confd.yaml' instead found %s", confd)
+	}
+
+	subDirOne, ok := dirOne.Child["subDirOne"]
+	if !ok {
+		t.Fatal("subDirOne not found in dirOne child.")
+	}
+
+	if len(subDirOne.Child) != 0 {
+		t.Fatalf("subDirOne have no child, found %s", len(subDirOne.Child))
+	}
+
+	if len(subDirOne.Service) != 1 {
+		t.Fatalf("subDirOne should have 1 service, found %s", len(subDirOne.Service))
+	}
+
+	confc, ok := subDirOne.Service["confc"]
+	if !ok {
+		t.Fatal("Key 'confc' not found in subDirOne's service")
+	}
+
+	if confc != "./testdata/dirOne/subDirOne/confc.yaml" {
+		t.Errorf("confc's path should be './testdata/dirOne/subDirOne/confc.yaml' instead found %s", confc)
 	}
 }
 
