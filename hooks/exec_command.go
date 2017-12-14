@@ -3,8 +3,10 @@ package hooks
 import (
 	"errors"
 	"os/exec"
+	"strings"
 
 	"github.com/remyLemeunier/contactkey/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 type ExecCommand struct {
@@ -38,6 +40,7 @@ func (e ExecCommand) PostDeployment(username string, env string, service string,
 func executeCommands(commandList []utils.CommandList) error {
 	var err error = nil
 	for _, commandName := range commandList {
+		log.Debugf("Executing command %s %s", commandName.Command, strings.Join(commandName.Args, " "))
 		if _, error := exec.Command(commandName.Command, commandName.Args...).CombinedOutput(); error != nil {
 			if err != nil {
 				err = errors.New(err.Error() + error.Error())
