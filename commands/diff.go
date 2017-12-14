@@ -30,22 +30,22 @@ func (d Diff) execute() {
 	// If the branch is null it will use the default one.
 	sha1, err := d.Context.Vcs.RetrieveSha1ForProject(branch)
 	if err != nil {
-		log.Error(fmt.Sprintf("Failed to retrieve sha1: %q \n", err))
+		log.Fatal(fmt.Sprintf("Failed to retrieve sha1: %q \n", err))
 		return
 	}
 	if sha1 == "" {
-		log.Error(fmt.Sprintf("No sha1 found for service %q \n", d.Service))
+		log.Fatal(fmt.Sprintf("No sha1 found for service %q \n", d.Service))
 		return
 	}
 
 	versions, err := d.Context.Deployer.ListVcsVersions(d.Env)
 	if err != nil {
-		log.Error(fmt.Sprintf("Failed to list versions with error %q \n", err))
+		log.Fatal(fmt.Sprintf("Failed to list versions with error %q \n", err))
 		return
 	}
 
 	if len(versions) == 0 {
-		log.Error(fmt.Sprintf("No service (%q) versions found for the Env: %q \n", d.Service, d.Env))
+		log.Fatal(fmt.Sprintf("No service (%q) versions found for the Env: %q \n", d.Service, d.Env))
 		return
 	}
 
@@ -62,7 +62,7 @@ func (d Diff) execute() {
 	for _, uniqueVersion := range uniqueVersions {
 		changes, err := d.Context.Vcs.Diff(uniqueVersion, sha1)
 		if err != nil {
-			log.Error(fmt.Sprintf("Failed to retrieve sha1: %q \n", err))
+			log.Fatal(fmt.Sprintf("Failed to retrieve sha1: %q \n", err))
 			return
 		}
 
