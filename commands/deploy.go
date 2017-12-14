@@ -71,12 +71,12 @@ func (d *Deploy) execute() {
 		log.Println(fmt.Sprintf("Trying to lock the lock command for service %q and env %q", d.Service, d.Env))
 		canLock, err := d.Context.LockSystem.Lock(d.Env, d.Service)
 		if err != nil {
-			log.Errorln(fmt.Sprintf("Failed to lock, error raised: %q", err))
+			log.Fatalln(fmt.Sprintf("Failed to lock, error raised: %q", err))
 			return
 		}
 
 		if canLock == false {
-			log.Errorln("Another command is currently running")
+			log.Fatalln("Another command is currently running")
 			return
 		}
 
@@ -91,24 +91,24 @@ func (d *Deploy) execute() {
 	// If the branch is null it will use the default one.
 	sha1ToDeploy, err := d.Context.Vcs.RetrieveSha1ForProject(branch)
 	if err != nil {
-		log.Errorln(fmt.Sprintf("Failed to retrieve source changes for %q : %q", d.Service, err))
+		log.Fatalln(fmt.Sprintf("Failed to retrieve source changes for %q : %q", d.Service, err))
 		return
 	}
 
 	podVersion, err := d.Context.Binaries.RetrievePodVersion(sha1ToDeploy)
 	if err != nil {
-		log.Errorln(fmt.Sprintf("Failed to retrieve pod version: %q", err))
+		log.Fatalln(fmt.Sprintf("Failed to retrieve pod version: %q", err))
 		return
 	}
 
 	deployedVersions, err := d.Context.Deployer.ListVcsVersions(d.Env)
 	if err != nil {
-		log.Errorln(fmt.Sprintf("Failed to retrieve DEPLOYED version from service(%q) in env %q: %q", d.Service, d.Env, err))
+		log.Fatalln(fmt.Sprintf("Failed to retrieve DEPLOYED version from service(%q) in env %q: %q", d.Service, d.Env, err))
 		return
 	}
 
 	if podVersion == "" {
-		log.Errorln(fmt.Sprintf("We have not found the pod version with the the sha1 %q \n"+
+		log.Fatalln(fmt.Sprintf("We have not found the pod version with the the sha1 %q \n"+
 			"The pod has not been created.", sha1ToDeploy))
 		return
 	}
@@ -125,7 +125,7 @@ func (d *Deploy) execute() {
 	}
 
 	if needToDeploy == false {
-		log.Errorln(fmt.Sprintf("Version %q is already deployed.", sha1ToDeploy))
+		log.Fatalln(fmt.Sprintf("Version %q is already deployed.", sha1ToDeploy))
 		return
 	}
 
@@ -133,7 +133,7 @@ func (d *Deploy) execute() {
 	for _, hook := range d.Context.Hooks {
 		err = hook.PreDeployment(userName, d.Env, d.Service, podVersion)
 		if hook.StopOnError() == true && err != nil {
-			log.Errorln(fmt.Sprintf("Predeployment failed: %q", err))
+			log.Fatalln(fmt.Sprintf("Predeployment failed: %q", err))
 			return
 		} else if err != nil {
 			log.Debugln(fmt.Sprintf("Predeployment failed: %q", err))
@@ -150,7 +150,8 @@ func (d *Deploy) execute() {
 	}()
 	err = d.Context.Deployer.Deploy(d.Env, podVersion, stateStream)
 	if err != nil {
-		log.Debugf("Deployment failed: %q", err)
+		log.Fatalf("Deployment failed: %q", err)
+		return
 	}
 
 	for _, hook := range d.Context.Hooks {

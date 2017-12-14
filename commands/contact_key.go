@@ -13,13 +13,13 @@ var branch = ""
 func Execute() {
 	cfg, err := utils.LoadConfig()
 	if err != nil {
-		log.Errorln(fmt.Sprintf("Failed load config: %q", err))
+		log.Fatalln(fmt.Sprintf("Failed load config: %q", err))
 		return
 	}
 
 	services, err := cfg.DiscoverServices()
 	if err != nil {
-		log.Errorln(fmt.Sprintf("Failed to find services: %q", err))
+		log.Fatalln(fmt.Sprintf("Failed to find services: %q", err))
 		return
 	}
 
@@ -55,6 +55,6 @@ func Execute() {
 
 	err = rootCmd.Execute()
 	if err != nil {
-		log.Errorln(err)
+		log.Fatalln(err)
 	}
 }
