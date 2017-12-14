@@ -21,6 +21,8 @@ hooks:
   newRelic:
     application: "Webhooks - {{.env}}"
   execCommand:
+    onInit:
+      - { command: "ls", args: ["-lah"] }
     onPredeploy:
       - { command: "ls", args: ["-lah"] }
     onPostDeploy:

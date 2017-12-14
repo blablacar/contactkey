@@ -8,6 +8,7 @@ import (
 )
 
 type ExecCommand struct {
+	OnInit       []utils.CommandList
 	OnPreDeploy  []utils.CommandList
 	OnPostDeploy []utils.CommandList
 	Stop         bool
@@ -15,10 +16,15 @@ type ExecCommand struct {
 
 func NewExecommand(manifest utils.ExecCommandManifest) *ExecCommand {
 	return &ExecCommand{
+		OnInit:       manifest.OnInit,
 		OnPreDeploy:  manifest.OnPreDeploy,
 		OnPostDeploy: manifest.OnPostDeploy,
 		Stop:         manifest.StopOnError,
 	}
+}
+
+func (e ExecCommand) Init() error {
+	return executeCommands(e.OnInit)
 }
 
 func (e ExecCommand) PreDeployment(username string, env string, service string, podVersion string) error {
