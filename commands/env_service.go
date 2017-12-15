@@ -19,14 +19,13 @@ func addEnvironmentToCommand(cmd *cobra.Command, envs []string) map[int]*cobra.C
 	return envCommands
 }
 
-func addServiceNameToCommand(cmd *cobra.Command, cfg *utils.Config, services []string, commandName string, env string) map[int]*cobra.Command {
-	serviceNameCommands := make(map[int]*cobra.Command)
-	for index, service := range services {
-		serviceCmd := &cobra.Command{
-			Use:   service,
-			Short: "Run command for " + service,
+func addServiceNameToCommand(serviceTree utils.ServiceTree, cmd *cobra.Command, cfg *utils.Config, commandName string, env string) {
+	for serviceName, filePath := range serviceTree.Service {
+		serviceCmd2 := &cobra.Command{
+			Use:   serviceName,
+			Short: "Run command for " + serviceName,
 			RunE: func(cmd *cobra.Command, args []string) error {
-				cckCommand, err := makeInstance(cfg, commandName, cmd.Name(), env)
+				cckCommand, err := makeInstance(cfg, commandName, cmd.Name(), env, filePath)
 				if err != nil {
 					return err
 				}
@@ -35,9 +34,16 @@ func addServiceNameToCommand(cmd *cobra.Command, cfg *utils.Config, services []s
 				return nil
 			},
 		}
-		cmd.AddCommand(serviceCmd)
-		serviceNameCommands[index] = serviceCmd
+
+		cmd.AddCommand(serviceCmd2)
 	}
 
-	return serviceNameCommands
+	for name, child := range serviceTree.Child {
+		serviceCmd1 := &cobra.Command{
+			Use:   name,
+			Short: "Run command for " + name,
+		}
+		cmd.AddCommand(serviceCmd1)
+		addServiceNameToCommand(child, serviceCmd1, cfg, commandName, env)
+	}
 }
