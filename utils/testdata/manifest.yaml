@@ -14,12 +14,16 @@ binaries:
     artifact: pod-webhooks
 hooks:
   slack:
-    channel:   channel
+    channel: channel
   newRelic:
     applicationFilter: "Webhooks - {{.env}}"
   execCommand:
+    onInit:
+      - command: "ls"
+        args: ["-lah"]
     onPredeploy:
-      - { command: "ls", args: ["-lah"] }
+      - command: "ls"
+        args: ["-lah"]
     onPostDeploy:
-      - { command: "cd /tmp"}
+      - command: "cd /tmp"
     stopOnError: true

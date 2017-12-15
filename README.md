@@ -123,9 +123,11 @@ hooks:                     # Hooks we are going to call before and after.
     applicationId: "<id>"
     stopOnError: false     # If an error occurs stop the deployment process (not mandatory, default: false)
   execCommand:             # Execute a command before and after the deployment process.
-    onPredeploy:           # Only execute before the deployment
+    onInit:                # Execute a command after reading the manifest
       - { command: "ls", args: ["-lah"] } # args is not mandatory
-    onPostDeploy:          # Only Executed after the deployment
+    onPredeploy:           # Execute a command before the deployment
+      - { command: "ls", args: ["-lah"] } # args is not mandatory
+    onPostDeploy:          # Execute a command after the deployment
       - { command: "cd /tmp"}
     stopOnError: true      # If an error occurs stop the deployment process (not mandatory default false)
 ```
