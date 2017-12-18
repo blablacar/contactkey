@@ -2,17 +2,11 @@ package utils
 
 import (
 	"io/ioutil"
-	"strings"
-
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/viper"
 )
-
-type ServiceTree struct {
-	Child   map[string]ServiceTree
-	Service map[string]string
-}
 
 type Config struct {
 	WorkPath           string `mapstructure:"workPath"`
@@ -101,14 +95,6 @@ type PrometheusConfig struct {
 	Url string `mapstructure:"url"`
 }
 
-func newServiceTree() ServiceTree {
-	st := ServiceTree{}
-	st.Child = make(map[string]ServiceTree)
-	st.Service = make(map[string]string)
-
-	return st
-}
-
 func LoadConfig() (*Config, error) {
 	cfg := &Config{}
 	viper.SetConfigType("yaml")
@@ -125,42 +111,27 @@ func LoadConfig() (*Config, error) {
 	return cfg, nil
 }
 
-func (c Config) DiscoverServices() (ServiceTree, error) {
-	mainTree := newServiceTree()
-	err := runThroughDir(&mainTree, c.WorkPath)
-	if err != nil {
-		return mainTree, err
-	}
+func (c Config) DiscoverServices() ([]string, error) {
+	services := make([]string, 0)
 
-	return mainTree, nil
-}
-
-func runThroughDir(serviceTree *ServiceTree, path string) error {
-	files, err := ioutil.ReadDir(path)
+	files, err := ioutil.ReadDir(c.WorkPath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	for _, file := range files {
 		if file.IsDir() == true {
-			st := newServiceTree()
-			err := runThroughDir(&st, path+"/"+file.Name())
-			if err != nil {
-				return err
-			}
-
-			serviceTree.Child[file.Name()] = st
 			continue
 		}
 
 		ext := filepath.Ext(file.Name())
 		if ext == ".yaml" || ext == ".yml" {
 			baseNameWithoutExt := strings.TrimSuffix(filepath.Base(file.Name()), ext)
-			serviceTree.Service[baseNameWithoutExt] = path + "/" + file.Name()
+			services = append(services, baseNameWithoutExt)
 		}
 	}
 
-	return nil
+	return services, nil
 }
 
 func ReadFile(path string) ([]byte, error) {
