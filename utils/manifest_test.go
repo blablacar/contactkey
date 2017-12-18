@@ -38,20 +38,12 @@ func TestLoadManifest(t *testing.T) {
 		t.Fatalf("OnPostDeploy in the ExecCommandManifest should have a len of 1 instead got %d", len(manifest.ExecCommandManifest.OnPostDeploy))
 	}
 
-	if manifest.ExecCommandManifest.OnInit[0].Command != "ls" {
-		t.Errorf("The OnInit command should be 'ls' instead got %d", manifest.ExecCommandManifest.OnInit[0].Command)
-	}
-
-	if len(manifest.ExecCommandManifest.OnInit[0].Args) != 1 {
-		t.Fatalf("Args len from OnInit in the ExecCommandManifest should have a len of 1 instead got %d", len(manifest.ExecCommandManifest.OnInit[0].Args))
-	}
-
 	if manifest.ExecCommandManifest.OnPreDeploy[0].Command != "ls" {
-		t.Errorf("The OnPreDeploy command should be 'ls' instead got %d", manifest.ExecCommandManifest.OnPreDeploy[0].Command)
+		t.Errorf("The OnPreDeploy commant should be 'ls' instead got %d", manifest.ExecCommandManifest.OnPreDeploy[0].Command)
 	}
 
 	if len(manifest.ExecCommandManifest.OnPreDeploy[0].Args) != 1 {
-		t.Fatalf("Args len from OnPreDeploy in the ExecCommandManifest should have a len of 1 instead got %d", len(manifest.ExecCommandManifest.OnPreDeploy[0].Args))
+		t.Fatalf("Args len from OnPredDeploy in the ExecCommandManifest should have a len of 1 instead got %d", len(manifest.ExecCommandManifest.OnPreDeploy[0].Args))
 	}
 
 	if manifest.ExecCommandManifest.OnPreDeploy[0].Args[0] != "-lah" {
@@ -59,7 +51,7 @@ func TestLoadManifest(t *testing.T) {
 	}
 
 	if manifest.ExecCommandManifest.OnPostDeploy[0].Command != "cd /tmp" {
-		t.Errorf("The OnPostDeploy command should be 'cd /tmp' instead got %d", manifest.ExecCommandManifest.OnPreDeploy[0].Command)
+		t.Errorf("The OnPostDeploy commant should be 'cd /tmp' instead got %d", manifest.ExecCommandManifest.OnPreDeploy[0].Command)
 	}
 
 	if len(manifest.ExecCommandManifest.OnPostDeploy[0].Args) != 0 {

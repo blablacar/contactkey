@@ -1,18 +1,18 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/remyLemeunier/contactkey/context"
 	"github.com/remyLemeunier/contactkey/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 var typeRegistry = make(map[string]CckCommand)
 
 func makeInstance(cfg *utils.Config, name string, service string, env string, filePath string) (CckCommand, error) {
 	if _, ok := typeRegistry[name]; !ok {
-		return nil, fmt.Errorf("Struct not found %s", name)
+		return nil, errors.New(fmt.Sprintf("Struct not found %s", name))
 
 	}
 
@@ -40,26 +40,17 @@ type CckCommand interface {
 func fill(cck CckCommand, config *utils.Config, service string, env string, filePath string) error {
 	manifestFile, err := utils.ReadFile(filePath)
 	if err != nil {
-		return fmt.Errorf("Unable to read file: %q with err: %q", filePath, err)
+		return errors.New(fmt.Sprintf("Unable to read file: %q with err: %q", filePath, err))
 	}
 
 	manifest, err := utils.LoadManifest(manifestFile)
 	if err != nil {
-		return fmt.Errorf("LoadConfig failed with err %q", err)
+		return errors.New(fmt.Sprintf("LoadConfig failed with err %q", err))
 	}
 
 	ctxt, err := context.NewContext(config, manifest)
 	if err != nil {
-		return fmt.Errorf("NewContext failed with err %q", err)
-	}
-
-	for _, hook := range ctxt.Hooks {
-		err = hook.Init()
-		if hook.StopOnError() == true && err != nil {
-			return fmt.Errorf("Init hook failed: %q", err)
-		} else if err != nil {
-			log.Debugf("Init hook failed: %q", err)
-		}
+		return errors.New(fmt.Sprintf("NewContext failed with err %q", err))
 	}
 
 	cck.fill(ctxt, service, env)
