@@ -16,7 +16,8 @@ func Execute() {
 		log.Fatalln(fmt.Sprintf("Failed load config: %q", err))
 		return
 	}
-	tree, err := cfg.DiscoverServices()
+
+	services, err := cfg.DiscoverServices()
 	if err != nil {
 		log.Fatalln(fmt.Sprintf("Failed to find services: %q", err))
 		return
@@ -27,14 +28,29 @@ func Execute() {
 	}
 
 	rootCmd.PersistentFlags().BoolVarP(&cfg.Verbose, "verbose", "v", false, "verbose output")
+	rootCmd.AddCommand(deployCmd)
+	rootCmd.AddCommand(diffCmd)
+	rootCmd.AddCommand(listCmd)
+	rootCmd.AddCommand(rollbackCmd)
 
-	verbsCommands := []*cobra.Command{deployCmd, diffCmd, listCmd, rollbackCmd}
-	for _, command := range verbsCommands {
-		rootCmd.AddCommand(command)
-		envsCmd := addEnvironmentToCommand(command, cfg.GlobalEnvironments)
-		for _, envCmd := range envsCmd {
-			addServiceNameToCommand(tree, envCmd, cfg, command.Name(), envCmd.Name())
-		}
+	deployEnvsCmd := addEnvironmentToCommand(deployCmd, cfg.GlobalEnvironments)
+	for _, deployEnvCmd := range deployEnvsCmd {
+		addServiceNameToCommand(deployEnvCmd, cfg, services, deployCmd.Name(), deployEnvCmd.Name())
+	}
+
+	diffEnvsCmd := addEnvironmentToCommand(diffCmd, cfg.GlobalEnvironments)
+	for _, diffEnvCmd := range diffEnvsCmd {
+		addServiceNameToCommand(diffEnvCmd, cfg, services, diffCmd.Name(), diffEnvCmd.Name())
+	}
+
+	listEnvsCmd := addEnvironmentToCommand(listCmd, cfg.GlobalEnvironments)
+	for _, listEnvCmd := range listEnvsCmd {
+		addServiceNameToCommand(listEnvCmd, cfg, services, listCmd.Name(), listEnvCmd.Name())
+	}
+
+	rollbackEnvsCmd := addEnvironmentToCommand(rollbackCmd, cfg.GlobalEnvironments)
+	for _, rollbackEnvCmd := range rollbackEnvsCmd {
+		addServiceNameToCommand(rollbackEnvCmd, cfg, services, rollbackCmd.Name(), rollbackEnvCmd.Name())
 	}
 
 	err = rootCmd.Execute()
