@@ -38,10 +38,6 @@ type NewRelicApplicationList struct {
 	} `json:"applications"`
 }
 
-func (c NewRelicClient) Init() error {
-	return nil
-}
-
 func (c NewRelicClient) PreDeployment(userName string, env string, service string, podVersion string) error {
 	var filter bytes.Buffer
 	filterTmpl, err := template.New("filter").Parse(c.ApplicationFilter)

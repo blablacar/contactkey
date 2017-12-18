@@ -38,10 +38,6 @@ func NewSlack(cfg utils.SlackConfig, manifest utils.SlackManifest) (*Slack, erro
 	}, nil
 }
 
-func (s Slack) Init() error {
-	return nil
-}
-
 // @TODO Later we could pass directly messages and use the go templater instead.
 func (s Slack) PreDeployment(username string, env string, service string, podVersion string) error {
 	return s.postMessage(fmt.Sprintf("[%q]Start, update service %q version %q %q", env, service, podVersion, username))

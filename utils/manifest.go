@@ -64,7 +64,6 @@ type NewRelicManifest struct {
 }
 
 type ExecCommandManifest struct {
-	OnInit       []CommandList `mapstructure:"onInit"`
 	OnPreDeploy  []CommandList `mapstructure:"onPreDeploy"`
 	OnPostDeploy []CommandList `mapstructure:"onPostDeploy"`
 	StopOnError  bool          `mapstructure:"stopOnError"`
