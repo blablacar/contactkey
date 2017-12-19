@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -40,7 +41,7 @@ type Deploy struct {
 	Writer  io.Writer
 }
 
-func (d *Deploy) execute() {
+func (d *Deploy) execute() error {
 	timer := prometheus.NewTimer(prometheus.ObserverFunc(
 		deployDuration.With(prometheus.Labels{"env": d.Env, "project": d.Service}).Set))
 	d.Context.Metrics.Add(deployDuration)
@@ -62,8 +63,7 @@ func (d *Deploy) execute() {
 	}
 
 	if err := utils.CheckIfIsLaunchedInAScreen(); err != nil && d.Context.ScreenMandatory == true {
-		log.Errorln(fmt.Sprintf("Screen error raised: %q", err))
-		return
+		return errors.New(fmt.Sprintf("Screen error raised: %q", err))
 	}
 
 	// The lock system is not mandatory
@@ -71,17 +71,15 @@ func (d *Deploy) execute() {
 		log.Println(fmt.Sprintf("Trying to lock the lock command for service %q and env %q", d.Service, d.Env))
 		canLock, err := d.Context.LockSystem.Lock(d.Env, d.Service)
 		if err != nil {
-			log.Fatalln(fmt.Sprintf("Failed to lock, error raised: %q", err))
-			return
+			return errors.New(fmt.Sprintf("Failed to lock, error raised: %q", err))
 		}
 
 		if canLock == false {
-			log.Fatalln("Another command is currently running")
-			return
+			return errors.New("Another command is currently running")
 		}
 
 		defer func(d *Deploy) {
-			d.Context.LockSystem.Unlock(d.Env, d.Service)
+			err = d.Context.LockSystem.Unlock(d.Env, d.Service)
 			if err != nil {
 				log.Errorln(fmt.Sprintf("Failed to unlock, error raised: %q", err))
 			}
@@ -91,26 +89,22 @@ func (d *Deploy) execute() {
 	// If the branch is null it will use the default one.
 	sha1ToDeploy, err := d.Context.Vcs.RetrieveSha1ForProject(branch)
 	if err != nil {
-		log.Fatalln(fmt.Sprintf("Failed to retrieve source changes for %q : %q", d.Service, err))
-		return
+		return errors.New(fmt.Sprintf("Failed to retrieve source changes for %q : %q", d.Service, err))
 	}
 
 	podVersion, err := d.Context.Binaries.RetrievePodVersion(sha1ToDeploy)
 	if err != nil {
-		log.Fatalln(fmt.Sprintf("Failed to retrieve pod version: %q", err))
-		return
+		return errors.New(fmt.Sprintf("Failed to retrieve pod version: %q", err))
 	}
 
 	deployedVersions, err := d.Context.Deployer.ListVcsVersions(d.Env)
 	if err != nil {
-		log.Fatalln(fmt.Sprintf("Failed to retrieve DEPLOYED version from service(%q) in env %q: %q", d.Service, d.Env, err))
-		return
+		return errors.New(fmt.Sprintf("Failed to retrieve DEPLOYED version from service(%q) in env %q: %q", d.Service, d.Env, err))
 	}
 
 	if podVersion == "" {
-		log.Fatalln(fmt.Sprintf("We have not found the pod version with the the sha1 %q \n"+
+		return errors.New(fmt.Sprintf("We have not found the pod version with the the sha1 %q \n"+
 			"The pod has not been created.", sha1ToDeploy))
-		return
 	}
 
 	needToDeploy := force
@@ -125,16 +119,14 @@ func (d *Deploy) execute() {
 	}
 
 	if needToDeploy == false {
-		log.Fatalln(fmt.Sprintf("Version %q is already deployed.", sha1ToDeploy))
-		return
+		return errors.New(fmt.Sprintf("Version %q is already deployed.", sha1ToDeploy))
 	}
 
 	log.Println(fmt.Sprintf("Going to deploy pod version %q \n", podVersion))
 	for _, hook := range d.Context.Hooks {
 		err = hook.PreDeployment(userName, d.Env, d.Service, podVersion)
 		if hook.StopOnError() == true && err != nil {
-			log.Fatalln(fmt.Sprintf("Predeployment failed: %q", err))
-			return
+			return errors.New(fmt.Sprintf("Predeployment failed: %q", err))
 		} else if err != nil {
 			log.Debugln(fmt.Sprintf("Predeployment failed: %q", err))
 		}
@@ -150,8 +142,7 @@ func (d *Deploy) execute() {
 	}()
 	err = d.Context.Deployer.Deploy(d.Env, podVersion, stateStream)
 	if err != nil {
-		log.Fatalf("Deployment failed: %q", err)
-		return
+		return errors.New(fmt.Sprintf("Deployment failed: %q", err))
 	}
 
 	for _, hook := range d.Context.Hooks {
@@ -168,6 +159,7 @@ func (d *Deploy) execute() {
 	}
 
 	log.Println(d.Writer, "Deployment has successfully ended")
+	return nil
 }
 
 func (d *Deploy) fill(context *context.Context, service string, env string) {

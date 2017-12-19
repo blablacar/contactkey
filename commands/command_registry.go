@@ -35,7 +35,7 @@ func init() {
 
 type CckCommand interface {
 	fill(context *context.Context, service string, env string)
-	execute()
+	execute() error
 }
 
 func fill(cck CckCommand, config *utils.Config, service string, env string) error {
@@ -69,6 +69,6 @@ func fill(cck CckCommand, config *utils.Config, service string, env string) erro
 	return nil
 }
 
-func execute(cck CckCommand) {
-	cck.execute()
+func execute(cck CckCommand) error {
+	return cck.execute()
 }

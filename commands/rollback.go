@@ -16,7 +16,8 @@ type Rollback struct {
 	Context *context.Context
 }
 
-func (r *Rollback) execute() {
+func (r *Rollback) execute() error {
+	return nil
 }
 
 func (r *Rollback) fill(context *context.Context, service string, env string) {

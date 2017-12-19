@@ -1,13 +1,13 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/remyLemeunier/contactkey/context"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -24,11 +24,10 @@ type List struct {
 	Writer      io.Writer
 }
 
-func (l List) execute() {
+func (l List) execute() error {
 	instances, err := l.Context.Deployer.ListInstances(l.Env)
 	if err != nil {
-		log.Fatalln(fmt.Sprintf("Failed to list versions : %q", err))
-		return
+		return errors.New(fmt.Sprintf("Failed to list versions : %q", err))
 	}
 
 	l.TableWriter.SetHeader([]string{"instance", "state", "version"})
@@ -36,7 +35,7 @@ func (l List) execute() {
 		l.TableWriter.Append([]string{instance.Name, instance.State, instance.Version})
 	}
 	l.TableWriter.Render()
-
+	return nil
 }
 
 func (l *List) fill(context *context.Context, service string, env string) {
