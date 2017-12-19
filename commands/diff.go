@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"errors"
+
 	"github.com/olekukonko/tablewriter"
 	"github.com/remyLemeunier/contactkey/context"
 	log "github.com/sirupsen/logrus"
@@ -26,27 +28,23 @@ type Diff struct {
 	TableWriter *tablewriter.Table
 }
 
-func (d Diff) execute() {
+func (d Diff) execute() error {
 	// If the branch is null it will use the default one.
 	sha1, err := d.Context.Vcs.RetrieveSha1ForProject(branch)
 	if err != nil {
-		log.Fatal(fmt.Sprintf("Failed to retrieve sha1: %q \n", err))
-		return
+		return errors.New(fmt.Sprintf("Failed to retrieve sha1: %q \n", err))
 	}
 	if sha1 == "" {
-		log.Fatal(fmt.Sprintf("No sha1 found for service %q \n", d.Service))
-		return
+		return errors.New(fmt.Sprintf("No sha1 found for service %q \n", d.Service))
 	}
 
 	versions, err := d.Context.Deployer.ListVcsVersions(d.Env)
 	if err != nil {
-		log.Fatal(fmt.Sprintf("Failed to list versions with error %q \n", err))
-		return
+		return errors.New(fmt.Sprintf("Failed to list versions with error %q \n", err))
 	}
 
 	if len(versions) == 0 {
-		log.Fatal(fmt.Sprintf("No service (%q) versions found for the Env: %q \n", d.Service, d.Env))
-		return
+		return errors.New(fmt.Sprintf("No service (%q) versions found for the Env: %q \n", d.Service, d.Env))
 	}
 
 	// Retrieve only unique versions
@@ -62,8 +60,7 @@ func (d Diff) execute() {
 	for _, uniqueVersion := range uniqueVersions {
 		changes, err := d.Context.Vcs.Diff(uniqueVersion, sha1)
 		if err != nil {
-			log.Fatal(fmt.Sprintf("Failed to retrieve sha1: %q \n", err))
-			return
+			return errors.New(fmt.Sprintf("Failed to retrieve sha1: %q \n", err))
 		}
 
 		log.Println(fmt.Sprintf("Diff between %q(deployed) and %q(branch) \n", uniqueVersion, sha1))
@@ -73,6 +70,7 @@ func (d Diff) execute() {
 		}
 		d.TableWriter.Render()
 	}
+	return nil
 }
 
 func (d *Diff) fill(context *context.Context, service string, env string) {

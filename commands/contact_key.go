@@ -14,13 +14,11 @@ func Execute() {
 	cfg, err := utils.LoadConfig()
 	if err != nil {
 		log.Fatalln(fmt.Sprintf("Failed load config: %q", err))
-		return
 	}
 
 	services, err := cfg.DiscoverServices()
 	if err != nil {
 		log.Fatalln(fmt.Sprintf("Failed to find services: %q", err))
-		return
 	}
 
 	rootCmd := &cobra.Command{

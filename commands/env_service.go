@@ -30,9 +30,8 @@ func addServiceNameToCommand(cmd *cobra.Command, cfg *utils.Config, services []s
 				if err != nil {
 					return err
 				}
-				execute(cckCommand)
 
-				return nil
+				return execute(cckCommand)
 			},
 		}
 		cmd.AddCommand(serviceCmd)
