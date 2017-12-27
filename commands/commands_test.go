@@ -41,7 +41,13 @@ func (v SourcesMock) RetrieveSha1ForProject(branch string) (string, error) {
 }
 
 func (v SourcesMock) Diff(deployedSha1 string, sha1ToDeploy string) (*services.Changes, error) {
-	return &services.Changes{}, nil
+	var commits = []services.Commits{}
+	commits = append(commits, services.Commits{DisplayId: "DisplayId1", AuthorFullName: "AuthorFullName1", AuthorSlug: "AuthorSlug1", Title: "Title1"})
+	commits = append(commits, services.Commits{DisplayId: "DisplayId2", AuthorFullName: "AuthorFullName2", AuthorSlug: "AuthorSlug2", Title: "Title2"})
+
+	return &services.Changes{
+		Commits: commits,
+	}, nil
 }
 
 type BinariesMock struct{}
