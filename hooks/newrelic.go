@@ -42,14 +42,14 @@ func (c NewRelicClient) Init() error {
 	return nil
 }
 
-func (c NewRelicClient) PreDeployment(userName string, env string, service string, podVersion string) error {
+func (c NewRelicClient) PreDeployment(hookinformation HookInformation) error {
 	var filter bytes.Buffer
 	filterTmpl, err := template.New("filter").Parse(c.ApplicationFilter)
 	if err != nil {
 		return err
 	}
 
-	if err := filterTmpl.Execute(&filter, struct{ env string }{env}); err != nil {
+	if err := filterTmpl.Execute(&filter, struct{ env string }{hookinformation.Env}); err != nil {
 	}
 
 	appId, err := c.findApplicationId(filter.String())
@@ -58,16 +58,21 @@ func (c NewRelicClient) PreDeployment(userName string, env string, service strin
 	}
 	c.ApplicationId = appId
 
-	description := fmt.Sprintf("Deploying %s %s on %s", service, podVersion, env)
+	var changelog string
+	for _, line := range hookinformation.Miscellaneous {
+		changelog = changelog + " " + line + "\n"
+	}
+	description := fmt.Sprintf("Deploying %s %s on %s", hookinformation.Service, hookinformation.PodVersion, hookinformation.Env)
 	d := &NewRelicDeployment{
 		description: description,
-		revision:    podVersion,
-		user:        userName,
+		revision:    hookinformation.PodVersion,
+		user:        hookinformation.UserName,
+		changelog:   changelog,
 	}
 	return c.CreateDeployment(d)
 }
 
-func (c NewRelicClient) PostDeployment(userName string, env string, service string, podVersion string) error {
+func (c NewRelicClient) PostDeployment(hookinformation HookInformation) error {
 	return nil
 }
 

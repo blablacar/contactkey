@@ -10,6 +10,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/remyLemeunier/contactkey/context"
 	"github.com/remyLemeunier/contactkey/deployers"
+	"github.com/remyLemeunier/contactkey/hooks"
 	"github.com/remyLemeunier/contactkey/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -122,9 +123,18 @@ func (d *Deploy) execute() error {
 		return errors.New(fmt.Sprintf("Version %q is already deployed.", sha1ToDeploy))
 	}
 
+	misc := d.getDiff(sha1ToDeploy)
+	hookinformation := hooks.HookInformation{
+		userName,
+		d.Env,
+		d.Service,
+		podVersion,
+		misc,
+	}
+
 	log.Println(fmt.Sprintf("Going to deploy pod version %q \n", podVersion))
 	for _, hook := range d.Context.Hooks {
-		err = hook.PreDeployment(userName, d.Env, d.Service, podVersion)
+		err = hook.PreDeployment(hookinformation)
 		if hook.StopOnError() == true && err != nil {
 			return errors.New(fmt.Sprintf("Predeployment failed: %q", err))
 		} else if err != nil {
@@ -146,7 +156,7 @@ func (d *Deploy) execute() error {
 	}
 
 	for _, hook := range d.Context.Hooks {
-		err = hook.PostDeployment(userName, d.Env, d.Service, podVersion)
+		err = hook.PostDeployment(hookinformation)
 		if err != nil {
 			log.Debugln(fmt.Sprintf("PostDeployment failed: %q", err))
 		}
@@ -167,4 +177,26 @@ func (d *Deploy) fill(context *context.Context, service string, env string) {
 	d.Service = service
 	d.Context = context
 	d.Writer = os.Stdout
+}
+
+func (d *Deploy) getDiff(sha1ToDeploy string) []string {
+	var diff []string
+	uniqueVersions, err := deployers.ListUniqueVcsVersions(d.Context.Deployer, d.Env)
+	if err != nil {
+		log.Debugln("Impossible to retrieve unique vcs version: %q", err.Error())
+	}
+
+	for _, uniqueVersion := range uniqueVersions {
+		changes, err := d.Context.Vcs.Diff(uniqueVersion, sha1ToDeploy)
+		if err != nil {
+			log.Debugln("Error during diff: %q", err.Error())
+		}
+
+		for _, change := range changes.Commits {
+			displayString := change.AuthorFullName + ":" + change.DisplayId
+			diff = append(diff, displayString)
+		}
+	}
+
+	return diff
 }
