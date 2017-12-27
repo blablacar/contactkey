@@ -29,11 +29,11 @@ func (e ExecCommand) Init() error {
 	return executeCommands(e.OnInit)
 }
 
-func (e ExecCommand) PreDeployment(username string, env string, service string, podVersion string) error {
+func (e ExecCommand) PreDeployment(hookinformation HookInformation) error {
 	return executeCommands(e.OnPreDeploy)
 }
 
-func (e ExecCommand) PostDeployment(username string, env string, service string, podVersion string) error {
+func (e ExecCommand) PostDeployment(hookinformation HookInformation) error {
 	return executeCommands(e.OnPostDeploy)
 }
 

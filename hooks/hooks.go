@@ -1,8 +1,16 @@
 package hooks
 
+type HookInformation struct {
+	UserName      string
+	Env           string
+	Service       string
+	PodVersion    string
+	Miscellaneous []string
+}
+
 type Hooks interface {
 	Init() error
-	PreDeployment(userName string, env string, service string, podVersion string) error
-	PostDeployment(userName string, env string, service string, podVersion string) error
+	PreDeployment(hookinformation HookInformation) error
+	PostDeployment(hookinformation HookInformation) error
 	StopOnError() bool
 }

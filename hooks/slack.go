@@ -43,12 +43,28 @@ func (s Slack) Init() error {
 }
 
 // @TODO Later we could pass directly messages and use the go templater instead.
-func (s Slack) PreDeployment(username string, env string, service string, podVersion string) error {
-	return s.postMessage(fmt.Sprintf("[%q]Start, update service %q version %q %q", env, service, podVersion, username))
+func (s Slack) PreDeployment(hookinformation HookInformation) error {
+	return s.postMessage(
+		fmt.Sprintf(
+			"[%q]Start, update service %q version %q %q",
+			hookinformation.Env,
+			hookinformation.Service,
+			hookinformation.PodVersion,
+			hookinformation.UserName,
+		),
+	)
 }
 
-func (s Slack) PostDeployment(username string, env string, service string, podVersion string) error {
-	return s.postMessage(fmt.Sprintf("[%q]End, update service %q version %q by %q", env, service, podVersion, username))
+func (s Slack) PostDeployment(hookinformation HookInformation) error {
+	return s.postMessage(
+		fmt.Sprintf(
+			"[%q]End, update service %q version %q by %q",
+			hookinformation.Env,
+			hookinformation.Service,
+			hookinformation.PodVersion,
+			hookinformation.UserName,
+		),
+	)
 }
 
 func (s Slack) postMessage(message string) error {

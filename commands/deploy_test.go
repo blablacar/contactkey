@@ -56,3 +56,33 @@ func TestUpdateSlow(t *testing.T) {
 	}
 	ggnCmd.Wait()
 }
+
+func TestGetDiff(t *testing.T) {
+	// Catch stdout
+	out := new(bytes.Buffer)
+	writer := io.Writer(out)
+	log.SetOutput(writer)
+
+	d := &Deploy{
+		Context: &context.Context{
+			Deployer: &DeployerMockGgn{},
+			Vcs:      &SourcesMock{},
+			Binaries: &BinariesMock{},
+			Metrics:  utils.NewBlackholeMetricsRegistry(),
+		},
+		Writer: out,
+	}
+
+	diff := d.getDiff("abcde")
+	if len(diff) != 2 {
+		t.Fatalf("diff len should be 2 insead got %s", len(diff))
+	}
+
+	if diff[0] != "AuthorFullName1:DisplayId1" {
+		t.Errorf("Error found %s", diff[0])
+	}
+
+	if diff[1] != "AuthorFullName2:DisplayId2" {
+		t.Errorf("Error found %s", diff[1])
+	}
+}
