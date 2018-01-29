@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/remyLemeunier/contactkey/deployers/testdata"
+	"github.com/blablacar/contactkey/deployers/testdata"
 )
 
 func mockggn(command string, args ...string) *exec.Cmd {

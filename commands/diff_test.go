@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/olekukonko/tablewriter"
-	"github.com/remyLemeunier/contactkey/context"
-	"github.com/remyLemeunier/contactkey/services"
+	"github.com/blablacar/contactkey/context"
+	"github.com/blablacar/contactkey/services"
 	log "github.com/sirupsen/logrus"
 )
 

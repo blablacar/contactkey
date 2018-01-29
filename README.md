@@ -1,4 +1,4 @@
-# contactkey [![Build Status](https://travis-ci.org/remyLemeunier/contactkey.svg?branch=master)](https://travis-ci.org/remyLemeunier/contactkey)
+# contactkey [![Build Status](https://travis-ci.org/blablacar/contactkey.svg?branch=master)](https://travis-ci.org/blablacar/contactkey)
 
 Contactkey is a Go command-line tool that orchestrate deployments on complex environments.
 
@@ -6,11 +6,11 @@ Contactkey is a Go command-line tool that orchestrate deployments on complex env
 ![this](https://docs.google.com/drawings/d/1N7mgky_Dq3KWrT_gRxR4iwxGjCDY6rbgc455mJgEMtA/pub?w=594&h=1155)
 # Deployers, Sources, Binaries, Hooks, Lock System
 ### Deployers
- * GGN 
- * Kubernetes (to do) 
+ * GGN
+ * Kubernetes (to do)
 
 ### Sources (upstream application code)
- * Stash 
+ * Stash
  * Github (to do)
 
 ### Binaries (container images)
@@ -22,11 +22,11 @@ Contactkey is a Go command-line tool that orchestrate deployments on complex env
  * NewRelic
  * MailSender (to do)
 
-### Lock System 
+### Lock System
  * FileLock
  * Etcd (to do)
  * Redis (to do)
- 
+
 
 ## Commands
 ```bash
@@ -45,19 +45,19 @@ workPath: /tmp/manifests   # Location of services manifest
 screenMandatory: true      # Check if the user is launching cck in a screen/tmux (not mandatory)
 
 globalEnvironments:        # Define the cck environment. It can be anything.
-  - preprod                # It will be used as the cck environment for 
+  - preprod                # It will be used as the cck environment for
   - prod                   # the command line.
 
 deployers:                 # Define the various deployers used in service manifest.
   ggn:                     # This will enable the ggn deployment feature
     vcsRegexp: -v(.+)      # Extract the vcs sha1 from pod version. (Not mandatory)
-    workPath: /tmp       
-    environments:          # Link between ggn environment and cck environment created above. 
-      preprod: staging    
-      prod:    production 
+    workPath: /tmp
+    environments:          # Link between ggn environment and cck environment created above.
+      preprod: staging
+      prod:    production
    k8s:                    # This will enable deployment on k8s using helm
     vcsRegexp: -v(.+)      # Extract the vcs sha1 from pod version. (Not mandatory)
-    workPath: /tmp         
+    workPath: /tmp
     environments:          # Link between cck environments and k8s clusters
       local:
         cluster: ops
@@ -65,22 +65,22 @@ deployers:                 # Define the various deployers used in service manife
         cluster: preprod
 
 sources:      # Define various version control system used in service manifest.
-  stash:                   # Currently we have only Stash supported. 
-    user:        user     
-    password:    password 
-    url:         url       
-    sha1MaxSize: 2         # Cut a sha1 if it's too long. (E.g: abcd => ab) (Not mendatory) 
+  stash:                   # Currently we have only Stash supported.
+    user:        user
+    password:    password
+    url:         url
+    sha1MaxSize: 2         # Cut a sha1 if it's too long. (E.g: abcd => ab) (Not mendatory)
 
-binaries:         # Define various repository manager used in service manifest. 
-  nexus:                   # Currently we have only Nexus supported. 
-    url:        127.0.0.1  
-    repository: repository 
-    group:      group      
+binaries:         # Define various repository manager used in service manifest.
+  nexus:                   # Currently we have only Nexus supported.
+    url:        127.0.0.1
+    repository: repository
+    group:      group
 
-hooks:                     # Define various hooks used in service manifest. 
+hooks:                     # Define various hooks used in service manifest.
   slack:                   # Currently we have only Slack supported.
-    url:   127.0.0.1      
-    token: token          
+    url:   127.0.0.1
+    token: token
 
   newRelic:
     url: https://api.newrelic.com
@@ -107,14 +107,14 @@ deployment:                # Define the deployment type we are going to use
   ggn:                     # for this service.
     pod: pod-webhooks      # podName used in ggn
     service: webhooks      # service used in ggn
-sources:      
-  stash:                   # Version control system used for the service. (Only one) 
+sources:
+  stash:                   # Version control system used for the service. (Only one)
     branch: master         # The default "stable" branch we usually deploy
-    repository: repository 
-    project: project       
-binaries:         
+    repository: repository
+    project: project
+binaries:
   nexus:                   # Repository manager used for the service. (Only one)
-    artifact: pod-webhooks 
+    artifact: pod-webhooks
 hooks:                     # Hooks we are going to call before and after.
   slack:                   # the deployment. (You can have several one)
     channel:   channel

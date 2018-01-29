@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/remyLemeunier/contactkey/utils"
+	"github.com/blablacar/contactkey/utils"
 	"github.com/remyLemeunier/k8s-deploy/releases"
 )
 

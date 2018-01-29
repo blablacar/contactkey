@@ -3,7 +3,7 @@ package commands
 import (
 	"fmt"
 
-	"github.com/remyLemeunier/contactkey/utils"
+	"github.com/blablacar/contactkey/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

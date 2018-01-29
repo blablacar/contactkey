@@ -8,9 +8,9 @@ import (
 	"os/user"
 
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/remyLemeunier/contactkey/context"
-	"github.com/remyLemeunier/contactkey/deployers"
-	"github.com/remyLemeunier/contactkey/utils"
+	"github.com/blablacar/contactkey/context"
+	"github.com/blablacar/contactkey/deployers"
+	"github.com/blablacar/contactkey/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

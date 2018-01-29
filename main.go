@@ -6,7 +6,7 @@ import (
 	"runtime/debug"
 
 	"github.com/coreos/go-systemd/journal"
-	"github.com/remyLemeunier/contactkey/commands"
+	"github.com/blablacar/contactkey/commands"
 	log "github.com/sirupsen/logrus"
 	"github.com/wercker/journalhook"
 )

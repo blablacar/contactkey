@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/olekukonko/tablewriter"
-	"github.com/remyLemeunier/contactkey/context"
+	"github.com/blablacar/contactkey/context"
 	"github.com/spf13/cobra"
 )
 
