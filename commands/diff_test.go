@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/olekukonko/tablewriter"
 	"github.com/blablacar/contactkey/context"
 	"github.com/blablacar/contactkey/services"
+	"github.com/olekukonko/tablewriter"
 	log "github.com/sirupsen/logrus"
 )
 

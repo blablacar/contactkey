@@ -5,8 +5,8 @@ import (
 
 	"runtime/debug"
 
-	"github.com/coreos/go-systemd/journal"
 	"github.com/blablacar/contactkey/commands"
+	"github.com/coreos/go-systemd/journal"
 	log "github.com/sirupsen/logrus"
 	"github.com/wercker/journalhook"
 )
