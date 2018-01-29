@@ -5,10 +5,10 @@ import (
 
 	"io/ioutil"
 
-	"github.com/remyLemeunier/contactkey/deployers"
-	"github.com/remyLemeunier/contactkey/hooks"
-	"github.com/remyLemeunier/contactkey/services"
-	"github.com/remyLemeunier/contactkey/utils"
+	"github.com/blablacar/contactkey/deployers"
+	"github.com/blablacar/contactkey/hooks"
+	"github.com/blablacar/contactkey/services"
+	"github.com/blablacar/contactkey/utils"
 	log "github.com/sirupsen/logrus"
 )
 

@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/remyLemeunier/contactkey/utils"
+	"github.com/blablacar/contactkey/utils"
 	log "github.com/sirupsen/logrus"
 )
 

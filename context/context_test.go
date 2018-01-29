@@ -5,7 +5,7 @@ import (
 
 	"reflect"
 
-	"github.com/remyLemeunier/contactkey/utils"
+	"github.com/blablacar/contactkey/utils"
 	"github.com/spf13/viper"
 )
 

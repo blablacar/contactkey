@@ -3,8 +3,8 @@ package deployers
 import (
 	"testing"
 
+	"github.com/blablacar/contactkey/utils"
 	"github.com/davecgh/go-spew/spew"
-	"github.com/remyLemeunier/contactkey/utils"
 	"github.com/remyLemeunier/k8s-deploy/releases"
 )
 

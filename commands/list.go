@@ -6,8 +6,8 @@ import (
 	"io"
 	"os"
 
+	"github.com/blablacar/contactkey/context"
 	"github.com/olekukonko/tablewriter"
-	"github.com/remyLemeunier/contactkey/context"
 	"github.com/spf13/cobra"
 )
 

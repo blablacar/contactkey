@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"path"
 
-	"github.com/remyLemeunier/contactkey/context"
-	"github.com/remyLemeunier/contactkey/utils"
+	"github.com/blablacar/contactkey/context"
+	"github.com/blablacar/contactkey/utils"
 	log "github.com/sirupsen/logrus"
 )
 

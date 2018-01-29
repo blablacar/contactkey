@@ -1,8 +1,8 @@
 package commands
 
 import (
-	"github.com/remyLemeunier/contactkey/deployers"
-	"github.com/remyLemeunier/contactkey/services"
+	"github.com/blablacar/contactkey/deployers"
+	"github.com/blablacar/contactkey/services"
 	log "github.com/sirupsen/logrus"
 )
 

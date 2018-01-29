@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/remyLemeunier/contactkey/utils"
+	"github.com/blablacar/contactkey/utils"
 	"github.com/remyLemeunier/k8s-deploy/releases"
 
 	log "github.com/sirupsen/logrus"

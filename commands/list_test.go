@@ -6,8 +6,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/blablacar/contactkey/context"
 	"github.com/olekukonko/tablewriter"
-	"github.com/remyLemeunier/contactkey/context"
 	log "github.com/sirupsen/logrus"
 )
 
