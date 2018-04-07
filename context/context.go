@@ -15,6 +15,7 @@ import (
 type Context struct {
 	Deployer          deployers.Deployer
 	Vcs               services.Sources
+	GetVersionFromVcs bool
 	Binaries          services.Binaries
 	Hooks             []hooks.Hooks
 	LockSystem        utils.Lock
@@ -68,6 +69,11 @@ func NewContext(cfg *utils.Config, manifest *utils.Manifest) (*Context, error) {
 			"Vcs unknown : %q",
 			manifest.VcsManifest,
 		)
+	}
+
+	ctx.GetVersionFromVcs = true
+	if cfg.VcsConfig.UseForVersion == false {
+		ctx.GetVersionFromVcs = false
 	}
 
 	if manifest.BinariesManifest.NexusManifest != (utils.NexusManifest{}) {

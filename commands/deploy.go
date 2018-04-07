@@ -87,12 +87,17 @@ func (d *Deploy) execute() error {
 	}
 
 	// If the branch is null it will use the default one.
-	sha1ToDeploy, err := d.Context.Vcs.RetrieveSha1ForProject(branch)
-	if err != nil {
-		return errors.New(fmt.Sprintf("Failed to retrieve source changes for %q : %q", d.Service, err))
+	var podVersion string
+	var sha1ToDeploy string
+	if d.Context.GetVersionFromVcs {
+		sha1ToDeploy, err = d.Context.Vcs.RetrieveSha1ForProject(branch)
+		if err != nil {
+			return errors.New(fmt.Sprintf("Failed to retrieve source changes for %q : %q", d.Service, err))
+		}
+		podVersion, err = d.Context.Binaries.RetrievePodVersion(sha1ToDeploy)
+	} else {
+		podVersion, err = d.Context.Binaries.RetrievePodVersion("")
 	}
-
-	podVersion, err := d.Context.Binaries.RetrievePodVersion(sha1ToDeploy)
 	if err != nil {
 		return errors.New(fmt.Sprintf("Failed to retrieve pod version: %q", err))
 	}
