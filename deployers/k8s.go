@@ -36,7 +36,11 @@ func NewDeployerK8s(cfg utils.DeployerK8sConfig, manifest utils.DeployerK8sManif
 	deployer.Namespace = manifest.Namespace
 	deployer.Environments = cfg.Environments
 	deployer.workPath = cfg.WorkPath
-	deployer.vcsRegexp = cfg.VcsRegexp
+	if manifest.VcsRegexp != "" {
+		deployer.vcsRegexp = manifest.VcsRegexp
+	} else {
+		deployer.vcsRegexp = cfg.VcsRegexp
+	}
 	return &deployer, nil
 }
 

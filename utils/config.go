@@ -44,7 +44,8 @@ type DeployerGgnConfig struct {
 }
 
 type VcsConfig struct {
-	StashConfig `mapstructure:"stash"`
+	StashConfig   `mapstructure:"stash"`
+	UseForVersion bool `mapstructure:"use_for_version"`
 }
 
 type StashConfig struct {
