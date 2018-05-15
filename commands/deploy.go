@@ -99,7 +99,12 @@ func (d *Deploy) execute() error {
 
 	deployedVersions, err := d.Context.Deployer.ListVcsVersions(d.Env)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Failed to retrieve DEPLOYED version from service(%q) in env %q: %q", d.Service, d.Env, err))
+		message := fmt.Sprintf("Failed to retrieve DEPLOYED version from service(%q) in env %q: %q", d.Service, d.Env, err)
+		if force {
+			log.Println(message)
+		} else {
+			return errors.New(message)
+		}
 	}
 
 	if podVersion == "" {
