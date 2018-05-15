@@ -27,14 +27,16 @@ var apiStub = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r 
 		switch r.RequestURI {
 		case "/v2/applications.json":
 			w.WriteHeader(http.StatusOK)
-			if string(body) == "filter[name]=webhook" {
+			if string(body) == "filter[name]=webhook" && r.Header.Get("Content-Type") == "application/x-www-form-urlencoded" {
 				w.Write(GetApplications)
 			} else {
 				w.Write(GetApplicationsEmpty)
 			}
 
 		case "/v2/applications/456/deployments.json":
-			w.WriteHeader(http.StatusCreated)
+			if r.Header.Get("Content-Type") == "application/json" {
+				w.WriteHeader(http.StatusCreated)
+			}
 
 		default:
 			w.WriteHeader(http.StatusBadRequest)
