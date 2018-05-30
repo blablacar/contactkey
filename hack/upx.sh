@@ -8,4 +8,4 @@ if [ "$(which upx)" = "" ]; then
 	exit 0
 fi
 
-upx -1 dist/contactkey*/cck*
+upx -1 dist/{darwin_amd64,linux_amd64}/cck
