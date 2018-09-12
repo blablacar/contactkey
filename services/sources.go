@@ -15,7 +15,11 @@ import (
 
 type Sources interface {
 	RetrieveSha1ForProject(branch string) (string, error)
-	Diff(deployedSha1 string, sha1ToDeploy string) (*Changes, error)
+	Diff(deployedSha1 string, sha1ToDeploy string, options DiffOptions) (*Changes, error)
+}
+
+type DiffOptions struct {
+	IncludeMerges bool
 }
 
 type Stash struct {
@@ -113,8 +117,14 @@ func (s Stash) RetrieveSha1ForProject(branch string) (string, error) {
 	return stashResponse.Values[0].Id, nil
 }
 
-func (s Stash) Diff(deployedSha1 string, sha1ToDeploy string) (*Changes, error) {
+func (s Stash) Diff(deployedSha1 string, sha1ToDeploy string, options DiffOptions) (*Changes, error) {
+	merges := "include"
+	if !options.IncludeMerges {
+		merges = "exclude"
+	}
+
 	params := url.Values{}
+	params.Add("merges", merges)
 	params.Add("since", deployedSha1)
 	params.Add("until", sha1ToDeploy)
 	stashResponse, err := s.getStashResponse(params)

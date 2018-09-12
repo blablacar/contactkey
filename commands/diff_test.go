@@ -18,7 +18,7 @@ func (v *VcsMock) RetrieveSha1ForProject(branch string) (string, error) {
 	return "abcde", nil
 }
 
-func (v *VcsMock) Diff(deployedSha1 string, sha1ToDeploy string) (*services.Changes, error) {
+func (v *VcsMock) Diff(deployedSha1 string, sha1ToDeploy string, options services.DiffOptions) (*services.Changes, error) {
 	changes := new(services.Changes)
 	commits := services.Commits{}
 	commits.Title = "Title"

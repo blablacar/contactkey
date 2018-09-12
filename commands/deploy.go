@@ -26,7 +26,7 @@ var (
 
 func init() {
 	deployCmd.PersistentFlags().StringVar(&branch, "branch", "", "Change the branch from the default one.")
-	deployCmd.PersistentFlags().BoolVar(&force, "force", false, "Force the deployement, even if already up to date")
+	deployCmd.PersistentFlags().BoolVar(&force, "force", false, "Force the deployment, even if already up to date")
 }
 
 var deployCmd = &cobra.Command{

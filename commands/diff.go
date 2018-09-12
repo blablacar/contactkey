@@ -7,9 +7,14 @@ import (
 	"errors"
 
 	"github.com/blablacar/contactkey/context"
+	"github.com/blablacar/contactkey/services"
 	"github.com/olekukonko/tablewriter"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+)
+
+var (
+	includeMerges = false
 )
 
 var diffCmd = &cobra.Command{
@@ -19,6 +24,7 @@ var diffCmd = &cobra.Command{
 
 func init() {
 	diffCmd.PersistentFlags().StringVar(&branch, "branch", "", "Change the branch from the default one.")
+	diffCmd.PersistentFlags().BoolVar(&includeMerges, "include-merges", false, "Include merges in the changelog message")
 }
 
 type Diff struct {
@@ -29,6 +35,10 @@ type Diff struct {
 }
 
 func (d Diff) execute() error {
+	options := services.DiffOptions{
+		IncludeMerges: includeMerges,
+	}
+
 	// If the branch is null it will use the default one.
 	sha1, err := d.Context.Vcs.RetrieveSha1ForProject(branch)
 	if err != nil {
@@ -58,7 +68,7 @@ func (d Diff) execute() error {
 	}
 
 	for _, uniqueVersion := range uniqueVersions {
-		changes, err := d.Context.Vcs.Diff(uniqueVersion, sha1)
+		changes, err := d.Context.Vcs.Diff(uniqueVersion, sha1, options)
 		if err != nil {
 			return errors.New(fmt.Sprintf("Failed to retrieve sha1: %q \n", err))
 		}
