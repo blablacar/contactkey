@@ -2,14 +2,19 @@ package commands
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	"errors"
 
 	"github.com/blablacar/contactkey/context"
-	"github.com/olekukonko/tablewriter"
+	"github.com/blablacar/contactkey/services"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+)
+
+var (
+	includeMerges = false
 )
 
 var diffCmd = &cobra.Command{
@@ -19,16 +24,21 @@ var diffCmd = &cobra.Command{
 
 func init() {
 	diffCmd.PersistentFlags().StringVar(&branch, "branch", "", "Change the branch from the default one.")
+	diffCmd.PersistentFlags().BoolVar(&includeMerges, "include-merges", false, "Include merges in the changelog message")
 }
 
 type Diff struct {
-	Env         string
-	Service     string
-	Context     *context.Context
-	TableWriter *tablewriter.Table
+	Env     string
+	Service string
+	Context *context.Context
+	Writer  io.Writer
 }
 
 func (d Diff) execute() error {
+	options := services.DiffOptions{
+		IncludeMerges: includeMerges,
+	}
+
 	// If the branch is null it will use the default one.
 	sha1, err := d.Context.Vcs.RetrieveSha1ForProject(branch)
 	if err != nil {
@@ -58,17 +68,15 @@ func (d Diff) execute() error {
 	}
 
 	for _, uniqueVersion := range uniqueVersions {
-		changes, err := d.Context.Vcs.Diff(uniqueVersion, sha1)
+		changes, err := d.Context.Vcs.Diff(uniqueVersion, sha1, options)
 		if err != nil {
 			return errors.New(fmt.Sprintf("Failed to retrieve sha1: %q \n", err))
 		}
 
 		log.Println(fmt.Sprintf("Diff between %q(deployed) and %q(branch) \n", uniqueVersion, sha1))
-		d.TableWriter.SetHeader([]string{"Author", "sha1", "description"})
 		for _, change := range changes.Commits {
-			d.TableWriter.Append([]string{change.AuthorFullName, change.DisplayId, change.Title})
+			fmt.Fprintf(d.Writer, "- %s (%s)\n", change.Title, change.DisplayId)
 		}
-		d.TableWriter.Render()
 	}
 	return nil
 }
@@ -77,5 +85,5 @@ func (d *Diff) fill(context *context.Context, service string, env string) {
 	d.Env = env
 	d.Service = service
 	d.Context = context
-	d.TableWriter = tablewriter.NewWriter(os.Stdout)
+	d.Writer = os.Stdout
 }

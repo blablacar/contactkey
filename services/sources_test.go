@@ -20,7 +20,7 @@ func setupTestCase(t *testing.T) func(t *testing.T) {
 
 			w.WriteHeader(http.StatusOK)
 			w.Write(raw)
-		case "/rest/api/latest/projects/project/repos/repository/commits?since=b04ad09883d1858081702b8e2d80eb348ead9849&until=b0d5ca3e586d48cc6d3ad35f0e03dfc891e62752":
+		case "/rest/api/latest/projects/project/repos/repository/commits?merges=exclude&since=b04ad09883d1858081702b8e2d80eb348ead9849&until=b0d5ca3e586d48cc6d3ad35f0e03dfc891e62752":
 			raw, err := ioutil.ReadFile("./data/diff.json")
 			if err != nil {
 				t.Error(err)
@@ -75,7 +75,12 @@ func TestDiff(t *testing.T) {
 		7,
 	}
 
-	changes, err := stash.Diff("b04ad09883d1858081702b8e2d80eb348ead9849", "b0d5ca3e586d48cc6d3ad35f0e03dfc891e62752")
+	changes, err := stash.Diff(
+		"b04ad09883d1858081702b8e2d80eb348ead9849",
+		"b0d5ca3e586d48cc6d3ad35f0e03dfc891e62752",
+		DiffOptions{IncludeMerges: false},
+	)
+
 	if err != nil {
 		t.Errorf("Error shouldn't have been raised instead got %s", err.Error())
 	}
@@ -94,7 +99,7 @@ func TestDiff(t *testing.T) {
 	if changes.Commits[0].AuthorSlug != "slug" {
 		t.Errorf("Error got %s", changes.Commits[0].AuthorSlug)
 	}
-	if changes.Commits[0].Title != "Merge pull request #138 in repository/project from branch 1to master\n\n* commit '40acf891cee4bb64fe16c213e97333d83cb5f682':\n  Some comments" {
+	if changes.Commits[0].Title != "Some comments 1" {
 		t.Errorf("Error got %s", changes.Commits[0].Title)
 	}
 
@@ -108,7 +113,7 @@ func TestDiff(t *testing.T) {
 		t.Errorf("Error got %s", changes.Commits[1].AuthorSlug)
 	}
 
-	if changes.Commits[2].Title != "Merge pull request #152 in repository/project from branch2 to master\n\n* commit 'd436e3c2b0385afc38bf6fb9b29567ef9b9f226b':\n  Some comments 2" {
+	if changes.Commits[2].Title != "Some comments 3" {
 		t.Errorf("Error got %s", changes.Commits[1].Title)
 	}
 }

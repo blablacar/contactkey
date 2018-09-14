@@ -40,7 +40,7 @@ func (v SourcesMock) RetrieveSha1ForProject(branch string) (string, error) {
 	return "vb0f586a", nil
 }
 
-func (v SourcesMock) Diff(deployedSha1 string, sha1ToDeploy string) (*services.Changes, error) {
+func (v SourcesMock) Diff(deployedSha1 string, sha1ToDeploy string, options services.DiffOptions) (*services.Changes, error) {
 	return &services.Changes{}, nil
 }
 
