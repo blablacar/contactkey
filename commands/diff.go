@@ -2,13 +2,13 @@ package commands
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	"errors"
 
 	"github.com/blablacar/contactkey/context"
 	"github.com/blablacar/contactkey/services"
-	"github.com/olekukonko/tablewriter"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -28,10 +28,10 @@ func init() {
 }
 
 type Diff struct {
-	Env         string
-	Service     string
-	Context     *context.Context
-	TableWriter *tablewriter.Table
+	Env     string
+	Service string
+	Context *context.Context
+	Writer  io.Writer
 }
 
 func (d Diff) execute() error {
@@ -74,11 +74,9 @@ func (d Diff) execute() error {
 		}
 
 		log.Println(fmt.Sprintf("Diff between %q(deployed) and %q(branch) \n", uniqueVersion, sha1))
-		d.TableWriter.SetHeader([]string{"Author", "sha1", "description"})
 		for _, change := range changes.Commits {
-			d.TableWriter.Append([]string{change.AuthorFullName, change.DisplayId, change.Title})
+			fmt.Fprintf(d.Writer, "- %s (%s)\n", change.Title, change.DisplayId)
 		}
-		d.TableWriter.Render()
 	}
 	return nil
 }
@@ -87,5 +85,5 @@ func (d *Diff) fill(context *context.Context, service string, env string) {
 	d.Env = env
 	d.Service = service
 	d.Context = context
-	d.TableWriter = tablewriter.NewWriter(os.Stdout)
+	d.Writer = os.Stdout
 }

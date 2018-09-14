@@ -8,7 +8,6 @@ import (
 
 	"github.com/blablacar/contactkey/context"
 	"github.com/blablacar/contactkey/services"
-	"github.com/olekukonko/tablewriter"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -45,9 +44,10 @@ func TestDiffExecute(t *testing.T) {
 		},
 	}
 
-	cmd.TableWriter = tablewriter.NewWriter(out)
+	cmd.Writer = out
 
 	cmd.execute()
+
 	if out.String() == "" {
 		t.Errorf("Unexpected stdout : %q", out)
 	}
@@ -55,10 +55,6 @@ func TestDiffExecute(t *testing.T) {
 	// Check if we display at the least the right information
 	if !strings.Contains(out.String(), "Diff between \\\"b0f586a\\\"(deployed) and \\\"abcde\\\"(branch)") {
 		t.Error("Diff not found")
-	}
-
-	if !strings.Contains(out.String(), "AuthorFullName") {
-		t.Error("AuthorFullName not found")
 	}
 
 	if !strings.Contains(out.String(), "DisplayId") {
