@@ -32,6 +32,7 @@ type DeployerManifest struct {
 type DeployerK8sManifest struct {
 	Release   string `mapstructure:"release"`
 	Namespace string `mapstructure:"namespace"`
+	VcsRegexp string `mapstructure:"vcsRegexp"`
 }
 
 type DeployerGgnManifest struct {

@@ -36,7 +36,11 @@ func NewDeployerK8s(cfg utils.DeployerK8sConfig, manifest utils.DeployerK8sManif
 	deployer.Namespace = manifest.Namespace
 	deployer.Environments = cfg.Environments
 	deployer.workPath = cfg.WorkPath
-	deployer.vcsRegexp = cfg.VcsRegexp
+	if len(manifest.VcsRegexp) != 0 {
+		deployer.vcsRegexp = manifest.VcsRegexp
+	} else {
+		deployer.vcsRegexp = cfg.VcsRegexp
+	}
 	return &deployer, nil
 }
 
@@ -111,7 +115,7 @@ func (d *DeployerK8s) ListVcsVersions(env string) ([]string, error) {
 
 	vcsVersion := regexp.MustCompile(d.vcsRegexp).FindStringSubmatch(content.String())
 	if len(vcsVersion) != 2 {
-		return nil, fmt.Errorf("Could not find vcsVersion")
+		return nil, fmt.Errorf("Could not match current deployment version with vcsRegexp=%s", d.vcsRegexp)
 	}
 
 	return []string{vcsVersion[1]}, nil
