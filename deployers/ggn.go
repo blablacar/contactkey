@@ -102,7 +102,7 @@ func (d *DeployerGgn) ListInstances(env string) ([]Instance, error) {
 		log.Debugf("Found unit %q", unit.name)
 		file, err := d.catUnit(ggnEnv, unit.name)
 		if err != nil {
-			log.Warn("Failed to cat unit %q", unit.name)
+			log.Warnf("Failed to cat unit %v", unit.name)
 			continue
 		}
 		if m := d.buildVersionRegexp().FindStringSubmatch(file); m != nil {
