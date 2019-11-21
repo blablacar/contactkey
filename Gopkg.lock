@@ -50,14 +50,6 @@
   revision = "4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9"
 
 [[projects]]
-  digest = "1:5fc6db95056f027c33df38134f69c4d11c668c97dd1fc868d0b8512f76825462"
-  name = "github.com/coreos/go-systemd"
-  packages = ["journal"]
-  pruneopts = ""
-  revision = "d2196463941895ee908e13531a23a39feb9e1243"
-  version = "v15"
-
-[[projects]]
   digest = "1:56c130d885a4aacae1dd9c7b71cfe39912c7ebc1ff7d2b46083c8812996dc43b"
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
@@ -733,7 +725,6 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/coreos/go-systemd/journal",
     "github.com/davecgh/go-spew/spew",
     "github.com/mitchellh/mapstructure",
     "github.com/olekukonko/tablewriter",
@@ -743,7 +734,6 @@
     "github.com/sirupsen/logrus",
     "github.com/spf13/cobra",
     "github.com/spf13/viper",
-    "github.com/wercker/journalhook",
     "gopkg.in/yaml.v2",
   ]
   solver-name = "gps-cdcl"
