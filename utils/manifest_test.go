@@ -15,7 +15,7 @@ func TestLoadManifest(t *testing.T) {
 	}
 
 	if manifest == (&Manifest{}) {
-		t.Errorf("Unexpected manifest %q", manifest)
+		t.Errorf("Unexpected manifest %v", manifest)
 	}
 
 	if manifest.Pod != "pod-webhooks" {
@@ -39,7 +39,7 @@ func TestLoadManifest(t *testing.T) {
 	}
 
 	if manifest.ExecCommandManifest.OnInit[0].Command != "ls" {
-		t.Errorf("The OnInit command should be 'ls' instead got %d", manifest.ExecCommandManifest.OnInit[0].Command)
+		t.Errorf("The OnInit command should be 'ls' instead got %v", manifest.ExecCommandManifest.OnInit[0].Command)
 	}
 
 	if len(manifest.ExecCommandManifest.OnInit[0].Args) != 1 {
@@ -47,7 +47,7 @@ func TestLoadManifest(t *testing.T) {
 	}
 
 	if manifest.ExecCommandManifest.OnPreDeploy[0].Command != "ls" {
-		t.Errorf("The OnPreDeploy command should be 'ls' instead got %d", manifest.ExecCommandManifest.OnPreDeploy[0].Command)
+		t.Errorf("The OnPreDeploy command should be 'ls' instead got %v", manifest.ExecCommandManifest.OnPreDeploy[0].Command)
 	}
 
 	if len(manifest.ExecCommandManifest.OnPreDeploy[0].Args) != 1 {
@@ -55,11 +55,11 @@ func TestLoadManifest(t *testing.T) {
 	}
 
 	if manifest.ExecCommandManifest.OnPreDeploy[0].Args[0] != "-lah" {
-		t.Errorf("Args from OnPreDeploy should have been -lah instead got %d", manifest.ExecCommandManifest.OnPreDeploy[0].Args[0])
+		t.Errorf("Args from OnPreDeploy should have been -lah instead got %v", manifest.ExecCommandManifest.OnPreDeploy[0].Args[0])
 	}
 
 	if manifest.ExecCommandManifest.OnPostDeploy[0].Command != "cd /tmp" {
-		t.Errorf("The OnPostDeploy command should be 'cd /tmp' instead got %d", manifest.ExecCommandManifest.OnPreDeploy[0].Command)
+		t.Errorf("The OnPostDeploy command should be 'cd /tmp' instead got %v", manifest.ExecCommandManifest.OnPreDeploy[0].Command)
 	}
 
 	if len(manifest.ExecCommandManifest.OnPostDeploy[0].Args) != 0 {
@@ -95,14 +95,14 @@ func TestK8sManifest(t *testing.T) {
 	}
 
 	if manifest == (&Manifest{}) {
-		t.Errorf("Unexpected manifest %q", manifest)
+		t.Errorf("Unexpected manifest %v", manifest)
 	}
 
 	if manifest.DeployerK8sManifest.Release != "webhooks" {
-		t.Errorf("Unexpected manifest %q", manifest)
+		t.Errorf("Unexpected manifest %v", manifest)
 	}
 
 	if manifest.DeployerK8sManifest.Namespace != "webapps" {
-		t.Errorf("Unexpected manifest %q", manifest)
+		t.Errorf("Unexpected manifest %v", manifest)
 	}
 }
