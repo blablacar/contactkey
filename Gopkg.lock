@@ -470,14 +470,6 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:e4d909dfbed1f1f6b4fb22a2c3f6c9f7cea401689a4dbbc744c9154fac8eb7a9"
-  name = "github.com/wercker/journalhook"
-  packages = ["."]
-  pruneopts = ""
-  revision = "158dbb9fcbfcc3386437e516bc71b58690606e91"
-
-[[projects]]
-  branch = "master"
   digest = "1:d2438f1c85d855408197edcbac2ba137513738ccefbd12396b0af99d5449880b"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
