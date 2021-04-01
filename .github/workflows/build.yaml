@@ -1,0 +1,43 @@
+name: Build
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    name: Golang
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install upx
+        run: sudo apt-get install upx
+
+      - uses: actions/setup-go@v2
+        with:
+          go-version: "^1.13"
+
+      - name: Dependencies
+        run: |
+          go get -u github.com/golang/dep/cmd/dep
+          dep ensure
+
+      - name: Building
+        run: |
+          ./hack/verify-gofmt.sh
+          go test --cover $(go list ./... | grep -v /vendor/)
+          go build -o /tmp/cck
+          /tmp/cck -h
+
+      - name: Publish
+        run: |
+          test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
